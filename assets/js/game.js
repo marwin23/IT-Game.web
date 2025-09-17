@@ -362,7 +362,7 @@ class Game {
         /// <returns>
         /// figure is at parking position
         /// </returns>
-        public bool CheckParking()
+        CheckParking: function()
         {
             foreach (var index in Field.FieldDescription.parking)
             {

@@ -12,25 +12,20 @@ class Point {
     /// construct point
     /// </summary>
     /// <param name="x">
-    /// column
+    /// column or point
     /// </param>
     /// <param name="y">
-    /// row
+    /// row or undefined
     /// </param>
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    /// <summary>
-    /// copy constructor
-    /// </summary>
-    /// <param name="p">
-    /// point to copy
-    /// </param>
-    constructor(p) {
-        this.x = p.x;
-        this.y = p.y;
+        if( !y) {
+            const p = x;
+            this.x = p.x;
+            this.y = p.y;
+        } else {
+            this.x = x;
+            this.y = y;
+        }
     }
 
     /// <summary>
@@ -84,14 +79,6 @@ class Player {
     /// coordinates of the dice roll position
     /// </summary>
     diceroll;
-
-    /// <summary>
-    /// default constructor for player
-    /// </summary>
-    constructor()
-    {
-
-    };
 
     /// <summary>
     /// copy constructor for one player
@@ -239,9 +226,9 @@ class Field {
     /// descriptions of the field for IT game
     /// </summary>
     static fieldIT = new Description(
-        positions = pointsIT,
-        parking = parkingIT,
-        players = playersIT
+        this.positions = pointsIT,
+        this.parking = parkingIT,
+        this.players = playersIT
     );
 
     /// <summary>

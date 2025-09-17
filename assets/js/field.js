@@ -1,7 +1,7 @@
 /// <summary>
 /// this class describes the fields
 /// </summary>
-const field = {
+const Field = {
     /// <summary>
     /// maximum numbers of figures for a player
     /// </summary>

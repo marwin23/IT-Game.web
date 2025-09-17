@@ -15,7 +15,7 @@ class FigureEventArgs {
     /// <summary>
     /// what to do with figure
     /// </summary>
-    action;
+    action;in
 
     /// <summary>
     /// constructor
@@ -611,7 +611,7 @@ class GamePlayer
     /// set all figures into the field
     /// </summary>
     SetFigures() {
-        for(var fig in this.Figures)
+        for(var fig of this.Figures)
             fig.Set();
     }
 
@@ -619,7 +619,7 @@ class GamePlayer
     /// delete all figures from the field
     /// </summary>
     DeleteFigures() {
-        for (var fig in this.Figures)
+        for (var fig of this.Figures)
             fig.Delete();
     }
 
@@ -632,12 +632,12 @@ class GamePlayer
     SetFiguresToCorner(force = false) {
         if (force)
         {
-            for(var fig in this.Figures)
+            for(var fig of this.Figures)
                 fig.SetCorner();
         }
         else
         {
-            for(var fig in this.Figures.filter(f => f.InField))
+            for(var fig of this.Figures.filter(f => f.InField))
                 fig.SetCorner();
         }
     }
@@ -814,8 +814,8 @@ class Game {
     SetPlayers(players){
         this.Players = 
             new Array.from(
-            players.filter( p => p >= 0),
-            c => new GamePlayer(this, c));
+                players.filter( p => p >= 0),
+                c => new GamePlayer(this, c));
         this.SetFiguresToCorner(true);          // set initial position
     }
 
@@ -897,9 +897,9 @@ class Game {
     /// </param>
     /// <param name="num">number of field positions</param>
     /// <param name="defeat">figure must be defeated if you can</param>
-    /// <param name="f2">defeated figure</param>
     /// <returns>
     /// number of another player jumped over figures
+    /// defeated figure
     /// </returns>
     CheckTrackFigure(f1, num, defeat) {
         var f = null;
@@ -911,13 +911,13 @@ class Game {
         for (var i = num; i > 0; i--)
         {
             if (!tf.Track())    // track figure
-                return -1;
+                return { num: -1, fd: null }
 
             f = this.CheckFigure(tf);
             if (!!f)
             {
                 if (!this.JumpHouse && tf.InHouse)
-                    return -1;
+                    return { num: -1, fd: null }
 
                 if (i > 1)              // if last field not reached
                 {
@@ -947,7 +947,7 @@ class Game {
     /// </summary>
     SetStart() {
         if (!!this.Players)
-            for (var pl in this.Players)
+            for (var pl of this.Players)
                 pl.Figures[0].SetStart();
     }
 
@@ -956,7 +956,7 @@ class Game {
     /// </summary>
     SetFigures() {
         if (!!this.Players)
-            for (var pl in this.Players)
+            for (var pl of this.Players)
                 pl.SetFigures();
     }
 
@@ -965,7 +965,7 @@ class Game {
     /// </summary>
     DeleteFigures() {
         if (!!this.Players)
-            for (var pl in this.Players)
+            for (var pl of this.Players)
                 pl.DeleteFigures();
     }
 
@@ -977,7 +977,7 @@ class Game {
     /// </param>
     SetFiguresToCorner(force = false) {
         if (!!this.Players)
-            for (var pl in this.Players)
+            for (var pl of this.Players)
                 pl.SetFiguresToCorner(force);
 
         this.Ranking = 0;
@@ -1014,8 +1014,8 @@ class Game {
     /// new parking flag
     /// </param>
     SetParking(p) {
-        var lstFig = new Array(Field.GameMaxFigure);
-        var lstPark = new Array(Field.FieldDescription.parking.Length);
+        var lstFig = new Array();   // Field.GameMaxFigure
+        var lstPark = new Array();  // Field.FieldDescription.parking.Length
         for(var i in Field.FieldDescription.parking)
         {
             var pos = Field.FieldDescription.positions[i];
@@ -1031,7 +1031,7 @@ class Game {
         for(var f in lstFig)
             f.Delete(); // delete first
 
-        this.OnParking?.Invoke(this, new ParkingEventArgs(lstPark.ToArray(), p));
+        this.OnParking?.Invoke(this, new ParkingEventArgs(lstPark, p));
 
         for(var f in lstFig)
             f.Set();    // set it again
@@ -1048,7 +1048,7 @@ class Game {
     /// </returns>
     GetRanking() {
         if (!this.Players)
-            return null;
+            return [];
 
         var lstRank = this.Players.filter(p => p.CheckFinish());
         lstRank.sort((p1, p2) => p1.Ranking - p2.Ranking);
@@ -1162,8 +1162,8 @@ class Game {
     #CheckStrategy(dice) {
         num = this.Player.Figures.Count;
 
-        var lstfd = new Array(Field.GameMaxFigure);   // figures to defeat
-        var lstft = new Array(Field.GameMaxFigure);   // figures to track
+        var lstfd = new Array();   // figures to defeat Field.GameMaxFigure
+        var lstft = new Array();   // figures to track Field.GameMaxFigure
 
         if (this.ForceDefeat || this.Player.Strategy != GamePlayer.StrategyDefinition.Manual)
         {
@@ -1314,20 +1314,17 @@ class Game {
                 var fig2 = this.CheckFigure(tfig);  // get figure at start positions
                 if (!!fig2)         // if there is a figure
                 {
-                    if (GameFigure.HaveSameColor(fig2, tfig))
-                    {
+                    if (GameFigure.HaveSameColor(fig2, tfig)) {
                         // track only this figure
                         return { ft: [ fig2 ], fd: null, fs: null };
                     }
-                    else
-                    {
+                    else {
                         fig.SetStart();
                         fdefeat = [ fig2 ];    // figure defeated
                         fset = fig;
                     }
                 }
-                else        // figure set to start position
-                {
+                else {          // figure set to start position
                     fig.SetStart();
                     fset = fig;
                 }
@@ -1340,6 +1337,5 @@ class Game {
         return CheckStrategy(dice);
     }
 }
-
 
 // --- end of file ---

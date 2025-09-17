@@ -264,11 +264,10 @@ class GameFigure {
     /// figure 1 == figure 2
     /// </returns>
     static Equals(a, b) {
-        if (a == null || b == null)
+        if (!a || !b)
             return false;
 
-        if (!(a.Player == null) &&
-            !(b.Player == null)) {
+        if (!!a.Player && !!b.Player) {
             // ignore myself
             if (a.Number == b.Number &&
                 HaveSameColor(a, b))
@@ -335,7 +334,7 @@ class GameFigure {
     /// set figure to start position
     /// </summary>
     SetStart() {
-        if (this.Player.FieldPlayer == null)
+        if (!this.Player.FieldPlayer)
             throw new ArgumentNullException("FieldPlayer");
 
         this.GameIndex = this.Player.FieldPlayer.start;
@@ -348,7 +347,7 @@ class GameFigure {
     /// set figure to corner position
     /// </summary>
     SetCorner() {
-        if (this.Player.FieldPlayer == null)
+        if (!this.Player.FieldPlayer)
             throw new ArgumentNullException("FieldPlayer");
 
         this.Position = new GamePoint(this.Player.FieldPlayer.figure[this.Number - 1]);
@@ -515,7 +514,7 @@ class GamePlayer
         {
             var f = new GameFigure(this, n);
 
-            if (!(this.Game.OnFigure == null))
+            if (!!this.Game.OnFigure)
                 this.Game.OnFigure(this, new FigureEventArgs(this, f, FigureAction.Init));
 
             this.Figures.Add(f);
@@ -548,12 +547,10 @@ class GamePlayer
     /// players are equal
     /// </returns>
     static Equals(a, b) {
-        if (a == null || b == null)
+        if (!a || !b)
             return false;
 
-        return
-            a == b ||
-            HaveSameColor(a, b);
+        return a == b || HaveSameColor(a, b);
     };
 
     /// <summary>
@@ -607,7 +604,7 @@ class GamePlayer
     /// figure found
     /// </returns>
     GetFigure(number) {
-        return this.Figures.FirstOrDefault(f => f.Number == number);
+        return this.Figures.find(f => f.Number == number);
     }
 
     /// <summary>
@@ -640,7 +637,7 @@ class GamePlayer
         }
         else
         {
-            for(var fig in this.Figures.Where(f => f.InField))
+            for(var fig in this.Figures.filter(f => f.InField))
                 fig.SetCorner();
         }
     }
@@ -652,7 +649,7 @@ class GamePlayer
     /// figure
     /// </returns>
     GetFigureFromCorner() {
-        return this.Figures.FirstOrDefault(f => !f.InField);
+        return this.Figures.find(f => !f.InField);
     }
 
     /// <summary>
@@ -666,7 +663,7 @@ class GamePlayer
     /// null, no figures shares the position
     /// </returns>
     CheckFigure(fig) {
-        return this.Figures.FirstOrDefault(f => f.Equals(fig));
+        return this.Figures.find(f => f.Equals(fig));
     }
 
     /// <summary>
@@ -674,7 +671,7 @@ class GamePlayer
     /// </summary>
     /// <returns>number of figures</returns>
     CheckHouse() {
-        return this.Figures.Count(f => f.InHouse);
+        return this.Figures.filter(f => f.InHouse).Length;
     }
 
     /// <summary>
@@ -682,7 +679,7 @@ class GamePlayer
     /// </summary>
     /// <returns>number of figures</returns>
     CheckField() {
-        return this.Figures.Count(f => f.InField && !f.InHouse);
+        return this.Figures.filter(f => f.InField && !f.InHouse).Length;
     }
 
     /// <summary>
@@ -692,7 +689,9 @@ class GamePlayer
     /// all figures in house
     /// </returns>
     CheckFinish() {
-        return this.Figures.All(f => f.InHouse);
+        return this.Figures
+                    .filter(f => f.InHouse)
+                    .Length === this.Figures.Length;
     }
 };
 
@@ -844,7 +843,7 @@ class Game {
             else
             {
                 // no player active
-                if (this.Player == null)
+                if (!this.Player)
                     run = SelectPlayer(true);  // get first player in game
                 else
                 {
@@ -866,7 +865,7 @@ class Game {
         }
 
         // check if game is entriely finished
-        if (!run && !(this.OnFinished == null))
+        if (!run && !!this.OnFinished)
             this.OnFinished(this, new FinishedEventArgs());
 
         return run;
@@ -883,7 +882,7 @@ class Game {
     /// null or undefined, no figure at the position
     /// </returns>
     CheckFigure(fig) {
-        if( this.Players != null)
+        if( !!this.Players)
             return null;
 
         return new Array.from( this.Players, p => p.CheckFigure(fig))
@@ -1243,7 +1242,7 @@ class Game {
                 tfig.SetStart();
 
                 var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (!!fig2)   // if there is a figure
+                if (!!fig2)         // if there is a figure
                 {
                     if (GameFigure.HaveSameColor(fig2, tfig))
                     {
@@ -1313,7 +1312,7 @@ class Game {
                 tfig.SetStart();
 
                 var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (fig2 != null)   // if there is a figure
+                if (!!fig2)         // if there is a figure
                 {
                     if (GameFigure.HaveSameColor(fig2, tfig))
                     {

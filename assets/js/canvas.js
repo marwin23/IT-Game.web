@@ -72,8 +72,8 @@ class FigureData
 /// physical position of top left corner in field
 /// </summary>
 class FieldPosition {
-    private Rectangle gameRect = new Rectangle();
-    private Size gameSize = new Size();
+    #gameRect;
+    #gameSize;
 
     /// <summary>
     /// calculate position and size of game in client window
@@ -147,12 +147,23 @@ class Menu {
         mctx.canvas.width = w;
         mctx.canvas.height = 20;
 
-        const images = [ "new", "force", "jump", "ranking", "player", "sound" ];
+        const images = [
+            { n: "new", x: 5 },
+            { n: "force", x: 25 },
+            { n: "jump", x: 45 },
+            { n: "dice6", x: 70 },
+            { n: "dice7", x: 90 },
+            { n: "dice8", x: 110 },
+            { n: "dice9", x: 130 },
+            { n: "ranking", x: 155 },
+            { n: "player", x: 175 },
+            { n: "sound", x: 195 }
+        ];
         for( var i = 0; i < images.length; i++) {
-            var icon = document.getElementById(images[i]);
-            icon.index = i;
+            var icon = document.getElementById(images[i].n);
+            icon.x = images[i].x;
             icon.onload = function() {
-                mctx.drawImage( this, this.index * 20, 0, this.width, this.height);           
+                mctx.drawImage( this, this.x, 2, this.width, this.height);           
             }
         }
 
@@ -167,9 +178,9 @@ class Menu {
 /// canvas of the game
 /// </summary>
 class Canvas {
-    private Game game = new Game();
-    private Random rnd = new Random();          // for the dice
-    private Bitmap bitmapGame;
+    #game = new Game();
+    #rnd = new Random();          // for the dice
+    #bitmapGame;
 
     /// <summary>
     /// dice pips
@@ -212,12 +223,12 @@ class Canvas {
 
     #imgFigBall0 = document.getElementById("ball0");
     #imgFigBall1 = document.getElementById("ball1");
-    #imgFigPoint0 = new ImageList();
-    #imgFigPoint1 = new ImageList();
-    #imgFigSmiley0 = new ImageList();
-    #imgFigSmiley1 = new ImageList();
-    #imgFigStar0 = new ImageList();
-    #imgFigStar1 = new ImageList();
+    #imgFigPoint0 = document.getElementById("point0");
+    #imgFigPoint1 = document.getElementById("point1");
+    #imgFigSmiley0 = document.getElementById("simley0");
+    #imgFigSmiley1 = document.getElementById("simley1");
+    #imgFigStar0 = document.getElementById("star0");
+    #imgFigStar1 = document.getElementById("star1");
     #imgFig;
 
     /// <summary>
@@ -519,7 +530,7 @@ class Canvas {
     /// number of dice pips.
     /// </returns>
     #RollDice() {
-        return rnd.Next(1, Properties.Settings.Default.MaxDice + 1);
+        return Math.floor(Math.random() * max + 1);
     }
 
     /// <summary>

@@ -199,18 +199,19 @@ class Canvas {
     _init = false;
 
 
-    #sndStart = new Audio("assets/audio/start.wav");
-    #sndMove = new SoundPlayer(Properties.Resources.Move);
-    #sndDefeat = new SoundPlayer(Properties.Resources.Defeat);
-    #sndDice = new SoundPlayer(Properties.Resources.Dice);
+    #sndStart = document.getElementById("start");
+    #sndMove = document.getElementById("move");
+    #sndDefeat = document.getElementById("defeat");
+    #sndOut = document.getElementById("out");
+    #sndDice = document.getElementById("dice");
 
-    #bmParking = new Bitmap(Properties.Resources.Parking);
-    #imgDice0 = new ImageList();
-    #imgDice1 = new ImageList();
+    #bmParking = document.getElementById("parking");
+    #imgDice0 = document.getElementById("dice0");
+    #imgDice1 = document.getElementById("dice1");
     #imgDice;
 
-    #imgFigBall0 = new ImageList();
-    #imgFigBall1 = new ImageList();
+    #imgFigBall0 = document.getElementById("ball0");
+    #imgFigBall1 = document.getElementById("ball1");
     #imgFigPoint0 = new ImageList();
     #imgFigPoint1 = new ImageList();
     #imgFigSmiley0 = new ImageList();
@@ -222,80 +223,30 @@ class Canvas {
     /// <summary>
     /// default constructor
     /// </summary>
-    constructor()
-    {
+    constructor() {
         Field.SetDescription();            // IT game field
 
         this.game.OnFigure += OnGameFigure;
         this.game.OnParking += OnGameParking;
 
-        this.CheckDiceRoll();
-
-        this.sndStart.Load();
-        this.sndMove.Load();
-        this.sndDefeat.Load();
-        this.sndDice.Load();
+        this.#CheckDiceRoll();
 
         // set images
-        this.imgDice0.ImageSize = new Size(32, 32);
-        this.imgDice0.Images.AddStrip(Properties.Resources.Dice0);
-        this.imgDice0.TransparentColor = Color.Magenta;
+        this.imgDice = [ this.#imgDice0, this.#imgDice1 ];
 
-        this.imgDice1.ImageSize = new Size(32, 32);
-        this.imgDice1.Images.AddStrip(Properties.Resources.Dice1);
-        this.imgDice1.TransparentColor = Color.Magenta;
-        this.imgDice = new[] { this.imgDice0, this.imgDice1 };
-
-        this.imgFigBall0.ImageSize = new Size(21, 21);
-        this.imgFigBall0.Images.AddStrip(Properties.Resources.FigBall0);
-        this.imgFigBall0.TransparentColor = Color.Black;
-
-        this.imgFigBall1.ImageSize = new Size(21, 21);
-        this.imgFigBall1.Images.AddStrip(Properties.Resources.FigBall1);
-        this.imgFigBall1.TransparentColor = Color.Black;
-
-        this.imgFigPoint0.ImageSize = new Size(21, 21);
-        this.imgFigPoint0.Images.AddStrip(Properties.Resources.FigPoint0);
-        this.imgFigPoint0.TransparentColor = Color.Black;
-
-        this.imgFigPoint1.ImageSize = new Size(21, 21);
-        this.imgFigPoint1.Images.AddStrip(Properties.Resources.FigPoint1);
-        this.imgFigPoint1.TransparentColor = Color.Black;
-
-        this.imgFigSmiley0.ImageSize = new Size(21, 21);
-        this.imgFigSmiley0.Images.AddStrip(Properties.Resources.FigSmiley0);
-        this.imgFigSmiley0.TransparentColor = Color.Black;
-
-        this.imgFigSmiley1.ImageSize = new Size(21, 21);
-        this.imgFigSmiley1.Images.AddStrip(Properties.Resources.FigSmiley1);
-        this.imgFigSmiley1.TransparentColor = Color.Black;
-
-        this.imgFigStar0.ImageSize = new Size(21, 21);
-        this.imgFigStar0.Images.AddStrip(Properties.Resources.FigStar0);
-        this.imgFigStar0.TransparentColor = Color.Black;
-
-        this.imgFigStar1.ImageSize = new Size(21, 21);
-        this.imgFigStar1.Images.AddStrip(Properties.Resources.FigStar1);
-        this.imgFigStar1.TransparentColor = Color.Black;
-
-        this.imgFig = new[,]
-        {
-            { this.imgFigBall0, this.imgFigBall1 },
-            { this.imgFigPoint0, this.imgFigPoint1 },
-            { this.imgFigSmiley0, this.imgFigSmiley1 },
-            { this.imgFigStar0, this.imgFigStar1 }
-        };
-
-        this.bmParking.MakeTransparent(Color.Magenta);
+        this.imgFig = [
+            [ this.#imgFigBall0, this.#imgFigBall1 ],
+            [ this.#imgFigPoint0, this.#imgFigPoint1 ],
+            [ this.#imgFigSmiley0, this.#imgFigSmiley1 ],
+            [ this.#imgFigStar0, this.#imgFigStar1 ]
+        ];
     }
 
     /// <summary>
     /// disposes the game field
     /// </summary>
-    public void DisposeGame()
-    {
-        if( !(this.bitmapGame is null))
-        {
+    DisposeGame() {
+        if( !!this.bitmapGame) {
             this.bitmapGame.Dispose();
             this.bitmapGame = null;
         }
@@ -361,7 +312,7 @@ class Canvas {
             this.tscGame.ContentPanel.Size,
             Properties.Resources.Field.Size);
         var rect = fp.CalcPosition(img.Size, f.Position);
-        var fd = f.Data as FigureData;
+        var fd = f.Data; //  as FigureData;
         if (!!fd)
             fd.GetBackGround(rect, this.bitmapGame);
 
@@ -451,21 +402,18 @@ class Canvas {
     /// <returns>
     /// figure, null if no figure is selected
     /// </returns>
-    private Game.GameFigure GetFigure(Game.GameFigure[] figures, Point pos)
-    {
+    #GetFigure(figures, pos) {
         if (!this.FiguresToSelect)
             return null;
 
-        if (!(figures is null))
-        {
-            var sz = this.imgFig[0,0].ImageSize;
-            var fp = new FieldPosition(
+        if (!!figures) {
+            const sz = this.imgFig[0][0].ImageSize;
+            const fp = new FieldPosition(
                 this.tscGame.ContentPanel.Size,
                 Properties.Resources.Field.Size);
 
-            foreach (var f in figures)
-            {
-                var rt = fp.CalcPosition(sz, f.Position);
+            for (var f of figures) {
+                const rt = fp.CalcPosition(sz, f.Position);
                 if (rt.Contains(pos))
                     return f;
             }
@@ -583,9 +531,9 @@ class Canvas {
     /// <param name="e">
     /// arguments of event.
     /// </param>
-    #OnGameParking(object sender, Game.ParkingEventArgs e)
+    #OnGameParking(e)
     {
-        var size = this.bmParking.Size;
+        var size = this.#bmParking.Size;
         var fp = new FieldPosition(
                     this.tscGame.ContentPanel.Size,
                     Properties.Resources.Field.Size);
@@ -611,7 +559,7 @@ class Canvas {
                     GameInternal.SetBackGround(park, rect, tscGame.ContentPanel, this.bitmapGame);
                 }
 
-                this.DisposePark();
+                this.#DisposePark();
             }
         }
     }
@@ -638,8 +586,7 @@ class Canvas {
     /// <param name="e">
     /// arguements of the event.
     /// </param>
-    #OnGameFigure(object sender, Game.FigureEventArgs e)
-    {
+    #OnGameFigure(e) {
         switch (e.action)
         {
             case FigureAction.Init:
@@ -647,14 +594,14 @@ class Canvas {
                 break;
 
             case FigureAction.Set:
-                this.SetFigure(e.player, e.figure);
+                this.#SetFigure(e.player, e.figure);
                 if (!this._init && Properties.Settings.Default.Sound)
                     if (e.figure.InField && e.figure.TrackNumber == 0)
-                        sndStart.PlaySync();
+                        sndStart.play();
                 break;
 
             case FigureAction.Delete:
-                this.DeleteFigure(e.player, e.figure);
+                this.#DeleteFigure(e.player, e.figure);
                 break;
 
             case FigureAction.Delay:
@@ -662,7 +609,7 @@ class Canvas {
                 if (!this._init)
                 {
                     if (Properties.Settings.Default.Sound)
-                        sndMove.PlaySync();
+                        sndMove.play();
                     else
                         Thread.Sleep(300);
                 }
@@ -670,7 +617,7 @@ class Canvas {
 
             case FigureAction.Defeated:
                 if (!this._init && Properties.Settings.Default.Sound)
-                    sndDefeat.PlaySync();
+                    sndDefeat.play();
                 break;
         }
     }
@@ -743,9 +690,9 @@ class Canvas {
             this.bitmapGame.Dispose();
 
         // delete parking field and figures
-        this.DisposeDice();
-        this.DisposeFigures();
-        this.DisposePark();
+        this.#DisposeDice();
+        this.#DisposeFigures();
+        this.#DisposePark();
 
         // create backgound image
         var rectTarget = this.tscGame.ContentPanel.ClientRectangle;

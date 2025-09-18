@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// arguments for figure event
 /// </summary>
-class FigureEventArgs {
+class FigureEvent extends CustomEvent {
     /// <summary>
     /// player
     /// </summary>
@@ -20,8 +20,7 @@ class FigureEventArgs {
     /// <summary>
     /// constructor
     /// </summary>
-    constructor(p, f, a)
-    {
+    constructor(p, f, a) {
         this.player = p;
         this.figure = f;
         this.action = a;
@@ -31,7 +30,7 @@ class FigureEventArgs {
 /// <summary>
 /// argument for parking event
 /// </summary>
-class ParkingEventArgs {
+class ParkingEvent extends CustomEvent {
     /// <summary>
     /// position of parking zones
     /// </summary>
@@ -54,7 +53,7 @@ class ParkingEventArgs {
 /// <summary>
 /// argument for finished event
 /// </summary>
-class FinishedEventArgs {
+class FinishedEvent extends CustomEvent {
     /// <summary>
     /// player that has been finished
     /// </summary>
@@ -83,8 +82,7 @@ class GamePoint
     /// <param name="row">
     /// row or undefined
     /// </param>
-    constructor(col, row)
-    {
+    constructor(col, row) {
         if( !row) {
             const p = col;
             this.Col = p.Col;
@@ -117,8 +115,7 @@ class GamePoint
     /// <returns>
     /// point 1 == point 2
     /// </returns>
-    static Equals(a, b)
-    {
+    static Equals(a, b) {
         if (!a || !b)
             return false;
 
@@ -144,8 +141,7 @@ class GameFigure {
     /// <param name="col">
     /// column of the position
     /// </param>
-    constructor(p, row, col)
-    {
+    constructor(p, row, col) {
         if( !col) {
             if( !row) {
                 const f = p;
@@ -701,23 +697,20 @@ class Game {
     });
 
 
-    /*
     /// <summary>
     /// event to handle figure
     /// </summary>
-    public event EventHandler<FigureEventArgs> OnFigure;
+    OnFigure;
 
     /// <summary>
     /// event to set or reset parking zones
     /// </summary>
-    public event EventHandler<ParkingEventArgs> OnParking;
+    OnParking;
 
     /// <summary>
     /// event for finished player or game
     /// </summary>
-    public event EventHandler<FinishedEventArgs> OnFinished;
-*/
-
+    OnFinished;
 
     /// <summary>
     /// show or hide parking field
@@ -755,20 +748,14 @@ class Game {
     JumpHouse;
 
     /// <summary>
-    /// constructor of the game
-    /// </summary>
-    constructor() {
-
-    }
-
-    /// <summary>
     /// constructor to init with players
     /// </summary>
     /// <param name="players">
     /// indices of player in the field
     /// </param>
     constructor(players) {
-        this.SetPlayers(players);
+        if( !!players)
+            this.SetPlayers(players);
     }
 
     /// <summary>

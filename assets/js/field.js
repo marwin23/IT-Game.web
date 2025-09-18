@@ -87,7 +87,7 @@ class Player {
     /// player to copy
     /// </param>
     constructor(p) {
-        this.name = p.name;
+        this.color = p.color;
         this.start = p.start;
         this.Hahead = p.Hahead;
         this.house = Point.CopyArray(p.house);
@@ -107,7 +107,7 @@ class Player {
     /// <returns>
     /// player1 == player2
     /// </returns>
-    static Equals(a, b) { return a.name == b.name; }
+    static Equals(a, b) { return a.color == b.color; }
 };
 
 
@@ -129,6 +129,15 @@ class Description {
     /// starting values of the players
     /// </summary>
     players;
+
+    /// <summary> 
+    /// copy constructor
+    /// </summary>
+    constructor(d) {
+        this.positions = d.positions;
+        this.parking = d.parking;
+        this.players = d.players;
+    }
 }
 
 /// <summary>
@@ -172,69 +181,69 @@ class Field {
     /// description of the players for the IT-field
     /// </summary>
     static playersIT = [
-        new Player(
-            color = "orange",
-            start = 29,             // index coordinates for start field
-            Hahead = 27,            // coordinates of the field house entrance ahead
-            house = [               // coordinates of the positions in the house
+        new Player({
+            color: "orange",
+            start: 29,             // index coordinates for start field
+            Hahead: 27,            // coordinates of the field house entrance ahead
+            house: [               // coordinates of the positions in the house
                 new Point(290,263), new Point(280,241), new Point(270,218), new Point(260,196)
             ],
-            figure = [              // data of the figures
+            figure: [              // data of the figures
                 new Point(245,330), new Point(260,310), new Point(281,323), new Point(267,344)
             ],
-            diceroll = new Point(315,335)   // coordinates of the dice roll position
-        ),
-        new Player(
-            color = "yellow",
-            start = 41,             // index coordinates for start field
-            Hahead = 39,            // coordinates of the field house entrance ahead
-            house = [               // coordinates of the positions in the house
+            diceroll: new Point(315,335)   // coordinates of the dice roll position
+        }),
+        new Player({
+            color: "yellow",
+            start: 41,             // index coordinates for start field
+            Hahead: 39,            // coordinates of the field house entrance ahead
+            house: [               // coordinates of the positions in the house
                 new Point(112,327), new Point(114,302), new Point(117,277), new Point(119,253)
             ],
-            figure = [              // data of the figures
+            figure: [              // data of the figures
                 new Point(21,358), new Point(37,338), new Point(57,354), new Point(40,374)
             ],
-            diceroll = new Point(90,380)   // coordinates of the dice roll position
-        ),
-        new Player(
-            color = "green",
-            start = 5,              // index coordinates for start field
-            Hahead = 3,             // coordinates of the field house entrance ahead
-            house = [               // coordinates of the positions in the house
+            diceroll: new Point(90,380)   // coordinates of the dice roll position
+        }),
+        new Player({
+            color: "green",
+            start: 5,              // index coordinates for start field
+            Hahead: 3,             // coordinates of the field house entrance ahead
+            house: [               // coordinates of the positions in the house
                 new Point(116,129), new Point(141,130), new Point(166,131), new Point(190,132)
             ],
-            figure = [              // data of the figures
+            figure: [              // data of the figures
                 new Point(79,56), new Point(96,37), new Point(116,52), new Point(98,72)
             ],
-            diceroll = new Point(50,75) // coordinates of the dice roll position
-        ),
-        new Player(
-            color = "blue",
-            start = 17,             // index coordinates for start field
-            Hahead = 15,            // coordinates of the field house entrance ahead
-            house = [               // coordinates of the positions in the house
+            diceroll: new Point(50,75) // coordinates of the dice roll position
+        }),
+        new Player({
+            color: "blue",
+            start: 17,             // index coordinates for start field
+            Hahead: 15,            // coordinates of the field house entrance ahead
+            house: [               // coordinates of the positions in the house
                 new Point(276,88), new Point(262,109), new Point(247,129), new Point(233,151)
             ],
-            figure = [              // data of the figures
+            figure: [              // data of the figures
                 new Point(347,80), new Point(368,93), new Point(354,115), new Point(333,101)
             ],
-            diceroll = new Point(370,50)   // coordinates of the dice roll position
-        ),
+            diceroll: new Point(370,50)   // coordinates of the dice roll position
+        })
     ];
 
     /// <summary>
     /// descriptions of the field for IT game
     /// </summary>
-    static fieldIT = new Description(
-        this.positions = pointsIT,
-        this.parking = parkingIT,
-        this.players = playersIT
-    );
+    static fieldIT = new Description({
+        positions: Field.pointsIT,
+        parking: Field.parkingIT,
+        players: Field.playersIT
+    });
 
     /// <summary>
     /// get description of the field
     /// </summary>
-    static FieldDescription = fieldIT;
+    static FieldDescription = Field.fieldIT;
 
     /// <summary>
     /// get names of the available players
@@ -243,7 +252,7 @@ class Field {
     /// array of player names
     /// </returns>
     static GetPlayerNames() {
-        return Array.from(FieldDescription.players, (p => p.name));
+        return Array.from(Field.FieldDescription.players, (p => p.color));
     }
 };
 

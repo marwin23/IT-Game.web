@@ -71,8 +71,7 @@ class FigureData
 /// <summary>
 /// physical position of top left corner in field
 /// </summary>
-class FieldPosition
-{
+class FieldPosition {
     private Rectangle gameRect = new Rectangle();
     private Size gameSize = new Size();
 
@@ -138,10 +137,36 @@ class FieldPosition
 }
 
 /// <summary>
+/// canvas of the menu
+/// </summary>
+class Menu {
+    constructor(w) {
+        const m = document.getElementById("menu");
+        const mctx = m.getContext("2d");
+
+        mctx.canvas.width = w;
+        mctx.canvas.height = 20;
+
+        const images = [ "new", "force", "jump", "ranking", "player", "sound" ];
+        for( var i = 0; i < images.length; i++) {
+            var icon = document.getElementById(images[i]);
+            icon.index = i;
+            icon.onload = function() {
+                mctx.drawImage( this, this.index * 20, 0, this.width, this.height);           
+            }
+        }
+
+        mctx.onclick = function(ev) {
+            alert("menu");
+            console.log(ev);
+        }
+    }
+};
+
+/// <summary>
 /// canvas of the game
 /// </summary>
-class Canvas
-{
+class Canvas {
     private Game game = new Game();
     private Random rnd = new Random();          // for the dice
     private Bitmap bitmapGame;
@@ -757,14 +782,14 @@ class Canvas
         {
             if (e.Clicks == 1)
             {
-                if (this.game.Player is null)
+                if (!this.game.Player)
                     return;
 
-                var pd = this.game.Player.Data as PlayerData;
-                if (pd is null)
+                const pd = this.game.Player.Data; // as PlayerData;
+                if (!pd)
                     return;
 
-                var name = GameInternal.GetPlayerName(this.game.Player);
+                const name = GameInternal.GetPlayerName(this.game.Player);
 
                 if (this.IsDice(this.game.Player, e.Location))
                 {
@@ -777,13 +802,13 @@ class Canvas
                     if (Properties.Settings.Default.Sound)
                         sndDice.PlaySync();
 
-                    pd.Figures = game.EvalDiceRoll(this.Dice, out Game.GameFigure[] fdefeat);
-                    if (!(pd.Figures is null))    // figure already has been tracked
+                    const res = game.EvalDiceRoll(this.Dice);
+                    if (!!res.ft)    // figure already has been tracked
                     {
-                        if (pd.Figures.Length == 0)
-                        {
-                            if (this.tsbRollDice3.Checked && game.CheckCorner())
-                            {
+                        pd.Figures = res.ft;
+
+                        if (pd.Figures.Length == 0) {
+                            if (this.tsbRollDice3.Checked && game.CheckCorner()) {
                                 pd.NumRolls++;
                                 if (pd.NumRolls < 3)
                                 {
@@ -792,9 +817,7 @@ class Canvas
                                     return;
                                 }
                             }
-                        }
-                        else if (pd.Figures.Length == 1)
-                        {
+                        } else if (pd.Figures.Length == 1) {
                             var f = pd.Figures[0];
                             this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
                             this.game.TrackFigure(f, this.Dice);
@@ -812,8 +835,8 @@ class Canvas
                 }
                 else
                 {
-                    var f = this.GetFigure(pd.Figures, e.Location);
-                    if (!(f is null))
+                    const f = this.GetFigure(pd.Figures, e.Location);
+                    if (!!f)
                     {
                         hit = true;
                         this.DeleteFigures(pd.Figures);

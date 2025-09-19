@@ -140,6 +140,51 @@ class FieldPosition {
 /// canvas of the menu
 /// </summary>
 class Menu {
+    images = [
+        { n: "new", x: 5 },
+        { n: "force", x: 25 },
+        { n: "jump", x: 45 },
+        { n: "dice6", x: 70 },
+        { n: "dice7", x: 90 },
+        { n: "dice8", x: 110 },
+        { n: "dice9", x: 130 },
+
+        { n: "ball", x: 155 },
+        { n: "point", x: 175 },
+        { n: "smiley", x: 195 },
+        { n: "star", x: 215 },
+
+        { n: "ranking", x: 240 },
+        { n: "player", x: 260 },
+        { n: "sound", x: 280 }
+    ];
+
+    /// <summary>
+    /// return menu name selected.
+    /// </summary>
+    #CheckPoint(x,y) {
+        for( var i = 0; i < images.length; i++) {
+            const r = new Rectangle(images[i].x, 2, 16, 16);
+            if( r.contains( x, y)) {
+                return images[i].n;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// check menu item to activate
+    /// </summary>
+    CheckMenu(n) {
+        for( var i = 0; i < images.length; i++) {
+            if(n === images[i].n) {
+                const r = new Rectangle(images[i].x, 2, 16, 16);
+
+                // TO DO
+            }
+        }
+    }
+
     constructor(w,f) {
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
@@ -147,27 +192,9 @@ class Menu {
         mctx.canvas.width = w;
         mctx.canvas.height = 20;
 
-        const images = [
-            { n: "new", x: 5 },
-            { n: "force", x: 25 },
-            { n: "jump", x: 45 },
-            { n: "dice6", x: 70 },
-            { n: "dice7", x: 90 },
-            { n: "dice8", x: 110 },
-            { n: "dice9", x: 130 },
-
-            { n: "ball", x: 155 },
-            { n: "point", x: 175 },
-            { n: "smiley", x: 195 },
-            { n: "star", x: 215 },
-
-            { n: "ranking", x: 240 },
-            { n: "player", x: 260 },
-            { n: "sound", x: 280 }
-        ];
-        for( var i = 0; i < images.length; i++) {
-            var icon = document.getElementById(images[i].n);
-            icon.pos = images[i].x;
+        for( var i = 0; i < this.images.length; i++) {
+            var icon = document.getElementById(this.images[i].n);
+            icon.pos = this.images[i].x;
             icon.onload = function() {
                 mctx.drawImage( this, this.pos, 2, this.width, this.height);           
             }
@@ -176,16 +203,9 @@ class Menu {
         m.onclick = function(ev) {
             const x = ev.clientX;
             const y = ev.clientY;
-
-            if( !!f) {
-                for( var i = 0; i < images.length; i++) {
-                    const r = new Rectangle(images[i].x, 2, 16, 16);
-                    if( r.contains( x, y)) {
-                        f(images[i].n)
-                        return;
-                    }
-                }
-            }
+            const n = CheckPoint( x,y);
+            if( !!n)
+                f(n);
         }
     }
 };
@@ -303,7 +323,6 @@ class Canvas {
         this.tsbFigurePoint.Checked = (fig == 1);
         this.tsbFigureSmiley.Checked = (fig == 2);
         this.tsbFigureStar.Checked = (fig == 3);
-        this.tscGame.ContentPanel.Invalidate();
     }
     
     /// <summary>

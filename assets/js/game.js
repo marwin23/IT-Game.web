@@ -330,7 +330,7 @@ class GameFigure {
     /// </summary>
     Defeated() {
         if (!this.Test)
-            this.Player.Game.OnFigure(this, new FigureEventArgs(this.Player, this, FigureAction.Defeated));
+            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Defeated);
 
         this.SetCorner();
     }
@@ -384,7 +384,7 @@ class GameFigure {
         this.HasSet = true;
 
         if (!this.Test)
-            this.Player.Game.OnFigure(this, new FigureEventArgs(this.Player, this, FigureAction.Set));
+            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Set);
 
         return !bSet;
     }
@@ -400,7 +400,7 @@ class GameFigure {
         this.HasSet = false;
 
         if (!this.Test)
-            this.Player.Game.OnFigure(this, new FigureEventArgs(this.Player, this, FigureAction.Delete));
+            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Delete);
 
         return bSet;
     }
@@ -442,7 +442,9 @@ class GamePlayer
     /// player index in field
     /// </param>
     constructor(game, player) {
-        if( !player) {
+        console.log( "GamePlayer", game, player);
+
+        if( player == null) {
             const p = game;
             this.Game = p.Game;
             this.FieldPlayer = p.FieldPlayer;   // just copy reference
@@ -455,12 +457,12 @@ class GamePlayer
         } else {
             if (player >= 0 && player < Field.FieldDescription.players.Length) {
                 this.FieldPlayer = Field.FieldDescription.players[player];
-                this.Name = this.FieldPlayer.name;
+                this.Name = this.FieldPlayer.color;
                 this.Index = player;
             }
 
             this.Game = game;
-            this.Strategy = StrategyDefinition.Manual;
+            this.Strategy = GamePlayer.StrategyDefinition.Manual;
             this.CreateFigures();
         }
     }
@@ -475,7 +477,7 @@ class GamePlayer
             var f = new GameFigure(this, n);
 
             if (!!this.Game.OnFigure)
-                this.Game.OnFigure(this, new FigureEventArgs(this, f, FigureAction.Init));
+                this.Game.OnFigure(this, f, Game.FigureAction.Init);
 
             this.Figures.push(f);
         }
@@ -1021,8 +1023,7 @@ class Game {
     CheckTrackFigure(fig, last) {
         fig.Track();
 
-        if (last)
-        {
+        if (last) {
             var f2 = this.CheckFigure(fig);
             if (!f2)
             {
@@ -1097,7 +1098,7 @@ class Game {
     TrackFigure(fig, dice) {
         for (var i = 1; i <= dice; i++)
         {
-            OnFigure?.BeginInvoke(this, new FigureEventArgs(this.Player, fig, FigureAction.Delay), null, i);
+            OnFigure?.BeginInvoke(this.Player, fig, Game.FigureAction.Delay); // , null, i);
 
             this.TrackFigure(fig, i == dice);
         }

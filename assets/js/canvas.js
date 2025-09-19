@@ -603,6 +603,7 @@ class Canvas {
     /// number of dice pips.
     /// </returns>
     #RollDice() {
+        const max = localStorage.getItem("MaxDice") ?? 6;
         return Math.floor(Math.random() * max + 1);
     }
 
@@ -664,44 +665,45 @@ class Canvas {
     /// <summary>
     /// event functions while tracking figure.
     /// </summary>
-    /// <param name="sender">
-    /// sender of the control
+    /// <param name="p">
+    /// game player
     /// </param>
-    /// <param name="e">
-    /// arguements of the event.
+    /// <param name="f">
+    /// figure to handle
     /// </param>
-    #OnGameFigure(e) {
-        switch (e.action)
-        {
-            case FigureAction.Init:
-                e.figure.Data = new FigureData();
+    /// <param name="a">
+    /// action to do
+    /// </param>
+    #OnGameFigure(p,f,a) {
+        switch (a) {
+            case Game.FigureAction.Init:
+                f.Data = new FigureData();
                 break;
 
-            case FigureAction.Set:
-                this.#SetFigure(e.player, e.figure);
-                if (!this._init && Properties.Settings.Default.Sound)
-                    if (e.figure.InField && e.figure.TrackNumber == 0)
-                        sndStart.play();
+            case Game.FigureAction.Set:
+                this.#SetFigure(p, f);
+                if (!this._init && localStorage.getItem("Sound") == "true")
+                    if (f.InField && f.TrackNumber == 0)
+                        this.#sndStart.play();
                 break;
 
-            case FigureAction.Delete:
-                this.#DeleteFigure(e.player, e.figure);
+            case Game.FigureAction.Delete:
+                this.#DeleteFigure(p, f);
                 break;
 
-            case FigureAction.Delay:
-                Application.DoEvents();     // perform paint events
-                if (!this._init)
-                {
-                    if (Properties.Settings.Default.Sound)
-                        sndMove.play();
+            case Game.FigureAction.Delay:
+                // Application.DoEvents();     // perform paint events
+                if (!this._init) {
+                    if (localStorage.getItem("Sound") == "true")
+                        this.#sndMove.play();
                     else
                         Thread.Sleep(300);
                 }
                 break;
 
-            case FigureAction.Defeated:
-                if (!this._init && Properties.Settings.Default.Sound)
-                    sndDefeat.play();
+            case Game.FigureAction.Defeated:
+                if (!this._init && localStorage.getItem("Sound") == "true")
+                    this.#sndDefeat.play();
                 break;
         }
     }
@@ -918,7 +920,7 @@ class Canvas {
                 this.#InitGame();
 
                 this.#game.SelectPlayer(true);
-                this.Dice = this.RollDice();
+                this.Dice = this.#RollDice();
             }
             break;
 

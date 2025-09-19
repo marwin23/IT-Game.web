@@ -99,25 +99,15 @@ class GameInternal {
     /// <param name="image">
     /// image to draw on field
     /// </param>
-    /// <param name="rect">
-    /// bounding rectangle
+    /// <param name="context">
+    /// control to draw image
     /// </param>
-    /// <param name="ctrl">
-    /// control to draw bitmap
-    /// </param>
-    /// <param name="game">
-    /// shadow copy of game field
-    /// </param>
-    static DrawBitmap(image, rect, ctrl, game)
-    {
-        /*
-        using (var g = ctrl.CreateGraphics())
-            g.DrawImage(image, rect);
+    static DrawImage(image, context, position) {
+        console.log("DrawImage", image, position);
 
-        // obtain a graphic object from gaming bitmap
-        using (var g = Graphics.FromImage(game))
-            g.DrawImage(image, rect);
-        */
+        const x = position.x - image.width / 2;
+        const y = position.y = image.height / 2;
+        context.drawImage(image, x, y, image.width, image.height);
     }
 
     /// <summary>

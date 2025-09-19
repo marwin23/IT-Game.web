@@ -241,7 +241,7 @@ class Menu {
 class Canvas {
     #game = new Game();
     #menu;
-    #bitmapGame;
+    #context;
 
     /// <summary>
     /// dice pips
@@ -312,9 +312,10 @@ class Canvas {
         ];
 
         const g = document.getElementById("game");
-        const gctx = g.getContext("2d");  
-        const f = document.getElementById("field");
+        const gctx = g.getContext("2d");
+        this.#context = gctx;
 
+        const f = document.getElementById("field");
         f.onload = function(e) {
             gctx.canvas.width = f.width;
             gctx.canvas.height = f.height;
@@ -389,9 +390,12 @@ class Canvas {
     /// set figures to select.
     /// </param>
     #SetFigure(p, f, select = false) {
+        console.log("SetFigure", p, f, select);
+
         const fig = parseInt(localStorage.getItem("Figure"));
-        const img = this.imgFig[fig, select ? 1 : 0].Images[p.Index];
+        const img = this.imgFig[fig, select ? 1 : 0][p.Index];
      
+        /*
         const fp = new FieldPosition(
             this.tscGame.ContentPanel.Size,
             Properties.Resources.Field.Size);
@@ -399,8 +403,9 @@ class Canvas {
         const fd = f.Data; //  as FigureData;
         if (!!fd)
             fd.GetBackGround(rect, this.bitmapGame);
+        */
 
-        GameInternal.DrawBitmap(img, rect, tscGame.ContentPanel, this.bitmapGame);
+        GameInternal.DrawImage(img, this.#context, f.Position);
     }
 
     /// <summary>
@@ -417,7 +422,6 @@ class Canvas {
         if( !!fd) {
             const img = this.imgFig[0,0].ImageSize;
             const fp = new FieldPosition(
-                this.tscGame.ContentPanel.Size,
                 Properties.Resources.Field.Size);
             const rect = fp.CalcPosition(img, f.Position);
             fd.SetBackGround(rect, this.tscGame.ContentPanel, this.bitmapGame);
@@ -616,8 +620,7 @@ class Canvas {
     /// <param name="e">
     /// arguments of event.
     /// </param>
-    #OnGameParking(e)
-    {
+    #OnGameParking(e) {
         var size = this.#bmParking.Size;
         var fp = new FieldPosition(
                     this.tscGame.ContentPanel.Size,
@@ -653,8 +656,7 @@ class Canvas {
     /// erase parking backgound
     /// </summary>
     #DisposePark() {
-        if( !!this.backGroundPark)
-        {
+        if( !!this.backGroundPark) {
             for (var park of this.backGroundPark)
                 park.Dispose();
 

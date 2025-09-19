@@ -1,107 +1,36 @@
 ﻿/// <summary>
-/// arguments for figure event
-/// </summary>
-class FigureEvent extends CustomEvent {
-    /// <summary>
-    /// player
-    /// </summary>
-    player;
-
-    /// <summary>
-    /// figure for action
-    /// </summary>
-    figure;
-
-    /// <summary>
-    /// what to do with figure
-    /// </summary>
-    action;
-
-    /// <summary>
-    /// constructor
-    /// </summary>
-    constructor(p, f, a) {
-        this.player = p;
-        this.figure = f;
-        this.action = a;
-    }
-}
-
-/// <summary>
-/// argument for parking event
-/// </summary>
-class ParkingEvent extends CustomEvent {
-    /// <summary>
-    /// position of parking zones
-    /// </summary>
-    positions;
-
-    /// <summary>
-    /// set or reset parking zones
-    /// </summary>
-    action;
-
-    /// <summary>
-    /// constructor
-    /// </summary>
-    constructor(p, a) {
-        this.positions = p;
-        this.action = a;
-    }
-};
-
-/// <summary>
-/// argument for finished event
-/// </summary>
-class FinishedEvent extends CustomEvent {
-    /// <summary>
-    /// player that has been finished
-    /// </summary>
-    player;
-
-    /// <summary>
-    /// constructor
-    /// </summary>
-    constructor( p = null)
-    {
-        this.player = p;
-    }
-};
-
-/// <summary>
 /// position in field
 /// </summary>
-class GamePoint
-{
+class GamePoint {
     /// <summary>
     /// constructor of position or copy
     /// </summary>
-    /// <param name="col">
+    /// <param name="x">
     /// column or point
     /// </param>
-    /// <param name="row">
+    /// <param name="y">
     /// row or undefined
-    /// </param>
-    constructor(col, row) {
-        if( !row) {
-            const p = col;
-            this.Col = p.Col;
-            this.Row = p.Row;
+    /// </param>S
+    constructor(x, y) {
+        if( y == null) {
+            const p = x;
+            this.x = p.x;
+            this.y = p.y;
         } else {
-            this.Col = col;
-            this.Row = row;
+            this.x = x;
+            this.y = y;
         }
     }
 
     /// <summary>
     /// current column of point
     /// </summary>
-    Col;
+    x;
 
     /// <summary>
     /// current row
     /// </summary>
-    Row;
+    y;
 
     /// <summary>
     /// check if two points are equal
@@ -116,10 +45,8 @@ class GamePoint
     /// point 1 == point 2
     /// </returns>
     static Equals(a, b) {
-        if (!a || !b)
-            return false;
-
-        return a.Col == b.Col && a.Row == b.Row;
+        return a != null && b != null && 
+               a.x == b.x && a.y == b.y;
     }
 };
 
@@ -134,16 +61,16 @@ class GameFigure {
     /// <param name="p">
     /// player to determine color
     /// </param>
-    /// <param name="row">
+    /// <param name="x">
     /// number of figure,
-    /// row of the position
-    /// </param>
-    /// <param name="col">
     /// column of the position
     /// </param>
-    constructor(p, row, col) {
-        if( !col) {
-            if( !row) {
+    /// <param name="y">
+    /// row of the position
+    /// </param>
+    constructor(p, x, y) {
+        if( y == null) {
+            if( x == null) {
                 const f = p;
                 this.Player = f.Player;         // just copy reference
                 this.Number = f.Number;
@@ -157,11 +84,12 @@ class GameFigure {
                 this.Data = f.Data;
             } else {
                 this.Player = p;
-                this.Number = row;
+                this.Number = x;
             }
+            this.Test = false;
         } else {
             this.Player = p;
-            this.Position = new GamePoint(row, col);
+            this.Position = new GamePoint(x,y);
             this.Test = true;
         }
     }
@@ -304,25 +232,29 @@ class GameFigure {
     /// set figure to start position
     /// </summary>
     SetStart() {
-        if (!!this.Player.FieldPlayer) {
+        if (this.Player.FieldPlayer != null) {
             this.GameIndex = this.Player.FieldPlayer.start;
             this.Position = new GamePoint(Field.FieldDescription.positions[this.GameIndex]);
         }
 
         this.InField = true;
         this.TrackNumber = 0;
+
+        console.log("SetStart", this);
     }
 
     /// <summary>
     /// set figure to corner position
     /// </summary>
     SetCorner() {
-        if (!!this.Player.FieldPlayer)
+        if (this.Player.FieldPlayer != null)
             this.Position = new GamePoint(this.Player.FieldPlayer.figure[this.Number - 1]);
 
         this.InField = false;
         this.InHouse = false;
         this.TrackNumber = 0;
+
+        console.log("SetCorner", this);
     }
 
     /// <summary>
@@ -442,9 +374,8 @@ class GamePlayer
     /// player index in field
     /// </param>
     constructor(game, player) {
-        console.log( "GamePlayer", game, player);
-
         if( player == null) {
+            console.log( "GamePlayer", game);
             const p = game;
             this.Game = p.Game;
             this.FieldPlayer = p.FieldPlayer;   // just copy reference
@@ -455,7 +386,8 @@ class GamePlayer
             this.Figures = p.Figures.filter(f => new GameFigure(f));
             this.Strategy = p.Strategy;
         } else {
-            if (player >= 0 && player < Field.FieldDescription.players.Length) {
+            const l = Field.FieldDescription.players.length;
+            if (player >= 0 && player < l) {
                 this.FieldPlayer = Field.FieldDescription.players[player];
                 this.Name = this.FieldPlayer.color;
                 this.Index = player;
@@ -464,6 +396,8 @@ class GamePlayer
             this.Game = game;
             this.Strategy = GamePlayer.StrategyDefinition.Manual;
             this.CreateFigures();
+
+            console.log( "GamePlayer", l, this);
         }
     }
 
@@ -491,8 +425,7 @@ class GamePlayer
     /// <returns>
     /// player are equal
     /// </returns>
-    static HaveSameColor(p1, p2)
-    {
+    static HaveSameColor(p1, p2) {
         return Field.Player.Equals(p1.FieldPlayer, p2.FieldPlayer);
     }
 
@@ -592,13 +525,12 @@ class GamePlayer
     /// also set figure that not in the field
     /// </param>
     SetFiguresToCorner(force = false) {
-        if (force)
-        {
+        console.log("SetFiguresToCorner", force);
+
+        if (force) {
             for(var fig of this.Figures)
                 fig.SetCorner();
-        }
-        else
-        {
+        } else {
             for(var fig of this.Figures.filter(f => f.InField))
                 fig.SetCorner();
         }
@@ -767,8 +699,7 @@ class Game {
     SetPlayers(players) {
         console.log("SetPlayers", players);
         
-        this.Players = 
-            players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c));
+        this.Players = players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c));
         this.SetFiguresToCorner(true);          // set initial position
     }
 
@@ -784,33 +715,28 @@ class Game {
     SelectPlayer(first = false) {
         var run = false;
 
-        var lstPlay = this.Players.filter(p => !p.CheckFinish());
-        if (lstPlay.Length > 0)
-        {
-            if (first)
-            {
+        var play = this.Players.filter(p => !p.CheckFinish());
+        if (play.length > 0) {
+            if (first) {
                 // find first player in the game
-                this.Player = lstPlay[0];
+                this.Player = play[0];
                 run = true;
-            }
-            else
-            {
+            } else {
                 // no player active
                 if (!this.Player)
-                    run = SelectPlayer(true);  // get first player in game
+                    run = this.SelectPlayer(true);  // get first player in game
                 else
                 {
-                    var index = lstPlay.IndexOf(this.Player);
+                    var index = play.IndexOf(this.Player);
                     if (index < 0)             // current player not found
-                        run = SelectPlayer(true);  // get first player in game
-                    else
-                    {
+                        run = this.SelectPlayer(true);  // get first player in game
+                    else {
                         // next player
                         index++;
-                        if (index >= lstPlay.Count)
+                        if (index >= play.length)
                             index = 0;
 
-                        this.Player = lstPlay[index];
+                        this.Player = play[index];
                         run = true;
                     }
                 }
@@ -819,7 +745,7 @@ class Game {
 
         // check if game is entriely finished
         if (!run && !!this.OnFinished)
-            this.OnFinished(this, new FinishedEventArgs());
+            this.OnFinished();
 
         return run;
     }
@@ -908,7 +834,7 @@ class Game {
     /// set all figures into the field
     /// </summary>
     SetFigures() {
-        if (!!this.Players)
+        if (this.Players != null)
             for (var pl of this.Players)
                 pl.SetFigures();
     }
@@ -929,7 +855,9 @@ class Game {
     /// also set figures in corner that are not in the field
     /// </param>
     SetFiguresToCorner(force = false) {
-        if (!!this.Players)
+        console.log( "SetFiguresToCorner", force);
+
+        if (this.Players != null)
             for (var pl of this.Players)
                 pl.SetFiguresToCorner(force);
 

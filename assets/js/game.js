@@ -262,7 +262,7 @@ class GameFigure {
     /// </summary>
     Defeated() {
         if (!this.Test)
-            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Defeated);
+            this.Player.Game.Canvas.OnFigure(this.Player, this, Game.FigureAction.Defeated);
 
         this.SetCorner();
     }
@@ -316,7 +316,7 @@ class GameFigure {
         this.HasSet = true;
 
         if (!this.Test)
-            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Set);
+            this.Player.Game.Canvas.OnFigure(this.Player, this, Game.FigureAction.Set);
 
         return !bSet;
     }
@@ -332,7 +332,7 @@ class GameFigure {
         this.HasSet = false;
 
         if (!this.Test)
-            this.Player.Game.OnFigure(this.Player, this, Game.FigureAction.Delete);
+            this.Player.Game.Canvas.OnFigure(this.Player, this, Game.FigureAction.Delete);
 
         return bSet;
     }
@@ -408,11 +408,8 @@ class GamePlayer
         this.Figures = new Array();     // Field.GameMaxFigure
         for (var n = 1; n <= Field.GameMaxFigure; n++)
         {
-            var f = new GameFigure(this, n);
-
-            if (!!this.Game.OnFigure)
-                this.Game.OnFigure(this, f, Game.FigureAction.Init);
-
+            const f = new GameFigure(this, n);
+            this.Game.Canvas.OnFigure(this, f, Game.FigureAction.Init);
             this.Figures.push(f);
         }
     }
@@ -630,19 +627,9 @@ class Game {
 
 
     /// <summary>
-    /// event to handle figure
+    /// canvas to call events
     /// </summary>
-    OnFigure;
-
-    /// <summary>
-    /// event to set or reset parking zones
-    /// </summary>
-    OnParking;
-
-    /// <summary>
-    /// event for finished player or game
-    /// </summary>
-    OnFinished;
+    Canvas;
 
     /// <summary>
     /// show or hide parking field
@@ -680,14 +667,13 @@ class Game {
     JumpHouse;
 
     /// <summary>
-    /// constructor to init with players
+    /// constructor
     /// </summary>
-    /// <param name="players">
-    /// indices of player in the field
+    /// <param name="c">
+    /// canvas for events
     /// </param>
-    constructor(players) {
-        if( !!players)
-            this.SetPlayers(players);
+    constructor(c) {
+        this.Canvas = c;
     }
 
     /// <summary>
@@ -744,8 +730,8 @@ class Game {
         }
 
         // check if game is entriely finished
-        if (!run && !!this.OnFinished)
-            this.OnFinished();
+        if (!run)
+            this.Canvas.OnFinished();
 
         return run;
     }
@@ -910,7 +896,7 @@ class Game {
         for(var f in lstFig)
             f.Delete(); // delete first
 
-        /// this.OnParking( lstPark, p);
+        this.Canvas.OnParking( lstPark, p);
 
         for(var f in lstFig)
             f.Set();    // set it again
@@ -957,9 +943,7 @@ class Game {
                 if (this.Player.CheckFinish())
                 {
                     this.Player.Ranking = ++this.Ranking;
-
-                    if (!!this.OnFinished)
-                        this.OnFinished(this, new FinishedEventArgs(this.Player));
+                    this.Canvas.OnFinished(this.Player);
                 }
             }
             else
@@ -997,9 +981,7 @@ class Game {
                 if (this.Player.CheckFinish())
                 {
                     this.Player.Ranking = ++this.Ranking;
-
-                    if (!!this.OnFinished)
-                        this.OnFinished( this, new FinishedEventArgs( this.Player));
+                    this.Canvas.OnFinished( this.Player);
                 }
             }
             else
@@ -1024,8 +1006,7 @@ class Game {
     TrackFigure(fig, dice) {
         for (var i = 1; i <= dice; i++)
         {
-            OnFigure?.BeginInvoke(this.Player, fig, Game.FigureAction.Delay); // , null, i);
-
+            this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Delay);
             this.TrackFigure(fig, i == dice);
         }
     };
@@ -1108,8 +1089,7 @@ class Game {
     /// </returns>
     EvalDiceRoll(dice) {
         var track = true;   // figure can be tracked
-        if (dice == 6)
-        {
+        if (dice == 6) {
             var fig = this.Player.GetFigureFromCorner();
             if (!!fig)
             {
@@ -1120,15 +1100,12 @@ class Game {
                 tfig.SetStart();
 
                 var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (!!fig2)         // if there is a figure
+                if (fig2 != null)           // if there is a figure
                 {
-                    if (GameFigure.HaveSameColor(fig2, tfig))
-                    {
+                    if (GameFigure.HaveSameColor(fig2, tfig)) {
                         // track only this figure
                         return { ft: [ fig2 ], fd: null };
-                    }
-                    else
-                    {
+                    } else {
                         fig2.Delete();      // delete from start position
                         fig.Delete();       // delete figure from corner
 
@@ -1138,9 +1115,7 @@ class Game {
                         fig.Set();          // set to start position
                         fig2.Set();
                     }
-                }
-                else        // figure set to start position
-                {
+                } else {                   // figure set to start position
                     fig.Delete();           // delete figure from corner
                     fig.SetStart();
                     fig.Set();              // set figure to start position
@@ -1178,19 +1153,17 @@ class Game {
         fdefeat = null;
         fset = null;
 
-        var track = true;   // figure can be tracked
-        if (dice == 6)
-        {
+        var track = true;           // figure can be tracked
+        if (dice == 6) {
             var fig = this.Player.GetFigureFromCorner();
-            if (!!fig)
-            {
+            if (fig != null) {
                 track = false;      // do not track figure
                 var tfig = new GameFigure(fig);
                 tfig.Test = true;
                 tfig.SetStart();
 
                 var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (!!fig2)         // if there is a figure
+                if (fig2 != null)                   // if there is a figure
                 {
                     if (GameFigure.HaveSameColor(fig2, tfig)) {
                         // track only this figure
@@ -1198,11 +1171,10 @@ class Game {
                     }
                     else {
                         fig.SetStart();
-                        fdefeat = [ fig2 ];    // figure defeated
+                        fdefeat = [ fig2 ];     // figure defeated
                         fset = fig;
                     }
-                }
-                else {          // figure set to start position
+                } else {                        // figure set to start position
                     fig.SetStart();
                     fset = fig;
                 }

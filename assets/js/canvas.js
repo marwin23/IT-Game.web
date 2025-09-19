@@ -239,7 +239,7 @@ class Menu {
 /// canvas of the game
 /// </summary>
 class Canvas {
-    #game = new Game();
+    #game = new Game(this);
     #menu;
     #context;
 
@@ -297,9 +297,6 @@ class Canvas {
     /// </summary>
     constructor() {
         // Field.SetDescription();            // IT game field
-
-        this.#game.OnFigure = this.#OnGameFigure;
-        this.#game.OnParking = this.#OnGameParking;
 
         // set images
         this.imgDice = [ this.#imgDice0, this.#imgDice1 ];
@@ -600,19 +597,21 @@ class Canvas {
     /// <summary>
     /// set or delete parking zones in field.
     /// </summary>
-    /// <param name="sender">
-    /// class where the event came from.
+    /// <param name="l">
+    /// list of parking coordinates.
     /// </param>
-    /// <param name="e">
-    /// arguments of event.
+    /// <param name="p">
+    /// parking flag.
     /// </param>
-    #OnGameParking(e) {
+    OnParking(l,p) {
+        return;
+
         var size = this.#bmParking.Size;
         var fp = new FieldPosition(
                     this.tscGame.ContentPanel.Size,
                     Properties.Resources.Field.Size);
 
-        if (e.action)          // set parking zones
+        if (p)          // set parking zones
         {
             this.backGroundPark = new Bitmap[e.positions.Length];
             var i = 0;
@@ -662,7 +661,7 @@ class Canvas {
     /// <param name="a">
     /// action to do
     /// </param>
-    #OnGameFigure(p,f,a) {
+    OnFigure(p,f,a) {
         switch (a) {
             case Game.FigureAction.Init:
                 f.Data = new FigureData();
@@ -694,6 +693,13 @@ class Canvas {
                     this.#sndDefeat.play();
                 break;
         }
+    }
+
+    /// <summary>
+    /// game finished
+    /// </summary>
+    OnFinished(p) {
+
     }
 
     /*

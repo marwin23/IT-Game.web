@@ -17,6 +17,25 @@ class Globals {
     /// <returns></returns>
     static MulDiv(number, numerator, denominator) {
         return Number(number * numerator) / denominator;
+    };
+}
+
+/// <summary>
+/// rectangle
+/// </summary>
+class Rectangle {
+    x; y; w; h;
+
+    constructor( x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+    }
+
+    contains(x, y) {
+        return this.x <= x && x <= this.x + this.w &&
+               this.y <= y && y <= this.y + this.h;
     }
 }
 

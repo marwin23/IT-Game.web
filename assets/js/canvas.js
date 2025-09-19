@@ -140,7 +140,7 @@ class FieldPosition {
 /// canvas of the menu
 /// </summary>
 class Menu {
-    constructor(w) {
+    constructor(w,f) {
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
 
@@ -155,9 +155,15 @@ class Menu {
             { n: "dice7", x: 90 },
             { n: "dice8", x: 110 },
             { n: "dice9", x: 130 },
-            { n: "ranking", x: 155 },
-            { n: "player", x: 175 },
-            { n: "sound", x: 195 }
+
+            { n: "ball", x: 155 },
+            { n: "point", x: 175 },
+            { n: "smiley", x: 195 },
+            { n: "star", x: 215 },
+
+            { n: "ranking", x: 240 },
+            { n: "player", x: 260 },
+            { n: "sound", x: 280 }
         ];
         for( var i = 0; i < images.length; i++) {
             var icon = document.getElementById(images[i].n);
@@ -167,9 +173,19 @@ class Menu {
             }
         }
 
-        mctx.onclick = function(ev) {
-            alert("menu");
-            console.log(ev);
+        m.onclick = function(ev) {
+            const x = ev.clientX;
+            const y = ev.clientY;
+
+            if( !!f) {
+                for( var i = 0; i < images.length; i++) {
+                    const r = new Rectangle(images[i].x, 2, 16, 16);
+                    if( r.contains( x, y)) {
+                        f(images[i].n)
+                        return;
+                    }
+                }
+            }
         }
     }
 };
@@ -179,7 +195,6 @@ class Menu {
 /// </summary>
 class Canvas {
     #game = new Game();
-    #rnd = new Random();          // for the dice
     #bitmapGame;
 
     /// <summary>
@@ -235,10 +250,10 @@ class Canvas {
     /// default constructor
     /// </summary>
     constructor() {
-        Field.SetDescription();            // IT game field
+        // Field.SetDescription();            // IT game field
 
-        this.game.OnFigure += OnGameFigure;
-        this.game.OnParking += OnGameParking;
+        this.#game.OnFigure = this.#OnGameFigure;
+        this.#game.OnParking = this.#OnGameParking;
 
         this.#CheckDiceRoll();
 
@@ -251,6 +266,22 @@ class Canvas {
             [ this.#imgFigSmiley0, this.#imgFigSmiley1 ],
             [ this.#imgFigStar0, this.#imgFigStar1 ]
         ];
+
+        const g = document.getElementById("game");
+        const gctx = g.getContext("2d");  
+        const f = document.getElementById("field");
+
+        f.onload = function(e) {
+            gctx.canvas.width = f.width;
+            gctx.canvas.height = f.height;
+            gctx.drawImage(f, 0, 0, f.width,f.height);
+        };
+
+        f.onmousedown = function(e) {
+            alert(e)
+        }
+
+        const m = new Menu(f.width, this.#OnMenu);
     }
 
     /// <summary>
@@ -267,7 +298,7 @@ class Canvas {
     /// set toolbar icons according to settings
     /// </summary>
     #CheckFigure() {
-        const fig = Properties.Settings.Default.Figure;
+        const fig = sessionStorage.getItem("Figure");
         this.tsbFigureBall.Checked = (fig == 0);
         this.tsbFigurePoint.Checked = (fig == 1);
         this.tsbFigureSmiley.Checked = (fig == 2);
@@ -279,7 +310,7 @@ class Canvas {
     /// check toolbar icons according to settings
     /// </summary>
     #CheckDiceRoll() {
-        const dice = Properties.Settings.Default.MaxDice;
+        const dice = sessionStorage.getItem("MaxDice");
         this.tsbDice6.Checked = (dice == 6);
         this.tsbDice7.Checked = (dice == 7);
         this.tsbDice8.Checked = (dice == 8);
@@ -291,14 +322,11 @@ class Canvas {
     /// </summary>
     #InitGame() {
         this._init = true;
-        var ps = Properties.Settings.Default.Players;
-        var players = ps
-            .Split(',')
-            .Select((s, i) => string.Equals(s, "1") ? i : -1)
-            .ToArray();
-        this.game.SetPlayers(players);
+        var ps = sessionStorage.getItem("Players");
+        var players = ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1);
+        this.#game.SetPlayers(players);
 
-        for (var p of this.game.Players)
+        for (var p of this.#game.Players)
             p.Data = new PlayerData();
 
         this._init = false;
@@ -317,13 +345,14 @@ class Canvas {
     /// set figures to select.
     /// </param>
     #SetFigure(p, f, select = false) {
-        var fig = Properties.Settings.Default.Figure;
-        var img = this.imgFig[fig, select ? 1 : 0].Images[p.Index];
-        var fp = new FieldPosition(
+        const fig = sessionStorage.getItem("Figure");
+        const img = this.imgFig[fig, select ? 1 : 0].Images[p.Index];
+     
+        const fp = new FieldPosition(
             this.tscGame.ContentPanel.Size,
             Properties.Resources.Field.Size);
-        var rect = fp.CalcPosition(img.Size, f.Position);
-        var fd = f.Data; //  as FigureData;
+        const rect = fp.CalcPosition(img.Size, f.Position);
+        const fd = f.Data; //  as FigureData;
         if (!!fd)
             fd.GetBackGround(rect, this.bitmapGame);
 
@@ -340,13 +369,13 @@ class Canvas {
     /// figure
     /// </param>
     #DeleteFigure(p, f) {
-        var fd = f.Data;
+        const fd = f.Data;
         if( !!fd) {
-            var img = this.imgFig[0,0].ImageSize;
-            var fp = new FieldPosition(
+            const img = this.imgFig[0,0].ImageSize;
+            const fp = new FieldPosition(
                 this.tscGame.ContentPanel.Size,
                 Properties.Resources.Field.Size);
-            var rect = fp.CalcPosition(img, f.Position);
+            const rect = fp.CalcPosition(img, f.Position);
             fd.SetBackGround(rect, this.tscGame.ContentPanel, this.bitmapGame);
         }
     }
@@ -364,11 +393,11 @@ class Canvas {
         this.FiguresToSelect = select;
 
         if (!figures) {
-            for (var f of this.game.Player.Figures)
-                this.#SetFigure(this.game.Player, f, select);
+            for (var f of this.#game.Player.Figures)
+                this.#SetFigure(this.#game.Player, f, select);
         } else {
             for (var f of figures)
-                this.#SetFigure(this.game.Player, f, select);
+                this.#SetFigure(this.#game.Player, f, select);
         }
     }
 
@@ -381,10 +410,10 @@ class Canvas {
     #DeleteFigures( figures = null) {
         if (!figures) {
             for (var f of this.game.Player.Figures)
-                this.#DeleteFigure(this.game.Player, f);
+                this.#DeleteFigure(this.#game.Player, f);
         } else {
             for (var f of figures)
-                this.#DeleteFigure(this.game.Player, f);
+                this.#DeleteFigure(this.#game.Player, f);
         }
     }
 
@@ -723,6 +752,7 @@ class Canvas {
         this.game.SetParking(Properties.Settings.Default.Parking);
         this.SetDice(this.game.Player, this.Dice, true);
     }
+    */
 
     /// <summary>
     /// mouse click in game field
@@ -733,35 +763,34 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    private void Game_ContentPanel_MouseDown(object sender, MouseEventArgs e)
-    {
+    #MouseDown(e) {
         var hit = false;
 
         if ( e.Button == MouseButtons.Left)
         {
             if (e.Clicks == 1)
             {
-                if (!this.game.Player)
+                if (!this.#game.Player)
                     return;
 
-                const pd = this.game.Player.Data; // as PlayerData;
+                const pd = this.#game.Player.Data; // as PlayerData;
                 if (!pd)
                     return;
 
                 const name = GameInternal.GetPlayerName(this.game.Player);
 
-                if (this.IsDice(this.game.Player, e.Location))
+                if (this.#IsDice(this.#game.Player, e.Location))
                 {
                     hit = true;
 
-                    this.Dice = this.RollDice();
-                    this.DeleteDice(this.game.Player);
-                    this.SetDice(this.game.Player, this.Dice);
+                    this.Dice = this.#RollDice();
+                    this.#DeleteDice(this.#game.Player);
+                    this.#SetDice(this.#game.Player, this.Dice);
 
-                    if (Properties.Settings.Default.Sound)
-                        sndDice.PlaySync();
+                    if (localStorage.getItem("Sound") == "true")
+                        sndDice.play();
 
-                    const res = game.EvalDiceRoll(this.Dice);
+                    const res = this.#game.EvalDiceRoll(this.Dice);
                     if (!!res.ft)    // figure already has been tracked
                     {
                         pd.Figures = res.ft;
@@ -771,21 +800,21 @@ class Canvas {
                                 pd.NumRolls++;
                                 if (pd.NumRolls < 3)
                                 {
-                                    this.DeleteDice(this.game.Player);
-                                    this.SetDice(this.game.Player, this.Dice, true);
+                                    this.#DeleteDice(this.#game.Player);
+                                    this.#SetDice(this.#game.Player, this.Dice, true);
                                     return;
                                 }
                             }
                         } else if (pd.Figures.Length == 1) {
                             var f = pd.Figures[0];
                             this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                            this.game.TrackFigure(f, this.Dice);
+                            this.#game.TrackFigure(f, this.Dice);
                         }
                         else
                         {
                             // set figures to select
-                            this.DeleteFigures(pd.Figures);
-                            this.SetFigures(pd.Figures, true);
+                            this.#DeleteFigures(pd.Figures);
+                            this.#SetFigures(pd.Figures, true);
                             this.tssGame.Text = string.Format("{0}: select figure to track.", name);
 
                             hit = false;
@@ -794,16 +823,16 @@ class Canvas {
                 }
                 else
                 {
-                    const f = this.GetFigure(pd.Figures, e.Location);
+                    const f = this.#GetFigure(pd.Figures, e.Location);
                     if (!!f)
                     {
                         hit = true;
-                        this.DeleteFigures(pd.Figures);
-                        this.SetFigures(pd.Figures);
+                        this.#DeleteFigures(pd.Figures);
+                        this.#SetFigures(pd.Figures);
                         this.tssGame.Text = string.Empty;
 
                         this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                        this.game.TrackFigure(f, this.Dice);
+                        this.#game.TrackFigure(f, this.Dice);
                     }
                 }
 
@@ -811,19 +840,17 @@ class Canvas {
                 {
                     pd.NumRolls = 0;
 
-                    this.DeleteDice(this.game.Player);
+                    this.#DeleteDice(this.game.Player);
 
                     if (this.Dice == 6)
-                        this.SetDice(this.game.Player, this.Dice, true);
+                        this.#SetDice(this.game.Player, this.Dice, true);
                     else
                     {
-                        if (!game.SelectPlayer())
-                        {
+                        if (!this.#game.SelectPlayer()) {
                             this.tssGame.Text = "Game finished!";
                             this.PrintRanking();
-                        }
-                        else
-                            this.SetDice(this.game.Player, this.Dice, true);
+                        } else
+                            this.#SetDice(this.game.Player, this.Dice, true);
                     }
                 }
             }
@@ -839,266 +866,117 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    private void NewGame_Click(object sender, EventArgs e)
-    {
-        this.InitGame();
+    #OnMenu(n) {
+        switch(n) {
+            case "new": {
+                this.#InitGame();
 
-        this.game.SelectPlayer(true);
-        this.Dice = this.RollDice();
-        this.tscGame.ContentPanel.Invalidate();
-    }
+                this.#game.SelectPlayer(true);
+                this.Dice = this.RollDice();
+            }
+            break;
 
-    /// <summary>
-    /// select players in the game (before new game)
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Player_Click(object sender, EventArgs e)
-    {
-        if( GameInternal.SelectPlayers())
-            this.InitGame();
+            case "player": {
+                if( GameInternal.SelectPlayers())
+                    this.#InitGame();
+            }
+            break;
+
+            case "ranking": {
+                this.#PrintRanking();
+            }
+            break;
+
+            case "dice6": {
+                localStorage.setItem("MaxDice", "6");
+                this.#CheckDiceRoll();
+            }
+            break;
+
+            case "dice7": {
+                localStorage.setItem("MaxDice", "7");
+                this.#CheckDiceRoll();
+            }
+            break;
+
+            case "dice8": {
+                localStorage.setItem("MaxDice", "8");
+                this.#CheckDiceRoll();
+            }
+            break;
+
+            case "dice9": {
+                localStorage.setItem("MaxDice", "9");
+                this.#CheckDiceRoll();
+            }
+            break;
+
+            case "force" : {
+                this.tsbForceDefeat.Checked = !this.tsbForceDefeat.Checked;
+                localStorage.setItem("ForceDefeat", this.tsbForceDefeat.Checked);
+                this.#game.ForceDefeat = this.tsbForceDefeat.Checked;
+            }
+            break;
+
+            case "dice3": {
+                this.tsbRollDice3.Checked = !this.tsbRollDice3.Checked;
+                localStorage.setItem("Dice3", this.tsbRollDice3.Checked);
+            }
+            break;
+
+            case "jump": {
+                this.tsbJump.Checked = !this.tsbJump.Checked;
+                localStorage.setItem("Jump", this.tsbJump.Checked);
+                this.#game.JumpHouse = this.tsbJump.Checked;
+            }
+            break;
+
+            case "parking": {
+                this.tsbParking.Checked = !this.tsbParking.Checked;
+                localStorage.setItem("Parking", this.tsbParking.Checked);
+            }
+            break;
+
+            case "sound": {
+                this.tsbSound.Checked = !this.tsbSound.Checked;
+                localStorage.setItem("Sound", this.tsbSound.Checked);
+            }
+            break;
+
+            case "ball": {
+                localStorage.setItem("Figure", 0);
+                this.#CheckFigure();
+            }
+            break;
+
+            case "point": {
+                localStorage.setItem("Figure", 1);
+                this.#CheckFigure();
+            }
+            break;
+
+            case "smiley": {
+                localStorage.setItem("Figure", 2);
+                this.#CheckFigure();
+            }
+            break;
+
+            case "star": {
+                localStorage.setItem("Figure", 3);
+                this.#CheckFigure();
+            }
+            break;
+        }
     }
 
     /// <summary>
     /// print ranking dialog
     /// </summary>
-    private void PrintRanking()
+    #PrintRanking()
     {
-        var rank = this.game.GetRanking();
+        const rank = this.#game.GetRanking();
         GameInternal.PrintRanking(rank, this);
     }
-
-    /// <summary>
-    /// user press tool strip button, to show ranking
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Ranking_Click(object sender, EventArgs e)
-    {
-        this.PrintRanking();
-    }
-
-    /// <summary>
-    /// 6 dice selected
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Dice6_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.MaxDice = 6;
-        this.CheckDiceRoll();
-    }
-
-    /// <summary>
-    /// 7 dice is selected
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Dice7_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.MaxDice = 7;
-        this.CheckDiceRoll();
-    }
-
-    /// <summary>
-    /// 8 dice is selected
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Dice8_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.MaxDice = 8;
-        this.CheckDiceRoll();
-    }
-
-    /// <summary>
-    /// 9 dice is selected
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Dice9_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.MaxDice = 9;
-        this.CheckDiceRoll();
-    }
-
-    /// <summary>
-    /// force defeat option is activated or deactivated
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void ForceDefeat_Click(object sender, EventArgs e)
-    {
-        this.tsbForceDefeat.Checked = !this.tsbForceDefeat.Checked;
-        Properties.Settings.Default.ForceDefeat = this.tsbForceDefeat.Checked;
-        this.game.ForceDefeat = this.tsbForceDefeat.Checked;
-    }
-
-    /// <summary>
-    /// roll dice 3 times if all figured are in the start field
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void RollDice3_Click(object sender, EventArgs e)
-    {
-        this.tsbRollDice3.Checked = !this.tsbRollDice3.Checked;
-        Properties.Settings.Default.Dice3 = this.tsbRollDice3.Checked;
-    }
-
-    /// <summary>
-    /// allow jump of figures in the house
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Jump_Click(object sender, EventArgs e)
-    {
-        this.tsbJump.Checked = !this.tsbJump.Checked;
-        Properties.Settings.Default.Jump = this.tsbJump.Checked;
-        this.game.JumpHouse = this.tsbJump.Checked;
-    }
-
-    /// <summary>
-    /// activate or deactivate parking fields
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Parking_Click(object sender, EventArgs e)
-    {
-        this.tsbParking.Checked = !this.tsbParking.Checked;
-        Properties.Settings.Default.Parking = this.tsbParking.Checked;
-        this.tscGame.ContentPanel.Invalidate();
-    }
-
-    /// <summary>
-    /// enable or disable sound
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void Sound_Click(object sender, EventArgs e)
-    {
-        this.tsbSound.Checked = !this.tsbSound.Checked;
-        Properties.Settings.Default.Sound = this.tsbSound.Checked;
-    }
-
-    /// <summary>
-    /// figures are balls
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void FigureBall_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.Figure = 0;
-        this.CheckFigure();
-    }
-
-    /// <summary>
-    /// figures are points
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void FigurePoint_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.Figure = 1;
-        this.CheckFigure();
-    }
-
-    /// <summary>
-    /// figures are smileys
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void FigureSmiley_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.Figure = 2;
-        this.CheckFigure();
-    }
-
-    /// <summary>
-    /// figures are stars
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void FigureStar_Click(object sender, EventArgs e)
-    {
-        Properties.Settings.Default.Figure = 3;
-        this.CheckFigure();
-    }
-
-    /// <summary>
-    /// show about box
-    /// </summary>
-    /// <param name="sender">
-    /// sender, tool tip button
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here)
-    /// </param>
-    private void About_Click(object sender, EventArgs e)
-    {
-        var dlg = new AboutForm();
-        dlg.ShowDialog(this);
-    }
-    */
 }
 
 // --- end of file ---

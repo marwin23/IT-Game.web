@@ -144,6 +144,7 @@ class Menu {
         { n: "new", x: 5 },
         { n: "force", x: 25 },
         { n: "jump", x: 45 },
+
         { n: "dice6", x: 70 },
         { n: "dice7", x: 90 },
         { n: "dice8", x: 110 },
@@ -163,26 +164,46 @@ class Menu {
     /// return menu name selected.
     /// </summary>
     #CheckPoint(x,y) {
-        for( var i = 0; i < images.length; i++) {
-            const r = new Rectangle(images[i].x, 2, 16, 16);
+        for( var i = 0; i < this.images.length; i++) {
+            const r = new Rectangle(this.images[i].x, 2, 16, 16);
             if( r.contains( x, y)) {
-                return images[i].n;
+                return this.images[i].n;
             }
         }
         return null;
     }
 
     /// <summary>
-    /// check menu item to activate
+    /// set check menu item to activate
     /// </summary>
-    CheckMenu(n) {
-        for( var i = 0; i < images.length; i++) {
-            if(n === images[i].n) {
-                const r = new Rectangle(images[i].x, 2, 16, 16);
+    SetCheck(n,b) {
+        const m = document.getElementById("menu");
+        const mctx = m.getContext("2d");
 
-                // TO DO
+        for( var i = 0; i < this.images.length; i++) {
+            if(n === this.images[i].n) {
+                mctx.strokeStyle = b ? "black" : "#08218c";
+                mctx.strokeRect( this.images[i].x -1 , 1, 18, 18);
+                this.images[i].c = b;
+                break;
             }
         }
+    }
+
+    /// <summary>
+    /// get check menu item
+    /// </summary>
+    GetCheck(n) {
+        const m = document.getElementById("menu");
+        const mctx = m.getContext("2d");
+
+        for( var i = 0; i < this.images.length; i++) {
+            if(n === this.images[i].n) {
+                return this.images[i].c;
+            }
+        }
+
+        return false;
     }
 
     constructor(w,f) {
@@ -215,6 +236,7 @@ class Menu {
 /// </summary>
 class Canvas {
     #game = new Game();
+    #menu;
     #bitmapGame;
 
     /// <summary>
@@ -260,8 +282,8 @@ class Canvas {
     #imgFigBall1 = document.getElementById("ball1");
     #imgFigPoint0 = document.getElementById("point0");
     #imgFigPoint1 = document.getElementById("point1");
-    #imgFigSmiley0 = document.getElementById("simley0");
-    #imgFigSmiley1 = document.getElementById("simley1");
+    #imgFigSmiley0 = document.getElementById("smiley0");
+    #imgFigSmiley1 = document.getElementById("smiley1");
     #imgFigStar0 = document.getElementById("star0");
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
@@ -274,8 +296,6 @@ class Canvas {
 
         this.#game.OnFigure = this.#OnGameFigure;
         this.#game.OnParking = this.#OnGameParking;
-
-        this.#CheckDiceRoll();
 
         // set images
         this.imgDice = [ this.#imgDice0, this.#imgDice1 ];
@@ -301,7 +321,8 @@ class Canvas {
             alert(e)
         }
 
-        const m = new Menu(f.width, this.#OnMenu);
+        this.#menu = new Menu(f.width, this.#OnMenu);
+        this.#CheckDiceRoll();
     }
 
     /// <summary>
@@ -319,10 +340,10 @@ class Canvas {
     /// </summary>
     #CheckFigure() {
         const fig = sessionStorage.getItem("Figure");
-        this.tsbFigureBall.Checked = (fig == 0);
-        this.tsbFigurePoint.Checked = (fig == 1);
-        this.tsbFigureSmiley.Checked = (fig == 2);
-        this.tsbFigureStar.Checked = (fig == 3);
+        this.#menu.SetCheck("ball", fig == 0);
+        this.#menu.SetCheck("point", fig == 1);
+        this.#menu.SetCheck("smiley", fig == 2);
+        this.#menu.SetCheck("star", fig == 3);
     }
     
     /// <summary>
@@ -330,10 +351,10 @@ class Canvas {
     /// </summary>
     #CheckDiceRoll() {
         const dice = sessionStorage.getItem("MaxDice");
-        this.tsbDice6.Checked = (dice == 6);
-        this.tsbDice7.Checked = (dice == 7);
-        this.tsbDice8.Checked = (dice == 8);
-        this.tsbDice9.Checked = (dice == 9);
+        this.#menu.SetCheck("dice6", dice == 6);
+        this.#menu.SetCheck("dice7", dice == 7);
+        this.#menu.SetCheck("dice8", dice == 8);
+        this.#menu.SetCheck("dice9", dice == 9);
     }
 
     /// <summary>
@@ -867,7 +888,7 @@ class Canvas {
                     {
                         if (!this.#game.SelectPlayer()) {
                             this.tssGame.Text = "Game finished!";
-                            this.PrintRanking();
+                            this.#PrintRanking();
                         } else
                             this.#SetDice(this.game.Player, this.Dice, true);
                     }
@@ -931,34 +952,39 @@ class Canvas {
             break;
 
             case "force" : {
-                this.tsbForceDefeat.Checked = !this.tsbForceDefeat.Checked;
-                localStorage.setItem("ForceDefeat", this.tsbForceDefeat.Checked);
-                this.#game.ForceDefeat = this.tsbForceDefeat.Checked;
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("ForceDefeat", c);
+                this.#game.ForceDefeat = c;
             }
             break;
 
             case "dice3": {
-                this.tsbRollDice3.Checked = !this.tsbRollDice3.Checked;
-                localStorage.setItem("Dice3", this.tsbRollDice3.Checked);
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("Dice3", c);
             }
             break;
 
             case "jump": {
-                this.tsbJump.Checked = !this.tsbJump.Checked;
-                localStorage.setItem("Jump", this.tsbJump.Checked);
-                this.#game.JumpHouse = this.tsbJump.Checked;
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("Jump", c);
+                this.#game.JumpHouse = c;
             }
             break;
 
             case "parking": {
-                this.tsbParking.Checked = !this.tsbParking.Checked;
-                localStorage.setItem("Parking", this.tsbParking.Checked);
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("Parking", c);
             }
             break;
 
             case "sound": {
-                this.tsbSound.Checked = !this.tsbSound.Checked;
-                localStorage.setItem("Sound", this.tsbSound.Checked);
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("Sound", c);
             }
             break;
 

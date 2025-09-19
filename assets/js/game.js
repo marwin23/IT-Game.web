@@ -761,11 +761,10 @@ class Game {
     /// null or undefined, no figure at the position
     /// </returns>
     CheckFigure(fig) {
-        if( !!this.Players)
+        if( this.Players == null)
             return null;
 
-        return new Array.from( this.Players, p => p.CheckFigure(fig))
-                        .find( f => f != null);
+        return this.Players.map( p => p.CheckFigure(fig)).find( f => f != null);
     }
 
     /// <summary>
@@ -897,13 +896,12 @@ class Game {
     SetParking(p) {
         var lstFig = new Array();   // Field.GameMaxFigure
         var lstPark = new Array();  // Field.FieldDescription.parking.Length
-        for(var i in Field.FieldDescription.parking)
-        {
-            var pos = Field.FieldDescription.positions[i];
-            var tf = new GameFigure(null, pos.Col, pos.Row);
+        for(var i in Field.FieldDescription.parking) {
+            const pos = Field.FieldDescription.positions[i];
+            const tf = new GameFigure(null, pos.x, pos.y);
 
-            var f = this.CheckFigure(tf);
-            if (!!f)    // if figure on a parking position
+            const f = this.CheckFigure(tf);
+            if (f != null)          // if figure on a parking position
                 lstFig.push(f);
 
             lstPark.push(new GamePoint(pos));
@@ -912,13 +910,13 @@ class Game {
         for(var f in lstFig)
             f.Delete(); // delete first
 
-        this.OnParking?.Invoke(this, new ParkingEventArgs(lstPark, p));
+        /// this.OnParking( lstPark, p);
 
         for(var f in lstFig)
             f.Set();    // set it again
 
         this.Parking = p;
-        this.ParkingNumber = Field.FieldDescription.parking.Length;
+        this.ParkingNumber = Field.FieldDescription.parking.length;
     }
 
     /// <summary>

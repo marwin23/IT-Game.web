@@ -311,22 +311,8 @@ class Canvas {
             [ this.#imgFigStar0, this.#imgFigStar1 ]
         ];
 
-        const g = document.getElementById("game");
-        const gctx = g.getContext("2d");
-        this.#context = gctx;
-
-        const f = document.getElementById("field");
-        f.onload = function(e) {
-            gctx.canvas.width = f.width;
-            gctx.canvas.height = f.height;
-            gctx.drawImage(f, 0, 0, f.width,f.height);
-        };
-
-        f.onmousedown = function(e) {
-            alert(e)
-        }
-
-        this.#menu = new Menu(f.width, this);
+        this.#OnPaint();
+        this.#menu = new Menu(this.#context.canvas.width, this);
         this.#CheckDiceRoll();
     }
 
@@ -802,6 +788,24 @@ class Canvas {
     }
     */
 
+    #OnPaint() {
+        const g = document.getElementById("game");
+        const gctx = g.getContext("2d");
+        this.#context = gctx;
+
+        const f = document.getElementById("field");
+        f.onload = () => {
+            gctx.canvas.width = f.width;
+            gctx.canvas.height = f.height;
+            gctx.drawImage(f, 0, 0, f.width,f.height);
+        };
+
+        const park = (localStorage.getItem("Parking") ?? "false") == "true";
+        this.#game.SetFigures();
+        this.#game.SetParking(park);
+        this.#SetDice(this.#game.Player, this.Dice, true);
+    }
+
     /// <summary>
     /// mouse click in game field
     /// </summary>
@@ -811,7 +815,7 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    #MouseDown(e) {
+    #OnMouseDown(e) {
         var hit = false;
 
         if ( e.Button == MouseButtons.Left)
@@ -923,6 +927,7 @@ class Canvas {
 
                 this.#game.SelectPlayer(true);
                 this.Dice = this.#RollDice();
+                this.#OnPaint();
             }
             break;
 

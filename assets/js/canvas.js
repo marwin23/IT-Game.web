@@ -140,7 +140,7 @@ class FieldPosition {
 /// canvas of the menu
 /// </summary>
 class Menu {
-    images = [
+    #images = [
         { n: "new", x: 5 },
         { n: "force", x: 25 },
         { n: "jump", x: 45 },
@@ -160,14 +160,16 @@ class Menu {
         { n: "sound", x: 280 }
     ];
 
+    #game;
+
     /// <summary>
     /// return menu name selected.
     /// </summary>
     #CheckPoint(x,y) {
-        for( var i = 0; i < this.images.length; i++) {
-            const r = new Rectangle(this.images[i].x, 2, 16, 16);
+        for( var i = 0; i < this.#images.length; i++) {
+            const r = new Rectangle(this.#images[i].x, 2, 16, 16);
             if( r.contains( x, y)) {
-                return this.images[i].n;
+                return this.#images[i].n;
             }
         }
         return null;
@@ -177,14 +179,16 @@ class Menu {
     /// set check menu item to activate
     /// </summary>
     SetCheck(n,b) {
+        console.log("SetCheck", n, b);
+
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
 
-        for( var i = 0; i < this.images.length; i++) {
-            if(n === this.images[i].n) {
+        for( var i = 0; i < this.#images.length; i++) {
+            if(n === this.#images[i].n) {
                 mctx.strokeStyle = b ? "black" : "#08218c";
-                mctx.strokeRect( this.images[i].x -1 , 1, 18, 18);
-                this.images[i].c = b;
+                mctx.strokeRect( this.#images[i].x -1 , 1, 18, 18);
+                this.#images[i].c = b;
                 break;
             }
         }
@@ -194,41 +198,41 @@ class Menu {
     /// get check menu item
     /// </summary>
     GetCheck(n) {
-        const m = document.getElementById("menu");
-        const mctx = m.getContext("2d");
-
-        for( var i = 0; i < this.images.length; i++) {
-            if(n === this.images[i].n) {
-                return this.images[i].c;
+        var r = false;
+        for( var i = 0; i < this.#images.length; i++) {
+            if(n === this.#images[i].n) {
+                r = this.#images[i].c;
+                break;
             }
         }
-
-        return false;
+        console.log("GetCheck", n, r);
+        return r;
     }
 
-    constructor(w,f) {
+    constructor(w,g) {
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
 
         mctx.canvas.width = w;
         mctx.canvas.height = 20;
 
-        for( var i = 0; i < this.images.length; i++) {
-            var icon = document.getElementById(this.images[i].n);
-            icon.pos = this.images[i].x;
+        for( var i = 0; i < this.#images.length; i++) {
+            var icon = document.getElementById(this.#images[i].n);
+            icon.pos = this.#images[i].x;
             icon.onload = function() {
                 mctx.drawImage( this, this.pos, 2, this.width, this.height);           
             }
         }
 
-        m.onclick = function(ev) {
-            const x = ev.clientX;
-            const y = ev.clientY;
-            const n = CheckPoint( x,y);
-            if( !!n)
-                f(n);
-        }
+        this.#game = g;
+        m.onclick = this.#handleClick;
     }
+
+    #handleClick = (ev) => {
+        const n = this.#CheckPoint(ev.clientX,ev.clientY);
+        if( !!n)
+            this.#game.OnMenu(n);
+    };
 };
 
 /// <summary>
@@ -321,7 +325,7 @@ class Canvas {
             alert(e)
         }
 
-        this.#menu = new Menu(f.width, this.#OnMenu);
+        this.#menu = new Menu(f.width, this);
         this.#CheckDiceRoll();
     }
 
@@ -339,7 +343,7 @@ class Canvas {
     /// set toolbar icons according to settings
     /// </summary>
     #CheckFigure() {
-        const fig = sessionStorage.getItem("Figure");
+        const fig = parseInt(localStorage.getItem("Figure"));
         this.#menu.SetCheck("ball", fig == 0);
         this.#menu.SetCheck("point", fig == 1);
         this.#menu.SetCheck("smiley", fig == 2);
@@ -350,7 +354,7 @@ class Canvas {
     /// check toolbar icons according to settings
     /// </summary>
     #CheckDiceRoll() {
-        const dice = sessionStorage.getItem("MaxDice");
+        const dice = parseInt(localStorage.getItem("MaxDice")) ?? 6;
         this.#menu.SetCheck("dice6", dice == 6);
         this.#menu.SetCheck("dice7", dice == 7);
         this.#menu.SetCheck("dice8", dice == 8);
@@ -362,7 +366,7 @@ class Canvas {
     /// </summary>
     #InitGame() {
         this._init = true;
-        var ps = sessionStorage.getItem("Players");
+        var ps = localStorage.getItem("Players") ?? "1,1,1,1";
         var players = ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1);
         this.#game.SetPlayers(players);
 
@@ -385,7 +389,7 @@ class Canvas {
     /// set figures to select.
     /// </param>
     #SetFigure(p, f, select = false) {
-        const fig = sessionStorage.getItem("Figure");
+        const fig = parseInt(localStorage.getItem("Figure"));
         const img = this.imgFig[fig, select ? 1 : 0].Images[p.Index];
      
         const fp = new FieldPosition(
@@ -552,7 +556,7 @@ class Canvas {
                 Properties.Resources.Field.Size);
             var rect = fp.CalcPosition(img, p.FieldPlayer.diceroll);
             GameInternal.SetBackGround(this.backGroundDice, rect, tscGame.ContentPanel, this.bitmapGame);
-            this.DisposeDice();
+            this.#DisposeDice();
         }
     }
 
@@ -880,17 +884,17 @@ class Canvas {
                 {
                     pd.NumRolls = 0;
 
-                    this.#DeleteDice(this.game.Player);
+                    this.#DeleteDice(this.#game.Player);
 
                     if (this.Dice == 6)
-                        this.#SetDice(this.game.Player, this.Dice, true);
+                        this.#SetDice(this.#game.Player, this.Dice, true);
                     else
                     {
                         if (!this.#game.SelectPlayer()) {
                             this.tssGame.Text = "Game finished!";
                             this.#PrintRanking();
                         } else
-                            this.#SetDice(this.game.Player, this.Dice, true);
+                            this.#SetDice(this.#game.Player, this.Dice, true);
                     }
                 }
             }
@@ -906,7 +910,9 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    #OnMenu(n) {
+    OnMenu(n) {
+        console.log("OnMenu", n);
+
         switch(n) {
             case "new": {
                 this.#InitGame();
@@ -928,25 +934,25 @@ class Canvas {
             break;
 
             case "dice6": {
-                localStorage.setItem("MaxDice", "6");
+                localStorage.setItem("MaxDice", 6);
                 this.#CheckDiceRoll();
             }
             break;
 
             case "dice7": {
-                localStorage.setItem("MaxDice", "7");
+                localStorage.setItem("MaxDice", 7);
                 this.#CheckDiceRoll();
             }
             break;
 
             case "dice8": {
-                localStorage.setItem("MaxDice", "8");
+                localStorage.setItem("MaxDice", 8);
                 this.#CheckDiceRoll();
             }
             break;
 
             case "dice9": {
-                localStorage.setItem("MaxDice", "9");
+                localStorage.setItem("MaxDice", 9);
                 this.#CheckDiceRoll();
             }
             break;
@@ -1022,6 +1028,6 @@ class Canvas {
         const rank = this.#game.GetRanking();
         GameInternal.PrintRanking(rank, this);
     }
-}
+};
 
 // --- end of file ---

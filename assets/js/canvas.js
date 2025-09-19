@@ -161,9 +161,9 @@ class Menu {
         ];
         for( var i = 0; i < images.length; i++) {
             var icon = document.getElementById(images[i].n);
-            icon.x = images[i].x;
+            icon.pos = images[i].x;
             icon.onload = function() {
-                mctx.drawImage( this, this.x, 2, this.width, this.height);           
+                mctx.drawImage( this, this.pos, 2, this.width, this.height);           
             }
         }
 
@@ -633,6 +633,7 @@ class Canvas {
         }
     }
 
+    /*
     /// <summary>
     /// initialize game form 
     /// </summary>
@@ -1097,6 +1098,7 @@ class Canvas {
         var dlg = new AboutForm();
         dlg.ShowDialog(this);
     }
+    */
 }
 
 // --- end of file ---

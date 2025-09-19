@@ -1,8 +1,7 @@
 ﻿/// <summary>
 /// global functions
 /// </summary>
-class Globals
-{
+class Globals {
     /// <summary>
     /// multiplicate and diviate in one operation
     /// </summary>
@@ -16,8 +15,7 @@ class Globals
     /// diviator
     /// </param>
     /// <returns></returns>
-    static MulDiv(number, numerator, denominator)
-    {
+    static MulDiv(number, numerator, denominator) {
         return Number(number * numerator) / denominator;
     }
 }
@@ -91,21 +89,22 @@ class GameInternal {
     /// <param name="game">
     /// shadow copy of game field
     /// </param>
-    public static void DrawBitmap(Image image, Rectangle rect, Control ctrl, Bitmap game)
+    static DrawBitmap(image, rect, ctrl, game)
     {
+        /*
         using (var g = ctrl.CreateGraphics())
             g.DrawImage(image, rect);
 
         // obtain a graphic object from gaming bitmap
         using (var g = Graphics.FromImage(game))
             g.DrawImage(image, rect);
+        */
     }
 
     /// <summary>
     /// select players for game
     /// </summary>
-    public static bool SelectPlayers()
-    {
+    static SelectPlayers() {
         var players = Properties.Settings.Default.Players.Split(',')
                                         .Select(s => string.Equals(s, "1"))
                                         .ToArray();
@@ -150,17 +149,15 @@ class GameInternal {
     /// <returns>
     /// players user name
     /// </returns>
-    public static string GetPlayerName(Game.GamePlayer p)
-    {
-        switch (p.Index)
-        {
+    static GetPlayerName(p) {
+        switch (p.Index) {
             case 0: return Properties.Settings.Default.Orange;
             case 1: return Properties.Settings.Default.Yellow;
             case 2: return Properties.Settings.Default.Green;
             case 3: return Properties.Settings.Default.Blue;
         }
 
-        return string.Empty;
+        return null;
     }
 
     /// <summary>
@@ -168,9 +165,9 @@ class GameInternal {
     /// </summary>
     /// <param name="rank"></param>
     /// <param name="owner"></param>
-    public static void PrintRanking(Game.GamePlayer[] rank, IWin32Window owner)
+    static PrintRanking(rank, owner)
     {
-        if (rank is null)
+        if (!rank)
             return;
 
         var dlg = new RankingForm();
@@ -182,4 +179,6 @@ class GameInternal {
         dlg.ShowDialog(owner);
     }
 }
-}
+
+// --- end of file ---
+

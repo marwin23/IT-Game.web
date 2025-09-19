@@ -124,35 +124,33 @@ class GameInternal {
     /// select players for game
     /// </summary>
     static SelectPlayers() {
-        var players = Properties.Settings.Default.Players.Split(',')
-                                        .Select(s => string.Equals(s, "1"))
-                                        .ToArray();
-        var dlg = new PlayerForm
-        {
-            OrangeName = Properties.Settings.Default.Orange,
-            YellowName = Properties.Settings.Default.Yellow,
-            GreenName = Properties.Settings.Default.Green,
-            BlueName = Properties.Settings.Default.Blue,
+        const p = localStorage.getItem("Players") ?? "1,1,1,1";
+        var players = p.split(',').map( (p) => p == "1");
+        document.getElementById("orangeChk").checked = players[0];
+        document.getElementById("orangeName").value = localStorage.getItem("Orange") ?? "orange";
+        document.getElementById("yellowChk").checked = players[2];
+        document.getElementById("yellowName").value = localStorage.getItem("Yellow") ?? "yellow";
+        document.getElementById("greenChk").checked = players[3];
+        document.getElementById("greenName").value = localStorage.getItem("Green") ?? "green";
+        document.getElementById("blueChk").checked = players[3];
+        document.getElementById("blueName").value = localStorage.getItem("Blue") ?? "blue";
 
-            OrangeSelected = players[0],
-            YellowSelected = players[1],
-            GreenSelected = players[2],
-            BlueSelected = players[3]
-        };
+        document.getElementById("playerForm").style.display = "block";
+        document.getElementById("playerSubmit").onsubmit = (ev) => {
+            console.log("Submit", ev);
 
-        if (DialogResult.OK == dlg.ShowDialog())
-        {
-            Properties.Settings.Default.Orange = dlg.OrangeName;
-            Properties.Settings.Default.Yellow = dlg.YellowName;
-            Properties.Settings.Default.Green = dlg.GreenName;
-            Properties.Settings.Default.Blue = dlg.BlueName;
+            localStorage.setItem("Orange", document.getElementById("orangeName").value);
+            localStorage.setItem("Yellow", document.getElementById("yellowName").value);
+            localStorage.setItem("Green", document.getElementById("greenName").value);
+            localStorage.setItem("Blue", document.getElementById("blueName").value);
 
-            players[0] = dlg.OrangeSelected;
-            players[1] = dlg.YellowSelected;
-            players[2] = dlg.GreenSelected;
-            players[3] = dlg.BlueSelected;
+            players[0] = document.getElementById("orangeChk").checked;
+            players[1] = document.getElementById("yellowChk").checked;
+            players[2] = document.getElementById("greenChk").checked;
+            players[3] = document.getElementById("blueChk").checked;
+            localStorage.setItem("Players", players.map(p => p ? "1" : "0").join(','));
 
-            Properties.Settings.Default.Players = string.Join(",", players.Select(p => p ? "1" : "0"));
+            document.getElementById("playerForm").style.display = "none";
             return true;
         }
 
@@ -170,10 +168,10 @@ class GameInternal {
     /// </returns>
     static GetPlayerName(p) {
         switch (p.Index) {
-            case 0: return Properties.Settings.Default.Orange;
-            case 1: return Properties.Settings.Default.Yellow;
-            case 2: return Properties.Settings.Default.Green;
-            case 3: return Properties.Settings.Default.Blue;
+            case 0: return localStorage.getItem("Orange");
+            case 1: return localStorage.getItem("Yellow");
+            case 2: return localStorage.getItem("Green");
+            case 3: return localStorage.getItem("Blue");
         }
 
         return null;

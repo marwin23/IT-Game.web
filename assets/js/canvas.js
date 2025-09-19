@@ -141,22 +141,22 @@ class FieldPosition {
 /// </summary>
 class Menu {
     #images = [
-        { n: "new", x: 5 },
-        { n: "force", x: 25 },
-        { n: "jump", x: 45 },
+        { n: "player", x: 5 },
+        { n: "new", x: 25 },
+        { n: "force", x: 45 },
+        { n: "jump", x: 65 },
 
-        { n: "dice6", x: 70 },
-        { n: "dice7", x: 90 },
-        { n: "dice8", x: 110 },
-        { n: "dice9", x: 130 },
+        { n: "dice6", x: 90 },
+        { n: "dice7", x: 110 },
+        { n: "dice8", x: 130 },
+        { n: "dice9", x: 150 },
 
-        { n: "ball", x: 155 },
-        { n: "point", x: 175 },
-        { n: "smiley", x: 195 },
-        { n: "star", x: 215 },
+        { n: "ball", x: 175 },
+        { n: "point", x: 195 },
+        { n: "smiley", x: 215 },
+        { n: "star", x: 235 },
 
-        { n: "ranking", x: 240 },
-        { n: "player", x: 260 },
+        { n: "ranking", x: 260 },
         { n: "sound", x: 280 }
     ];
 

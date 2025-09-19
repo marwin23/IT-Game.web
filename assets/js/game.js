@@ -262,9 +262,8 @@ class GameFigure {
     /// figure is at parking position
     /// </returns>
     CheckParking() {
-        for (var index of Field.FieldDescription.parking)
-        {
-            var pos = Field.FieldDescription.positions[index];
+        for (var index of Field.FieldDescription.parking) {
+            const pos = Field.FieldDescription.positions[index];
             if (GamePoint.Equals(this.Position, new GamePoint(pos)))
                 return true;
         }
@@ -286,8 +285,7 @@ class GameFigure {
     /// </returns>
     CheckStart(all = false) {
         if (all) {
-            for (const p of Field.FieldDescription.players)
-            {
+            for (const p of Field.FieldDescription.players) {
                 const pos = Field.FieldDescription.positions[p.start];
                 if (GamePoint.Equals(this.Position, new GamePoint(pos)))
                     return true;
@@ -764,11 +762,11 @@ class Game {
     /// <param name="players">
     /// field index of players
     /// </param>
-    SetPlayers(players){
+    SetPlayers(players) {
+        console.log("SetPlayers", players);
+        
         this.Players = 
-            new Array.from(
-                players.filter( p => p >= 0),
-                c => new GamePlayer(this, c));
+            players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c));
         this.SetFiguresToCorner(true);          // set initial position
     }
 

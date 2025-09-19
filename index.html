@@ -62,9 +62,37 @@
 		  <audio id="defeat" src="assets/audio/Defeat.mp3" preload="auto"></audio>
 		  <audio id="out" src="assets/audio/Out.mp3" preload="auto"></audio>
         </div>
-    		<script>
-	          javascript:activateDocument();
-		    </script>
+		<form id="playerForm" style="display:none;">
+			<table>
+				<tr>
+					<td><label for="orangeChk">Orange</label></td>
+					<td><input type="checkbox" id="orangeChk" name="orangeChk"></td>
+					<td><input type="text" id="orangeName" name="orangeName"></input></td>
+				</tr>
+				<tr>
+					<td><label for="yellowChk">Yellow</label></td>
+					<td><input type="checkbox" id="yellowChk" name="yellowChk"></td>
+					<td><input type="text" id="yellowName" name="yellowName"></td>
+				</tr>
+				<tr>
+					<td><label for="greenChk">Green</label></td>
+					<td><input type="checkbox" id="greenChk" name="greenChk"></td>
+					<td><input type="text" id="greenName" name="greenName"></td>
+				</tr>
+				<tr>
+					<td><label for="blueChk">Blue</label></td>
+					<td><input type="checkbox" id="blueChk" name="blueChk"></td>
+					<td><input type="text" id="blueName" name="blueName"></td>
+				</tr>
+			</table>
+			<input type="submit" id="playerSubmit" value="Submit">
+		</form>
+		<form id="rankingForm" style="display:none;">
+			
+		</form>
+		<script>
+			javascript:activateDocument();
+		</script>
     </body>
 </html>
 

@@ -5,8 +5,8 @@ class Point {
     /// <summary>
     /// init member variables
     /// </summary>
-    #x = 0;
-    #y = 0;
+    x = 0;
+    y = 0;
 
     /// <summary>
     /// construct point
@@ -18,7 +18,7 @@ class Point {
     /// row or undefined
     /// </param>
     constructor(x, y) {
-        if( !y) {
+        if( y == null) {
             const p = x;
             this.x = p.x;
             this.y = p.y;
@@ -27,12 +27,6 @@ class Point {
             this.y = y;
         }
     }
-
-    /// <summary>
-    /// get for coordinates
-    /// </summary>
-    get Col() { return this.#x; }
-    get Row() { return this.#y; }
 
     /// <summary>
     /// copy an array of point and create another

@@ -25,6 +25,17 @@ class Globals {
     static sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
+
+    /// <summary>
+    /// sychron play audio file
+    /// </summary>
+    static async play(m) {
+        const d = m.duration * 1000;
+        const t = setTimeout(() => m.play());
+        m.onended = () => { clearTimeout(t) };
+        await this.sleep(d);
+    }
+
 }
 
 /// <summary>
@@ -354,10 +365,10 @@ class GameInternal {
             return;
 
         var dlg = new RankingForm();
-        if (rank.Length > 0) dlg.First = GetPlayerName(rank[0]);
-        if (rank.Length > 1) dlg.Second = GetPlayerName(rank[1]);
-        if (rank.Length > 2) dlg.Third = GetPlayerName(rank[2]);
-        if (rank.Length > 3) dlg.Forth = GetPlayerName(rank[3]);
+        if (rank.length > 0) dlg.First = GetPlayerName(rank[0]);
+        if (rank.length > 1) dlg.Second = GetPlayerName(rank[1]);
+        if (rank.length > 2) dlg.Third = GetPlayerName(rank[2]);
+        if (rank.length > 3) dlg.Forth = GetPlayerName(rank[3]);
 
         dlg.ShowDialog(owner);
     }

@@ -613,7 +613,7 @@ class Canvas {
     /// <param name="a">
     /// action to do
     /// </param>
-    OnFigure(p,f,a) {
+    async OnFigure(p,f,a) {
         console.log( "OnFigure", p, f, a);
 
         switch (a) {
@@ -635,7 +635,10 @@ class Canvas {
             case Game.FigureAction.Track:
                 if (!this._init) {
                     if (this.#menu.GetCheck("sound"))
-                        this.#sndMove.play();
+                        await Globals.play(this.#sndMove);
+                    else
+                        await Globals.sleep(300);
+
                 }
                 break;
 
@@ -770,7 +773,7 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    #OnMouseDown = (e) => {
+    #OnMouseDown = async(e) => {
         console.log("OnMouseDown", e, this);
 
         var hit = false;
@@ -812,7 +815,7 @@ class Canvas {
                 } else if (pd.Figures.length == 1) {
                     var f = pd.Figures[0];
                     // this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                    this.#game.TrackFigure(f, this.Dice);
+                    await this.#game.TrackFigure(f, this.Dice);
                 } else {
                     // set figures to select
                     this.#DeleteFigures(pd.Figures);
@@ -828,10 +831,10 @@ class Canvas {
                 hit = true;
                 this.#DeleteFigures(pd.Figures);
                 this.#SetFigures(pd.Figures);
-                this.tssGame.Text = string.Empty;
+                // this.tssGame.Text = string.Empty;
 
                 // this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                this.#game.TrackFigure(f, this.Dice);
+                await this.#game.TrackFigure(f, this.Dice);
             }
         }
 

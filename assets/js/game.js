@@ -292,7 +292,7 @@ class GameFigure {
 
         if (this.InHouse) {         // figure in the house
             // figure at the end of the house
-            if (this.GameIndex == this.Player.FieldPlayer.house.Length - 1)
+            if (this.GameIndex == this.Player.FieldPlayer.house.length - 1)
                 return false;
 
             this.Position = new GamePoint(this.Player.FieldPlayer.house[++this.GameIndex]);
@@ -304,7 +304,7 @@ class GameFigure {
                 this.Position = new GamePoint(this.Player.FieldPlayer.house[this.GameIndex]);
             } else {
                 this.GameIndex++;   // track figure
-                if (this.GameIndex == Field.FieldDescription.positions.Length)
+                if (this.GameIndex == Field.FieldDescription.positions.length)
                     this.GameIndex = 0;
 
                 this.Position = new GamePoint(Field.FieldDescription.positions[this.GameIndex]);
@@ -591,7 +591,7 @@ class GamePlayer
     /// </summary>
     /// <returns>number of figures</returns>
     CheckHouse() {
-        return this.Figures.filter(f => f.InHouse).Length;
+        return this.Figures.filter(f => f.InHouse).length;
     }
 
     /// <summary>
@@ -599,7 +599,7 @@ class GamePlayer
     /// </summary>
     /// <returns>number of figures</returns>
     CheckField() {
-        return this.Figures.filter(f => f.InField && !f.InHouse).Length;
+        return this.Figures.filter(f => f.InField && !f.InHouse).length;
     }
 
     /// <summary>
@@ -609,7 +609,7 @@ class GamePlayer
     /// all figures in house
     /// </returns>
     CheckFinish() {
-        return this.Figures.filter(f => f.InHouse).length === this.Figures.Length;
+        return this.Figures.filter(f => f.InHouse).length === this.Figures.length;
     }
 };
 
@@ -922,7 +922,7 @@ class Game {
     /// </param>
     SetParking(p) {
         var lstFig = new Array();   // Field.GameMaxFigure
-        var lstPark = new Array();  // Field.FieldDescription.parking.Length
+        var lstPark = new Array();  // Field.FieldDescription.parking.length
         for(var i in Field.FieldDescription.parking) {
             const pos = Field.FieldDescription.positions[i];
             const tf = new GameFigure(null, pos.x, pos.y);
@@ -1040,9 +1040,7 @@ class Game {
     async TrackFigure(fig, dice) {
         for (var i = 1; i <= dice; i++)
         {
-            this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
-            await Globals.sleep(300);
-
+            await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
             this.TrackFigureByOne(fig, i == dice);
         }
     };

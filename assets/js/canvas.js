@@ -637,7 +637,7 @@ class Canvas {
                     if (this.#menu.GetCheck("sound"))
                         this.#sndMove.play();
 
-                    await Globals.sleep(300);                    
+                    await Globals.sleep(1000);                    
                 }
                 break;
 

@@ -613,7 +613,7 @@ class Canvas {
     /// <param name="a">
     /// action to do
     /// </param>
-    async OnFigure(p,f,a) {
+    OnFigure(p,f,a) {
         console.log( "OnFigure", p, f, a);
 
         switch (a) {
@@ -632,12 +632,10 @@ class Canvas {
                 this.#DeleteFigure(p, f);
                 break;
 
-            case Game.FigureAction.Delay:
+            case Game.FigureAction.Track:
                 if (!this._init) {
                     if (this.#menu.GetCheck("sound"))
                         this.#sndMove.play();
-
-                    await Globals.sleep(1000);                    
                 }
                 break;
 

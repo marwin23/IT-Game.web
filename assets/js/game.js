@@ -647,9 +647,9 @@ class Game {
         Defeated: 4,
 
         /// <summary>
-        /// process delay at tracking figure
+        /// process tracking figure
         /// </summary>
-        Delay: 5
+        Track: 5
     });
 
 
@@ -1037,10 +1037,12 @@ class Game {
     /// <param name="dice">
     /// number of dice pips
     /// </param>
-    TrackFigure(fig, dice) {
+    async TrackFigure(fig, dice) {
         for (var i = 1; i <= dice; i++)
         {
-            this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Delay);
+            this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
+            await Globals.sleep(300);
+
             this.TrackFigureByOne(fig, i == dice);
         }
     };

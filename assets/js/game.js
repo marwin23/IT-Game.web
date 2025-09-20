@@ -312,6 +312,8 @@ class GameFigure {
     /// figure has not been set before
     /// </returns>
     Set() {
+        console.log("Set", this.HasSet);
+
         const bSet = this.HasSet;
         this.HasSet = true;
 
@@ -386,7 +388,7 @@ class GamePlayer
             this.Figures = p.Figures.filter(f => new GameFigure(f));
             this.Strategy = p.Strategy;
         } else {
-            const l = Field.FieldDescription.players.length;
+            const l = Field.GameMaxPlayer();
             if (player >= 0 && player < l) {
                 this.FieldPlayer = Field.FieldDescription.players[player];
                 this.Name = this.FieldPlayer.color;
@@ -412,6 +414,8 @@ class GamePlayer
             this.Game.Canvas.OnFigure(this, f, Game.FigureAction.Init);
             this.Figures.push(f);
         }
+
+        console.log("CreateFigures");
     }
 
     /// <summary>
@@ -503,6 +507,8 @@ class GamePlayer
     /// set all figures into the field
     /// </summary>
     SetFigures() {
+        console.log("SetFigures", this.Figures);
+
         for(var fig of this.Figures)
             fig.Set();
     }
@@ -580,9 +586,7 @@ class GamePlayer
     /// all figures in house
     /// </returns>
     CheckFinish() {
-        return this.Figures
-                    .filter(f => f.InHouse)
-                    .Length === this.Figures.Length;
+        return this.Figures.filter(f => f.InHouse).length === this.Figures.Length;
     }
 };
 
@@ -683,10 +687,10 @@ class Game {
     /// field index of players
     /// </param>
     SetPlayers(players) {
-        console.log("SetPlayers", players);
-        
-        this.Players = players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c));
+        this.Players = Array.from(players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c)));
         this.SetFiguresToCorner(true);          // set initial position
+
+        console.log("SetPlayers", players, this.Players);
     }
 
     /// <summary>
@@ -810,7 +814,9 @@ class Game {
     /// set first figure of all players to start
     /// </summary>
     SetStart() {
-        if (!!this.Players)
+        console.log("SetStart", this.Players);
+
+        if (this.Players != null)
             for (var pl of this.Players)
                 pl.Figures[0].SetStart();
     }
@@ -819,6 +825,8 @@ class Game {
     /// set all figures into the field
     /// </summary>
     SetFigures() {
+        console.log("SetFigures", this.Players);
+
         if (this.Players != null)
             for (var pl of this.Players)
                 pl.SetFigures();
@@ -828,7 +836,9 @@ class Game {
     /// delete all figures from the field
     /// </summary>
     DeleteFigures() {
-        if (!!this.Players)
+        console.log("DeleteFigures", this.Players);
+
+        if (this.Players != null)
             for (var pl of this.Players)
                 pl.DeleteFigures();
     }
@@ -915,9 +925,9 @@ class Game {
         if (!this.Players)
             return [];
 
-        var lstRank = this.Players.filter(p => p.CheckFinish());
-        lstRank.sort((p1, p2) => p1.Ranking - p2.Ranking);
-        return lstRank;
+        var ranking = this.Players.filter(p => p.CheckFinish());
+        ranking.sort((p1, p2) => p1.Ranking - p2.Ranking);
+        return ranking;
     }
 
     /// <summary>
@@ -937,17 +947,13 @@ class Game {
 
         if (last) {
             var f2 = this.CheckFigure(fig);
-            if (!f2)
-            {
+            if (!f2) {
                 fig.Set();
-                if (this.Player.CheckFinish())
-                {
+                if (this.Player.CheckFinish()) {
                     this.Player.Ranking = ++this.Ranking;
                     this.Canvas.OnFinished(this.Player);
                 }
-            }
-            else
-            {
+            } else {
                 fig.Set();
             }
 
@@ -972,14 +978,11 @@ class Game {
 
         if (!last)
             fig.Set();
-        else
-        {
-            var f2 = this.CheckFigure(fig);
-            if (!f2)
-            {
+        else {
+            const f2 = this.CheckFigure(fig);
+            if (f2 == null) {
                 fig.Set();
-                if (this.Player.CheckFinish())
-                {
+                if (this.Player.CheckFinish()) {
                     this.Player.Ranking = ++this.Ranking;
                     this.Canvas.OnFinished( this.Player);
                 }

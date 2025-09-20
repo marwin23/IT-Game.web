@@ -100,7 +100,52 @@ class GameInternal {
     /// image to draw on field
     /// </param>
     /// <param name="context">
-    /// control to draw image
+    /// context to draw image
+    /// </param>
+    static DrawField(image, context) {
+        console.log("DrawField", image);
+
+        context.canvas.width = image.width;
+        context.canvas.height = image.height;
+        context.drawImage(image, 0, 0, image.width, image.height);
+    }
+
+    /// <summary>
+    /// draw figure to field
+    /// </summary>
+    /// <param name="image">
+    /// image to draw on field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    /// <param name="index">
+    /// player index to draw image
+    /// </param>
+    static DrawFigure(image, context, position, index) {
+        console.log("DrawFigure", image, position);
+
+        const w = image.width / Field.GameMaxPlayer();
+        const h = image.height;
+        const sx = index * w;
+        const sy = 0;
+
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, sx,sy, w,h, x,y, w,h);
+    }
+
+    /// <summary>
+    /// draw image to field
+    /// </summary>
+    /// <param name="image">
+    /// image to draw on field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
     /// </param>
     static DrawImage(image, context, position) {
         console.log("DrawImage", image, position);
@@ -108,6 +153,26 @@ class GameInternal {
         const x = position.x - image.width / 2;
         const y = position.y = image.height / 2;
         context.drawImage(image, x, y, image.width, image.height);
+    }
+
+    /// <summary>
+    /// draw background image to field
+    /// </summary>
+    /// <param name="image">
+    /// field image
+    /// </param>
+    /// <param name="back">
+    /// image set before
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    static DrawBackground(image, back, context, position) {
+        console.log("DrawBackground", back, position);
+
+        const x = position.x - back.width / 2;
+        const y = position.y = back.height / 2;
+        context.drawImage(image, x, y, back.width, back.height);
     }
 
     /// <summary>
@@ -127,6 +192,7 @@ class GameInternal {
 
         document.getElementById("playerForm").style.display = "block";
         document.getElementById("playerSubmit").onsubmit = (ev) => {
+            ev.preventDefault(); 
             console.log("Submit", ev);
 
             localStorage.setItem("Orange", document.getElementById("orangeName").value);

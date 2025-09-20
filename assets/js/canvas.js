@@ -277,7 +277,8 @@ class Canvas {
     #sndOut = document.getElementById("out");
     #sndDice = document.getElementById("dice");
 
-    #bmParking = document.getElementById("parking");
+    #imgField = document.getElementById("field");
+    #imgParking = document.getElementById("parking");
     #imgDice0 = document.getElementById("dice0");
     #imgDice1 = document.getElementById("dice1");
     #imgDice;
@@ -314,20 +315,10 @@ class Canvas {
     }
 
     /// <summary>
-    /// disposes the game field
-    /// </summary>
-    DisposeGame() {
-        if( !!this.bitmapGame) {
-            this.bitmapGame.Dispose();
-            this.bitmapGame = null;
-        }
-    }
-
-    /// <summary>
     /// set toolbar icons according to settings
     /// </summary>
     #CheckFigure() {
-        const fig = parseInt(localStorage.getItem("Figure"));
+        const fig = parseInt(localStorage.getItem("Figure")) ?? 0;
         this.#menu.SetCheck("ball", fig == 0);
         this.#menu.SetCheck("point", fig == 1);
         this.#menu.SetCheck("smiley", fig == 2);
@@ -351,7 +342,7 @@ class Canvas {
     #InitGame() {
         this._init = true;
         var ps = localStorage.getItem("Players") ?? "1,1,1,1";
-        var players = ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1);
+        var players = Array.from(ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1));
         this.#game.SetPlayers(players);
 
         for (var p of this.#game.Players)
@@ -375,8 +366,8 @@ class Canvas {
     #SetFigure(p, f, select = false) {
         console.log("SetFigure", p, f, select);
 
-        const fig = parseInt(localStorage.getItem("Figure"));
-        const img = this.imgFig[fig, select ? 1 : 0][p.Index];
+        const fig = parseInt(localStorage.getItem("Figure") ?? 0);
+        const img = this.imgFig[fig][select ? 1 : 0];
      
         /*
         const fp = new FieldPosition(
@@ -388,7 +379,7 @@ class Canvas {
             fd.GetBackGround(rect, this.bitmapGame);
         */
 
-        GameInternal.DrawImage(img, this.#context, f.Position);
+        GameInternal.DrawFigure(img, this.#context, f.Position, p.Index);
     }
 
     /// <summary>
@@ -421,9 +412,11 @@ class Canvas {
     /// show figures for selection
     /// </param>
     #SetFigures(figures = null, select = false) {
+        console.log("SetFigures", figures, select);
+
         this.FiguresToSelect = select;
 
-        if (!figures) {
+        if (figures == null) {
             for (var f of this.#game.Player.Figures)
                 this.#SetFigure(this.#game.Player, f, select);
         } else {
@@ -439,6 +432,8 @@ class Canvas {
     /// figures to delete. null, delete all figures of current player.
     /// </param>
     #DeleteFigures( figures = null) {
+        console.log("DeleteFigures", figures, select);
+
         if (!figures) {
             for (var f of this.game.Player.Figures)
                 this.#DeleteFigure(this.#game.Player, f);
@@ -543,17 +538,6 @@ class Canvas {
                 Properties.Resources.Field.Size);
             var rect = fp.CalcPosition(img, p.FieldPlayer.diceroll);
             GameInternal.SetBackGround(this.backGroundDice, rect, tscGame.ContentPanel, this.bitmapGame);
-            this.#DisposeDice();
-        }
-    }
-
-    /// <summary>
-    /// dispose background of dice.
-    /// </summary>
-    #DisposeDice() {
-        if (!!this.backGroundDice) {
-            this.backGroundDice.Dispose();
-            this.backGroundDice = null;
         }
     }
 
@@ -569,12 +553,11 @@ class Canvas {
     /// <returns>
     /// point is in dice.
     /// </returns>
-    #IsDice(p, point)
-    {
+    #IsDice(p, point) {
         if (!this.DiceToSelect)
             return false;
 
-        var sz = this.imgDice1.ImageSize;
+        var sz = this.#imgDice1.ImageSize;
         var fp = new FieldPosition(
             this.tscGame.ContentPanel.Size,
             Properties.Resources.Field.Size);
@@ -604,13 +587,9 @@ class Canvas {
     /// parking flag.
     /// </param>
     OnParking(l,p) {
-        return;
+        console.log("OnParking", l,p);
 
-        var size = this.#bmParking.Size;
-        var fp = new FieldPosition(
-                    this.tscGame.ContentPanel.Size,
-                    Properties.Resources.Field.Size);
-
+        var size = this.#imgParking.Size;
         if (p)          // set parking zones
         {
             this.backGroundPark = new Bitmap[e.positions.Length];
@@ -618,7 +597,7 @@ class Canvas {
             for (var rect of e.positions.Select(pos => fp.CalcPosition(size, pos)))
             {
                 this.backGroundPark[i++] = GameInternal.GetBackGround(rect, this.bitmapGame);
-                GameInternal.DrawBitmap(this.bmParking, rect, tscGame.ContentPanel, this.bitmapGame);
+                GameInternal.DrawParking(this.#imgParking, rect, tscGame.ContentPanel, this.bitmapGame);
             }
         }
         else            // delete parking zones
@@ -662,6 +641,8 @@ class Canvas {
     /// action to do
     /// </param>
     OnFigure(p,f,a) {
+        console.log( "OnFigure", p, f, a);
+
         switch (a) {
             case Game.FigureAction.Init:
                 f.Data = new FigureData();
@@ -698,6 +679,9 @@ class Canvas {
     /// <summary>
     /// game finished
     /// </summary>
+    /// <param name="p">
+    /// player finished
+    /// </param>
     OnFinished(p) {
 
     }
@@ -795,16 +779,11 @@ class Canvas {
     */
 
     #OnPaint() {
-        const g = document.getElementById("game");
-        const gctx = g.getContext("2d");
-        this.#context = gctx;
+        console.log("OnPaint");
 
-        const f = document.getElementById("field");
-        f.onload = () => {
-            gctx.canvas.width = f.width;
-            gctx.canvas.height = f.height;
-            gctx.drawImage(f, 0, 0, f.width,f.height);
-        };
+        const g = document.getElementById("game");
+        this.#context = g.getContext("2d");
+        GameInternal.DrawField(this.#imgField, this.#context);
 
         const park = (localStorage.getItem("Parking") ?? "false") == "true";
         this.#game.SetFigures();

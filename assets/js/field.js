@@ -254,6 +254,13 @@ class Field {
     static GetPlayerNames() {
         return Array.from(Field.FieldDescription.players, (p => p.color));
     }
+
+    /// <summary>
+    /// get max players
+    /// </summary>
+    static GameMaxPlayer() {
+        return Field.FieldDescription.players.length;
+    }
 };
 
 // --- end of file ---

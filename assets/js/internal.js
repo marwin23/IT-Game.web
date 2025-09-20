@@ -18,6 +18,13 @@ class Globals {
     static MulDiv(number, numerator, denominator) {
         return Number(number * numerator) / denominator;
     };
+
+    /// <summary>
+    /// sleep awhile
+    /// </summary>
+    static sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 }
 
 /// <summary>

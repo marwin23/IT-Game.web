@@ -452,25 +452,21 @@ class Canvas {
     /// <param name="figures">
     /// figures to check.
     /// </param>
-    /// <param name="pos">
+    /// <param name="x,y">
     /// mouse position
     /// </param>
     /// <returns>
     /// figure, null if no figure is selected
     /// </returns>
-    #GetFigure(figures, pos) {
-        if (!this.FiguresToSelect)
-            return null;
-
-        if (figures != null) {
-            const sz = this.#imgFig[0][0].ImageSize;
-            const fp = new FieldPosition(
-                this.tscGame.ContentPanel.Size,
-                Properties.Resources.Field.Size);
-
+    #GetFigure(figures, x,y) {
+        if (this.FiguresToSelect && figures != null) {
+            const sz = this.#imgFig[0][0];
             for (var f of figures) {
-                const rt = fp.CalcPosition(sz, f.Position);
-                if (rt.Contains(pos))
+                const pos = f.Position;
+                const size = this.#imgFig[0][0].height;
+                const rect = new Rectangle( pos.x - size / 2, pos.y - size / 2, size, size);
+                console.log("GetFigure", rect);
+                if( rect.contains(x,y))
                     return f;
             }
         }
@@ -491,7 +487,7 @@ class Canvas {
     /// user can throw the dice.
     /// </param>
     #SetDice( p, dice, select = false) {
-        if (!p || dice == 0)
+        if (p == null || dice == 0)
             return;
 
         const img = this.#imgDice[select ? 1 : 0];
@@ -617,7 +613,7 @@ class Canvas {
     /// <param name="a">
     /// action to do
     /// </param>
-    OnFigure(p,f,a) {
+    async OnFigure(p,f,a) {
         console.log( "OnFigure", p, f, a);
 
         switch (a) {
@@ -627,7 +623,7 @@ class Canvas {
 
             case Game.FigureAction.Set:
                 this.#SetFigure(p, f);
-                if (!this._init && localStorage.getItem("Sound") == "true")
+                if (!this._init && this.#menu.GetCheck("sound"))
                     if (f.InField && f.TrackNumber == 0)
                         this.#sndStart.play();
                 break;
@@ -637,17 +633,16 @@ class Canvas {
                 break;
 
             case Game.FigureAction.Delay:
-                // Application.DoEvents();     // perform paint events
                 if (!this._init) {
-                    if (localStorage.getItem("Sound") == "true")
+                    if (this.#menu.GetCheck("sound"))
                         this.#sndMove.play();
-                    else
-                        Thread.Sleep(300);
+
+                    await Globals.sleep(300);                    
                 }
                 break;
 
             case Game.FigureAction.Defeated:
-                if (!this._init && localStorage.getItem("Sound") == "true")
+                if (!this._init && this.#menu.GetCheck("sound"))
                     this.#sndDefeat.play();
                 break;
         }
@@ -830,7 +825,7 @@ class Canvas {
                 }
             }
         } else {
-            const f = this.#GetFigure(pd.Figures, e.Location);
+            const f = this.#GetFigure(pd.Figures, e.offsetX, e.offsetY);
             if (f != null) {
                 hit = true;
                 this.#DeleteFigures(pd.Figures);

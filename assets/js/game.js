@@ -173,7 +173,7 @@ class GameFigure {
         if (a.Player != null && b.Player != null) {
             // ignore myself
             if (a.Number == b.Number &&
-                HaveSameColor(a, b))
+                GamePlayer.HaveSameColor(a, b))
                 return false;
         }
 
@@ -418,8 +418,7 @@ class GamePlayer
     /// </summary>
     CreateFigures() {
         this.Figures = new Array();     // Field.GameMaxFigure
-        for (var n = 1; n <= Field.GameMaxFigure; n++)
-        {
+        for (var n = 1; n <= Field.GameMaxFigure; n++) {
             const f = new GameFigure(this, n);
             this.Game.Canvas.OnFigure(this, f, Game.FigureAction.Init);
             this.Figures.push(f);
@@ -437,6 +436,8 @@ class GamePlayer
     /// player are equal
     /// </returns>
     static HaveSameColor(p1, p2) {
+        console.log("HaveSameColor", p1, p2);
+
         return Field.Player.Equals(p1.FieldPlayer, p2.FieldPlayer);
     }
 
@@ -456,7 +457,7 @@ class GamePlayer
         if (!a || !b)
             return false;
 
-        return a == b || HaveSameColor(a, b);
+        return a == b || GamePlayer.HaveSameColor(a, b);
     };
 
     /// <summary>
@@ -1032,43 +1033,34 @@ class Game {
     /// figures that can be defeated
     /// </returns>
     #CheckStrategy(dice) {
-        num = this.Player.Figures.Count;
-
         var lstfd = new Array();   // figures to defeat Field.GameMaxFigure
         var lstft = new Array();   // figures to track Field.GameMaxFigure
 
-        if (this.ForceDefeat || this.Player.Strategy != GamePlayer.StrategyDefinition.Manual)
-        {
+        if (this.ForceDefeat || this.Player.Strategy != GamePlayer.StrategyDefinition.Manual) {
             // at first determine if other figures can be defeated
-            for (var f in this.Player.Figures)
-            {
+            for (var f of this.Player.Figures) {
                 const res = this.CheckTrackFigure(f, dice, true);
-                if( res.num >= 0)
-                {
+                if( res.num >= 0) {
                     lstfd.push(res.fd);
                     lstft.push(f);
                 }
             }
 
-            if (lstft.Length > 0)
-            {
+            if (lstft.length > 0) {
                 lstfd.sort((f1, f2) => f2.TrackNumber - f1.TrackNumber);
                 return { ft: lstft, fd: lstfd }
             }
         }
 
-        for(var f in this.Player.Figures)
-        {
+        for(var f of this.Player.Figures) {
             const res = this.CheckTrackFigure(f, dice, false);
-            if ( res.num >= 0)
-            {
+            if ( res.num >= 0) {
                 lstfd.push(res.fd);
                 lstft.push(f);
             }
         }
 
-        switch (this.Player.Strategy)            // evaluate strategy
-        {
+        switch (this.Player.Strategy) {            // evaluate strategy
             case GamePlayer.StrategyDefinition.One:
                 lstft.sort((f1, f2) => f2.TrackNumber - f1.TrackNumber);
                 break;
@@ -1139,7 +1131,7 @@ class Game {
         if (!track)                         // if figure cannot be tracked anymore
             return { ft: null, fd: null };
 
-        return CheckStrategy(dice);
+        return this.#CheckStrategy(dice);
     }
 
     /// <summary>
@@ -1197,7 +1189,7 @@ class Game {
         if (!track)                         // if figure cannot be tracked anymore
             return { ft: null, fd: null, fs: null };
 
-        return CheckStrategy(dice);
+        return this.#CheckStrategy(dice);
     }
 }
 

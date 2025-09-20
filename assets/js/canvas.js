@@ -533,23 +533,23 @@ class Canvas {
     /// <param name="p">
     /// current player.
     /// </param>
-    /// <param name="point">
+    /// <param name="x,y">
     /// point in screen coordinates.
     /// </param>
     /// <returns>
     /// point is in dice.
     /// </returns>
-    #IsDice(p, point) {
-        if (!this.DiceToSelect)
-            return false;
-
-        var sz = this.#imgDice1.ImageSize;
-        var fp = new FieldPosition(
-            this.tscGame.ContentPanel.Size,
-            Properties.Resources.Field.Size);
-        var rt = fp.CalcPosition(sz, p.FieldPlayer.diceroll);
-
-        return rt.Contains(point);
+    #IsDice(p, x, y) {
+        var ret = false;
+        if (this.DiceToSelect) {
+            const pos = p.FieldPlayer.diceroll;
+            const size = this.#imgDice1.height;
+            const rect = new Rectangle( pos.x - size / 2, pos.y - size / 2, size, size);
+            console.log("IsDice", rect);
+            ret = rect.contains(x,y);
+        }
+        console.log("IsDice", ret, x,y);
+        return ret;
     }
 
     /// <summary>
@@ -786,22 +786,21 @@ class Canvas {
     /// <param name="e">
     /// event argument (not used here)
     /// </param>
-    #OnMouseDown(e) {
-        console.log("OnMouseDown", e);
+    #OnMouseDown = (e) => {
+        console.log("OnMouseDown", e, this);
 
         var hit = false;
 
         if (this.#game.Player == null)
             return;
 
-        const pd = this.#game.Player.Data; // as PlayerData;
-        if (!pd)
+        const pd = this.#game.Player.Data; // PlayerData;
+        if (pd == null)
             return;
 
-        const name = GameInternal.GetPlayerName(this.game.Player);
+        const name = GameInternal.GetPlayerName(this.#game.Player);
 
-        if (this.#IsDice(this.#game.Player, e.Location))
-        {
+        if (this.#IsDice(this.#game.Player, e.offsetX, e.offsetY)) {
             hit = true;
 
             this.Dice = this.#RollDice();
@@ -812,7 +811,7 @@ class Canvas {
                 sndDice.play();
 
             const res = this.#game.EvalDiceRoll(this.Dice);
-            if (!!res.ft)    // figure already has been tracked
+            if (res.ft != null)    // figure already has been tracked
             {
                 pd.Figures = res.ft;
 
@@ -841,9 +840,7 @@ class Canvas {
                     hit = false;
                 }
             }
-        }
-        else
-        {
+        } else {
             const f = this.#GetFigure(pd.Figures, e.Location);
             if (!!f)
             {

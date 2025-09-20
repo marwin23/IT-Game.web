@@ -1003,7 +1003,7 @@ class Game {
     /// <param name="last">
     /// last field
     /// </param>
-    TrackFigure(fig, last) {
+    TrackFigureByOne(fig, last) {
         fig.Delete();
         fig.Track();
 
@@ -1041,7 +1041,7 @@ class Game {
         for (var i = 1; i <= dice; i++)
         {
             this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Delay);
-            this.TrackFigure(fig, i == dice);
+            this.TrackFigureByOne(fig, i == dice);
         }
     };
 

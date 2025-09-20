@@ -139,6 +139,60 @@ class GameInternal {
     }
 
     /// <summary>
+    /// draw parking sign to the field
+    /// </summary>
+    /// <param name="image">
+    /// image to draw on field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    /// <param name="index">
+    /// player index to draw image
+    /// </param>
+    static DrawParking(image, context, position) {
+        console.log("DrawFigure", image, position);
+
+        const w = image.width;
+        const h = image.height;
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, x,y, w,h);
+    }
+
+    /// <summary>
+    /// draw dice to the field
+    /// </summary>
+    /// <param name="image">
+    /// image to draw on field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    /// <param name="index">
+    /// dice index to draw image
+    /// </param>
+    static DrawDice(image, context, position, index) {
+        console.log("DrawDice", image, position);
+
+        const w = image.width / 9;
+        const h = image.height;
+        const sx = index * w;
+        const sy = 0;
+
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, sx,sy, w,h, x,y, w,h);
+    }
+
+
+    /// <summary>
     /// draw image to field
     /// </summary>
     /// <param name="image">

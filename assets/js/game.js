@@ -167,10 +167,10 @@ class GameFigure {
     /// figure 1 == figure 2
     /// </returns>
     static Equals(a, b) {
-        if (!a || !b)
+        if (a == null || b == null)
             return false;
 
-        if (!!a.Player && !!b.Player) {
+        if (a.Player != null && b.Player != null) {
             // ignore myself
             if (a.Number == b.Number &&
                 HaveSameColor(a, b))
@@ -181,6 +181,16 @@ class GameFigure {
             return true;
 
         return false;
+    }
+
+    /// <summary>
+    /// check if game figures are equal
+    /// </summary>
+    /// <param name="f">
+    /// figure
+    /// </param>
+    Equals(f) {
+        return GameFigure.Equals(this,f);
     }
 
     /// <summary>

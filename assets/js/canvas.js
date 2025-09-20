@@ -300,9 +300,9 @@ class Canvas {
         // Field.SetDescription();            // IT game field
 
         // set images
-        this.imgDice = [ this.#imgDice0, this.#imgDice1 ];
+        this.#imgDice = [ this.#imgDice0, this.#imgDice1 ];
 
-        this.imgFig = [
+        this.#imgFig = [
             [ this.#imgFigBall0, this.#imgFigBall1 ],
             [ this.#imgFigPoint0, this.#imgFigPoint1 ],
             [ this.#imgFigSmiley0, this.#imgFigSmiley1 ],
@@ -367,7 +367,7 @@ class Canvas {
         console.log("SetFigure", p, f, select);
 
         const fig = parseInt(localStorage.getItem("Figure") ?? 0);
-        const img = this.imgFig[fig][select ? 1 : 0];
+        const img = this.#imgFig[fig][select ? 1 : 0];
      
         /*
         const fp = new FieldPosition(
@@ -394,7 +394,7 @@ class Canvas {
     #DeleteFigure(p, f) {
         const fd = f.Data;
         if( !!fd) {
-            const img = this.imgFig[0,0].ImageSize;
+            const img = this.#imgFig[0,0].ImageSize;
             const fp = new FieldPosition(
                 Properties.Resources.Field.Size);
             const rect = fp.CalcPosition(img, f.Position);
@@ -473,7 +473,7 @@ class Canvas {
             return null;
 
         if (!!figures) {
-            const sz = this.imgFig[0][0].ImageSize;
+            const sz = this.#imgFig[0][0].ImageSize;
             const fp = new FieldPosition(
                 this.tscGame.ContentPanel.Size,
                 Properties.Resources.Field.Size);
@@ -504,24 +504,18 @@ class Canvas {
         if (!p || dice == 0)
             return;
 
-        var img = this.imgDice[select ? 1 : 0].Images[dice - 1];
+        const img = this.#imgDice[select ? 1 : 0];
         this.DiceToSelect = select;
 
-        var fp = new FieldPosition(
-            this.tscGame.ContentPanel.Size,
-            Properties.Resources.Field.Size);
-
-        var rect = fp.CalcPosition(img.Size, p.FieldPlayer.diceroll);
-        this.backGroundDice = GameInternal.GetBackGround(rect, this.bitmapGame);
-
-        GameInternal.DrawBitmap(img, rect, tscGame.ContentPanel, this.bitmapGame);
-
+        GameInternal.DrawDice(img, this.#context, p.FieldPlayer.diceroll, dice - 1);
+/*
         if (select) {
             var name = GameInternal.GetPlayerName(p);
             this.tssGame.Text = string.Format("{0}: roll dice.", name);
         }
         else
             this.tssGame.Text = string.Empty;
+*/
     }
 
     /// <summary>

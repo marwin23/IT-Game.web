@@ -151,7 +151,7 @@ class GameFigure {
     /// <param name="f2">second figure</param>
     /// <returns>equal color</returns>
     static HaveSameColor(f1, f2) {
-        return Field.Player.Equals(f1.Player.FieldPlayer, f2.Player.FieldPlayer);
+        return Player.Equals(f1.Player.FieldPlayer, f2.Player.FieldPlayer);
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ class GameFigure {
         if (a.Player != null && b.Player != null) {
             // ignore myself
             if (a.Number == b.Number &&
-                GamePlayer.HaveSameColor(a, b))
+                GameFigure.HaveSameColor(a, b))
                 return false;
         }
 
@@ -436,9 +436,8 @@ class GamePlayer
     /// player are equal
     /// </returns>
     static HaveSameColor(p1, p2) {
-        console.log("HaveSameColor", p1, p2);
-
-        return Field.Player.Equals(p1.FieldPlayer, p2.FieldPlayer);
+        console.log("HaveSameColor", p1.FieldPlayer, p2.FieldPlayer);
+        return Player.Equals(p1.FieldPlayer, p2.FieldPlayer);
     }
 
     /// <summary>
@@ -460,6 +459,19 @@ class GamePlayer
         return a == b || GamePlayer.HaveSameColor(a, b);
     };
 
+    /// <summary>
+    /// check if players are equal
+    /// </summary>
+    /// <param name="a">
+    /// player to compare
+    /// </param>
+    /// <returns>
+    /// players are equal
+    /// </returns>
+    Equals(p) {
+        return GamePlayer.Equals(this,p);
+    };
+    
     /// <summary>
     /// game where the player belongs to
     /// </summary>
@@ -716,7 +728,7 @@ class Game {
     SelectPlayer(first = false) {
         var run = false;
 
-        var play = this.Players.filter(p => !p.CheckFinish());
+        var play = Array.from(this.Players.filter(p => !p.CheckFinish()));
         if (play.length > 0) {
             if (first) {
                 // find first player in the game
@@ -728,8 +740,8 @@ class Game {
                     run = this.SelectPlayer(true);  // get first player in game
                 else
                 {
-                    var index = play.IndexOf(this.Player);
-                    if (index < 0)             // current player not found
+                    var index = play.findIndex((p) => p.Equals(this.Player));
+                    if (index < 0)                      // current player not found
                         run = this.SelectPlayer(true);  // get first player in game
                     else {
                         // next player
@@ -781,8 +793,11 @@ class Game {
     /// defeated figure
     /// </returns>
     CheckTrackFigure(f1, num, defeat) {
+        console.log( "CheckTrackFigure", f1, num, defeat);
+
         var f = null;
         var numfig = 0;         // number of foreign figures to jump over
+        var res = { num: -1, fd: null };
 
         var tf = new GameFigure(f1);
         tf.Test = true;
@@ -790,13 +805,12 @@ class Game {
         for (var i = num; i > 0; i--)
         {
             if (!tf.Track())    // track figure
-                return { num: -1, fd: null }
+                return res;
 
             f = this.CheckFigure(tf);
-            if (!!f)
-            {
+            if (f != null) {
                 if (!this.JumpHouse && tf.InHouse)
-                    return { num: -1, fd: null }
+                    return res;
 
                 if (i > 1)              // if last field not reached
                 {
@@ -809,16 +823,22 @@ class Game {
 
         // if there is not another figure on the same position
         // figure cannot be tracked if force defeat is active
-        if (!f)
-            return { num: defeat ? -1 : numfig, fd: null };
+        if (!f) {
+            res.num = defeat ? -1 : numfig;
+            return res;
+        }
 
         if (GameFigure.HaveSameColor(f, tf))
-            return { num: -1, fd: null }
+            return res;
 
         if (this.Parking && f.CheckParking())   // if figure is at parking position
-            return { num: -1, fd: null };
+            return res;
 
-        return { num: numfig, fd: f };
+        res.num = numfig;
+        res.fd = f;
+        console.log( "CheckTrackFigure", res);
+
+        return res;
     }
 
     /// <summary>
@@ -953,7 +973,7 @@ class Game {
     /// <return>
     /// defeated figure
     /// </return>
-    CheckTrackFigure(fig, last) {
+    CheckTrackFigureByOne(fig, last) {
         fig.Track();
 
         if (last) {
@@ -1040,6 +1060,7 @@ class Game {
             // at first determine if other figures can be defeated
             for (var f of this.Player.Figures) {
                 const res = this.CheckTrackFigure(f, dice, true);
+                console.log( "CheckTrackFigure", res);
                 if( res.num >= 0) {
                     lstfd.push(res.fd);
                     lstft.push(f);
@@ -1054,6 +1075,7 @@ class Game {
 
         for(var f of this.Player.Figures) {
             const res = this.CheckTrackFigure(f, dice, false);
+            console.log( "CheckTrackFigure", res);
             if ( res.num >= 0) {
                 lstfd.push(res.fd);
                 lstft.push(f);

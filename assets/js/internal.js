@@ -139,6 +139,31 @@ class GameInternal {
     }
 
     /// <summary>
+    /// delete figure from field
+    /// </summary>
+    /// <param name="image">
+    /// image field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    /// <param name="index">
+    /// player index to draw image
+    /// </param>
+    static DeleteFigure(image, back, context, position) {
+        console.log("DeleteFigure", image, position);
+
+        const w = back.width / Field.GameMaxPlayer();
+        const h = back.height;
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, x,y, w,h, x,y, w,h);
+    }
+
+    /// <summary>
     /// draw parking sign to the field
     /// </summary>
     /// <param name="image">
@@ -191,6 +216,30 @@ class GameInternal {
         context.drawImage(image, sx,sy, w,h, x,y, w,h);
     }
 
+    /// <summary>
+    /// delete dice from field
+    /// </summary>
+    /// <param name="image">
+    /// image field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    /// <param name="index">
+    /// player index to draw image
+    /// </param>
+    static DeleteDice(image, back, context, position) {
+        console.log("DeleteDice", image, position);
+
+        const w = back.width / 9;
+        const h = back.height;
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, x,y, w,h, x,y, w,h);
+    }
 
     /// <summary>
     /// draw image to field

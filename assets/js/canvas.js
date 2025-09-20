@@ -312,6 +312,8 @@ class Canvas {
         this.#OnPaint();
         this.#menu = new Menu(this.#context.canvas.width, this);
         this.#CheckDiceRoll();
+
+        document.getElementById("game").onmousedown = this.#OnMouseDown;
     }
 
     /// <summary>
@@ -369,16 +371,6 @@ class Canvas {
         const fig = parseInt(localStorage.getItem("Figure") ?? 0);
         const img = this.#imgFig[fig][select ? 1 : 0];
      
-        /*
-        const fp = new FieldPosition(
-            this.tscGame.ContentPanel.Size,
-            Properties.Resources.Field.Size);
-        const rect = fp.CalcPosition(img.Size, f.Position);
-        const fd = f.Data; //  as FigureData;
-        if (!!fd)
-            fd.GetBackGround(rect, this.bitmapGame);
-        */
-
         GameInternal.DrawFigure(img, this.#context, f.Position, p.Index);
     }
 
@@ -472,7 +464,7 @@ class Canvas {
         if (!this.FiguresToSelect)
             return null;
 
-        if (!!figures) {
+        if (figures != null) {
             const sz = this.#imgFig[0][0].ImageSize;
             const fp = new FieldPosition(
                 this.tscGame.ContentPanel.Size,
@@ -526,7 +518,7 @@ class Canvas {
     /// </param>
     #DeleteDice(p) {
         if (!!this.backGroundDice) {
-            var img = this.imgDice[0].ImageSize;
+            var img = this.#imgDice[0].ImageSize;
             var fp = new FieldPosition(
                 this.tscGame.ContentPanel.Size,
                 Properties.Resources.Field.Size);
@@ -795,95 +787,91 @@ class Canvas {
     /// event argument (not used here)
     /// </param>
     #OnMouseDown(e) {
+        console.log("OnMouseDown", e);
+
         var hit = false;
 
-        if ( e.Button == MouseButtons.Left)
+        if (this.#game.Player == null)
+            return;
+
+        const pd = this.#game.Player.Data; // as PlayerData;
+        if (!pd)
+            return;
+
+        const name = GameInternal.GetPlayerName(this.game.Player);
+
+        if (this.#IsDice(this.#game.Player, e.Location))
         {
-            if (e.Clicks == 1)
+            hit = true;
+
+            this.Dice = this.#RollDice();
+            this.#DeleteDice(this.#game.Player);
+            this.#SetDice(this.#game.Player, this.Dice);
+
+            if (localStorage.getItem("Sound") == "true")
+                sndDice.play();
+
+            const res = this.#game.EvalDiceRoll(this.Dice);
+            if (!!res.ft)    // figure already has been tracked
             {
-                if (!this.#game.Player)
-                    return;
+                pd.Figures = res.ft;
 
-                const pd = this.#game.Player.Data; // as PlayerData;
-                if (!pd)
-                    return;
-
-                const name = GameInternal.GetPlayerName(this.game.Player);
-
-                if (this.#IsDice(this.#game.Player, e.Location))
-                {
-                    hit = true;
-
-                    this.Dice = this.#RollDice();
-                    this.#DeleteDice(this.#game.Player);
-                    this.#SetDice(this.#game.Player, this.Dice);
-
-                    if (localStorage.getItem("Sound") == "true")
-                        sndDice.play();
-
-                    const res = this.#game.EvalDiceRoll(this.Dice);
-                    if (!!res.ft)    // figure already has been tracked
-                    {
-                        pd.Figures = res.ft;
-
-                        if (pd.Figures.Length == 0) {
-                            if (this.tsbRollDice3.Checked && game.CheckCorner()) {
-                                pd.NumRolls++;
-                                if (pd.NumRolls < 3)
-                                {
-                                    this.#DeleteDice(this.#game.Player);
-                                    this.#SetDice(this.#game.Player, this.Dice, true);
-                                    return;
-                                }
-                            }
-                        } else if (pd.Figures.Length == 1) {
-                            var f = pd.Figures[0];
-                            this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                            this.#game.TrackFigure(f, this.Dice);
-                        }
-                        else
+                if (pd.Figures.Length == 0) {
+                    if (this.tsbRollDice3.Checked && game.CheckCorner()) {
+                        pd.NumRolls++;
+                        if (pd.NumRolls < 3)
                         {
-                            // set figures to select
-                            this.#DeleteFigures(pd.Figures);
-                            this.#SetFigures(pd.Figures, true);
-                            this.tssGame.Text = string.Format("{0}: select figure to track.", name);
-
-                            hit = false;
+                            this.#DeleteDice(this.#game.Player);
+                            this.#SetDice(this.#game.Player, this.Dice, true);
+                            return;
                         }
                     }
+                } else if (pd.Figures.Length == 1) {
+                    var f = pd.Figures[0];
+                    this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
+                    this.#game.TrackFigure(f, this.Dice);
                 }
                 else
                 {
-                    const f = this.#GetFigure(pd.Figures, e.Location);
-                    if (!!f)
-                    {
-                        hit = true;
-                        this.#DeleteFigures(pd.Figures);
-                        this.#SetFigures(pd.Figures);
-                        this.tssGame.Text = string.Empty;
+                    // set figures to select
+                    this.#DeleteFigures(pd.Figures);
+                    this.#SetFigures(pd.Figures, true);
+                    this.tssGame.Text = string.Format("{0}: select figure to track.", name);
 
-                        this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
-                        this.#game.TrackFigure(f, this.Dice);
-                    }
+                    hit = false;
                 }
+            }
+        }
+        else
+        {
+            const f = this.#GetFigure(pd.Figures, e.Location);
+            if (!!f)
+            {
+                hit = true;
+                this.#DeleteFigures(pd.Figures);
+                this.#SetFigures(pd.Figures);
+                this.tssGame.Text = string.Empty;
 
-                if (hit)
-                {
-                    pd.NumRolls = 0;
+                this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
+                this.#game.TrackFigure(f, this.Dice);
+            }
+        }
 
-                    this.#DeleteDice(this.#game.Player);
+        if (hit)
+        {
+            pd.NumRolls = 0;
 
-                    if (this.Dice == 6)
-                        this.#SetDice(this.#game.Player, this.Dice, true);
-                    else
-                    {
-                        if (!this.#game.SelectPlayer()) {
-                            this.tssGame.Text = "Game finished!";
-                            this.#PrintRanking();
-                        } else
-                            this.#SetDice(this.#game.Player, this.Dice, true);
-                    }
-                }
+            this.#DeleteDice(this.#game.Player);
+
+            if (this.Dice == 6)
+                this.#SetDice(this.#game.Player, this.Dice, true);
+            else
+            {
+                if (!this.#game.SelectPlayer()) {
+                    this.tssGame.Text = "Game finished!";
+                    this.#PrintRanking();
+                } else
+                    this.#SetDice(this.#game.Player, this.Dice, true);
             }
         }
     }

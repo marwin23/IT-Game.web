@@ -12,6 +12,11 @@ class PlayerData
     /// figures that can be tracked
     /// </summary>
     Figures;
+
+    constructor() {
+        this.NumRolls = 0;
+        this.Figures = null;
+    }
 };
 
 /// <summary>
@@ -67,6 +72,7 @@ class Menu {
     ];
 
     #game;
+    #color;
 
     /// <summary>
     /// return menu name selected.
@@ -95,7 +101,7 @@ class Menu {
 
         for( var image of this.#images) {
             if(n === image.n) {
-                mctx.strokeStyle = b ? "black" : "blue";
+                mctx.strokeStyle = b ? "black" : this.#color;
                 mctx.lineWidth = 2;
                 mctx.strokeRect( image.x -1, 1, 18, 18);
 
@@ -120,7 +126,7 @@ class Menu {
         return r;
     }
 
-    constructor(w,g) {
+    constructor(c,g) {
         this.#InitStorage();
 
         const m = document.getElementById("menu");
@@ -141,6 +147,7 @@ class Menu {
         }
 
         this.#game = g;
+        this.#color = c;
         m.onclick = this.#handleClick;
     }
 
@@ -209,6 +216,7 @@ class Canvas {
     
     #canvas = document.getElementById("game");
     #text = document.getElementById("text");
+    #color;         // blackground color
 
     /// <summary>
     /// default constructor
@@ -227,14 +235,19 @@ class Canvas {
             [ this.#imgFigStar0, this.#imgFigStar1 ]
         ];
 
+        // blackground color
+        this.#color = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
+
         this.#OnPaint();
         this.#context.scale(2,2);
-        this.#menu = new Menu(this.#context.canvas.width, this);
+        this.#menu = new Menu(this.#color, this);
 
         this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
         this.#game.Parking = localStorage.getItem("Parking") == "true";
         this.#game.JumpHouse = localStorage.getItem("Jump") == "true";
+
         this.#menu.SetCheck("force", this.#game.ForceDefeat);
+        this.#menu.SetCheck("jump", this.#game.JumpHouse);
         this.#menu.SetCheck("dice3", localStorage.getItem("Dice3") == "true");
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
@@ -543,35 +556,6 @@ class Canvas {
 
     }
 
-    /*
-    /// <summary>
-    /// initialize game form 
-    /// </summary>
-    /// <param name="sender">
-    /// sender, game form
-    /// </param>
-    /// <param name="e">
-    /// event argumnent (not used here)
-    /// </param>
-    private void GameForm_Load(object sender, EventArgs e)
-    {
-        this._init = true;
-        this.tsbRollDice3.Checked = Properties.Settings.Default.Dice3;
-        this.tsbSound.Checked = Properties.Settings.Default.Sound;
-        this.tsbJump.Checked = Properties.Settings.Default.Jump;
-        this.tsbForceDefeat.Checked = Properties.Settings.Default.ForceDefeat;
-        this.tsbParking.Checked = Properties.Settings.Default.Parking;
-
-        this.game.ForceDefeat = this.tsbForceDefeat.Checked;
-        this.game.JumpHouse = this.tsbJump.Checked;
-
-        this.CheckFigure();
-        this.CheckDiceRoll();
-
-        this._init = false;
-    }
-    */
-
     #OnPaint() {
         console.log("OnPaint");
 
@@ -627,6 +611,7 @@ class Canvas {
                 if (pd.Figures.length == 0) {
                     if( this.#menu.GetCheck("dice3") && this.#game.CheckCorner()) {
                         pd.NumRolls++;
+                        console.log("NumRolls", pd.NumRolls);
                         if (pd.NumRolls < 3)
                         {
                             // this.#DeleteDice(this.#game.Player);

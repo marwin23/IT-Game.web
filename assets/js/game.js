@@ -602,7 +602,9 @@ class GamePlayer
     /// </summary>
     /// <returns>number of figures</returns>
     CheckField() {
-        return this.Figures.filter(f => f.InField && !f.InHouse).length;
+        const n = this.Figures.filter(f => f.InField && !f.InHouse).length;
+        console.log("CheckField", n);
+        return n;
     }
 
     /// <summary>
@@ -914,7 +916,9 @@ class Game {
     /// all figures are in the corner
     /// </returns>
     CheckCorner() {
-        return this.Player.CheckField() == 0;
+        const r = this.Player.CheckField() === 0;
+        console.log("CheckCorner", r, this.Player);
+        return r;
     }
 
     /// <summary>

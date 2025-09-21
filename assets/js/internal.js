@@ -29,13 +29,18 @@ class Globals {
     /// <summary>
     /// sychron play audio file
     /// </summary>
-    static async play(m) {
-        const d = m.duration * 1000;
-        const t = setTimeout(() => m.play());
-        m.onended = () => { clearTimeout(t) };
-        await this.sleep(d);
+    static async play(m, b = 300) {
+        return new Promise(resolve => {
+                if( m != null) {
+                    const d = Math.ceil(m.duration * 1000);
+                    console.log("play", m.id, d);
+                    m.play();
+                    setTimeout(resolve, d < b ? b : d); // workaround
+                } else {
+                    setTimeout(resolve, b);     // just sleep
+                }
+        })
     }
-
 }
 
 /// <summary>
@@ -193,9 +198,6 @@ class GameInternal {
     /// <param name="position">
     /// position to draw image
     /// </param>
-    /// <param name="index">
-    /// player index to draw image
-    /// </param>
     static DrawParking(image, context, position) {
         console.log("DrawFigure", image, position);
 
@@ -204,6 +206,28 @@ class GameInternal {
         const x = position.x - w / 2;
         const y = position.y - h / 2;
         context.drawImage(image, x,y, w,h);
+    }
+
+    /// <summary>
+    /// delete parking sign from the field
+    /// </summary>
+    /// <param name="image">
+    /// image to draw on field
+    /// </param>
+    /// <param name="context">
+    /// context to draw image
+    /// </param>
+    /// <param name="position">
+    /// position to draw image
+    /// </param>
+    static DeleteParking(image, back, context, position) {
+        console.log("DeleteParking", image, position);
+
+        const w = back.width;
+        const h = back.height;
+        const x = position.x - w / 2;
+        const y = position.y - h / 2;
+        context.drawImage(image, x,y, w,h, x,y, w,h);
     }
 
     /// <summary>
@@ -300,16 +324,16 @@ class GameInternal {
     /// select players for game
     /// </summary>
     static SelectPlayers() {
-        const p = localStorage.getItem("Players") ?? "1,1,1,1";
-        var players = p.split(',').map( (p) => p == "1");
+        const p = localStorage.getItem("Players");
+        var players = Array.from(p.split(',').map( (p) => p == "1"));
         document.getElementById("orangeChk").checked = players[0];
-        document.getElementById("orangeName").value = localStorage.getItem("Orange") ?? "orange";
+        document.getElementById("orangeName").value = localStorage.getItem("Orange");
         document.getElementById("yellowChk").checked = players[2];
-        document.getElementById("yellowName").value = localStorage.getItem("Yellow") ?? "yellow";
+        document.getElementById("yellowName").value = localStorage.getItem("Yellow");
         document.getElementById("greenChk").checked = players[3];
-        document.getElementById("greenName").value = localStorage.getItem("Green") ?? "green";
+        document.getElementById("greenName").value = localStorage.getItem("Green");
         document.getElementById("blueChk").checked = players[3];
-        document.getElementById("blueName").value = localStorage.getItem("Blue") ?? "blue";
+        document.getElementById("blueName").value = localStorage.getItem("Blue");
 
         document.getElementById("playerForm").style.display = "block";
         document.getElementById("playerSubmit").onsubmit = (ev) => {

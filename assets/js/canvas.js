@@ -161,6 +161,21 @@ class Menu {
         { n: "sound", x: 300 }
     ];
 
+    #storage = [
+        { n: "Players", d: "1,1,1,1" },
+        { n: "Orange", d: "orange" },
+        { n: "Yellow", d: "yellow" },
+        { n: "Green", d: "green" },
+        { n: "Blue", d: "blue" },
+
+        { n: "Force",  d: false },
+        { n: "Parking", d: true },
+        { n: "Jump", d: false },
+        { n: "MaxDice", d: 6 },
+        { n: "Dice3", d: false },
+        { n: "Figure", d: 0 }
+    ];
+
     #game;
 
     /// <summary>
@@ -211,9 +226,12 @@ class Menu {
     }
 
     constructor(w,g) {
+        this.#InitStorage();
+
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
 
+        mctx.scale(2,2);
         mctx.canvas.width = w;
         mctx.canvas.height = 20;
 
@@ -221,7 +239,7 @@ class Menu {
             var icon = document.getElementById(this.#images[i].n);
             icon.pos = this.#images[i].x;
             icon.onload = function() {
-                mctx.drawImage( this, this.pos, 2, this.width, this.height);           
+                mctx.drawImage( this, this.pos, 2, this.width, this.height);
             }
         }
 
@@ -234,6 +252,14 @@ class Menu {
         if( !!n)
             this.#game.OnMenu(n);
     };
+
+    #InitStorage() {
+        localStorage.clear();   // TEST
+
+        for( const s of this.#storage) {
+            localStorage.setItem(s.n, localStorage.getItem(s.n) ?? s.d);
+        }
+    }
 };
 
 /// <summary>
@@ -311,6 +337,7 @@ class Canvas {
         ];
 
         this.#OnPaint();
+        this.#context.scale(2,2);
         this.#menu = new Menu(this.#context.canvas.width, this);
         this.#CheckDiceRoll();
 
@@ -332,7 +359,7 @@ class Canvas {
     /// check toolbar icons according to settings
     /// </summary>
     #CheckDiceRoll() {
-        const dice = parseInt(localStorage.getItem("MaxDice")) ?? 6;
+        const dice = parseInt(localStorage.getItem("MaxDice"));
         this.#menu.SetCheck("dice6", dice == 6);
         this.#menu.SetCheck("dice7", dice == 7);
         this.#menu.SetCheck("dice8", dice == 8);
@@ -344,7 +371,7 @@ class Canvas {
     /// </summary>
     #InitGame() {
         this._init = true;
-        var ps = localStorage.getItem("Players") ?? "1,1,1,1";
+        var ps = localStorage.getItem("Players");
         var players = Array.from(ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1));
         this.#game.SetPlayers(players);
 
@@ -369,7 +396,7 @@ class Canvas {
     #SetFigure(p, f, select = false) {
         console.log("SetFigure", p, f, select);
 
-        const fig = parseInt(localStorage.getItem("Figure") ?? 0);
+        const fig = parseInt(localStorage.getItem("Figure"));
         const img = this.#imgFig[fig][select ? 1 : 0];
      
         GameInternal.DrawFigure(img, this.#context, f.Position, p.Index);
@@ -546,7 +573,7 @@ class Canvas {
     /// number of dice pips.
     /// </returns>
     #RollDice() {
-        const max = localStorage.getItem("MaxDice") ?? 6;
+        const max = localStorage.getItem("MaxDice");
         return Math.floor(Math.random() * max + 1);
     }
 
@@ -562,42 +589,12 @@ class Canvas {
     OnParking(l,p) {
         console.log("OnParking", l,p);
 
-        var size = this.#imgParking.Size;
-        if (p)          // set parking zones
-        {
-            this.backGroundPark = new Bitmap[e.positions.Length];
-            var i = 0;
-            for (var rect of e.positions.Select(pos => fp.CalcPosition(size, pos)))
-            {
-                this.backGroundPark[i++] = GameInternal.GetBackGround(rect, this.bitmapGame);
-                GameInternal.DrawParking(this.#imgParking, rect, tscGame.ContentPanel, this.bitmapGame);
-            }
-        }
-        else            // delete parking zones
-        {
-            if (!!this.backGroundPark)
-            {
-                var i = 0;
-                for (var rect of e.positions.Select(pos => fp.CalcPosition(size, pos)))
-                {
-                    var park = this.backGroundPark[i++];
-                    GameInternal.SetBackGround(park, rect, tscGame.ContentPanel, this.bitmapGame);
-                }
-
-                this.#DisposePark();
-            }
-        }
-    }
-
-    /// <summary>
-    /// erase parking backgound
-    /// </summary>
-    #DisposePark() {
-        if( !!this.backGroundPark) {
-            for (var park of this.backGroundPark)
-                park.Dispose();
-
-            this.backGroundPark = null;
+        if (p) {          // set parking zones
+            for( const c of l)
+                GameInternal.DrawParking(this.#imgParking, this.#context, c);
+        } else {           // delete parking zones
+            for( const c of l)
+                GameInternal.DeleteParking(this.#imgField, this.#imgParking, this.#context, c);
         }
     }
 
@@ -625,7 +622,7 @@ class Canvas {
                 this.#SetFigure(p, f);
                 if (!this._init && this.#menu.GetCheck("sound"))
                     if (f.InField && f.TrackNumber == 0)
-                        this.#sndStart.play();
+                        await Globals.play(this.#sndStart);
                 break;
 
             case Game.FigureAction.Delete:
@@ -644,7 +641,7 @@ class Canvas {
 
             case Game.FigureAction.Defeated:
                 if (!this._init && this.#menu.GetCheck("sound"))
-                    this.#sndDefeat.play();
+                    await Globals.play(this.#sndDefeat);
                 break;
         }
     }
@@ -686,71 +683,8 @@ class Canvas {
 
         this._init = false;
     }
-
-    /// <summary>
-    /// game form is about to be closed
-    /// </summary>
-    /// <param name="sender">
-    /// sender, game form
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here).
-    /// </param>
-    private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
-    {
-    }
-
-    /// <summary>
-    /// called if form is about to be resized
-    /// </summary>
-    /// <param name="sender">
-    /// sender, game form
-    /// </param>
-    /// <param name="e">
-    /// event argument (not used here).
-    /// </param>
-    private void GameForm_Resize(object sender, EventArgs e)
-    {
-    }
-
-    /// <summary>
-    /// graphical paint of the field, figures and other stuff
-    /// </summary>
-    /// <param name="sender">
-    /// sender, content panel (??)
-    /// </param>
-    /// <param name="e">
-    /// event argument, not used here.
-    /// </param>
-    private void Game_ContentPanel_Paint(object sender, PaintEventArgs e)
-    {
-        if (!(this.bitmapGame is null))
-            this.bitmapGame.Dispose();
-
-        // delete parking field and figures
-        this.#DisposeDice();
-        this.#DisposeFigures();
-        this.#DisposePark();
-
-        // create backgound image
-        var rectTarget = this.tscGame.ContentPanel.ClientRectangle;
-        this.bitmapGame = new Bitmap(rectTarget.Width, rectTarget.Height, e.Graphics);
-        var bm = Properties.Resources.Field;
-        var fp = new FieldPosition( this.tscGame.ContentPanel.Size, bm.Size);
-        var rect = fp.CalcPosition(bm.Size);
-
-        using (var g = Graphics.FromImage(this.bitmapGame))
-        {
-            g.DrawImage(bm, rect);
-            e.Graphics.DrawImage(bm, rect);
-        }
-
-        this.game.SetFigures();
-        this.game.SetParking(Properties.Settings.Default.Parking);
-        this.SetDice(this.game.Player, this.Dice, true);
-    }
     */
-
+   
     #OnPaint() {
         console.log("OnPaint");
 
@@ -758,7 +692,7 @@ class Canvas {
         this.#context = g.getContext("2d");
         GameInternal.DrawField(this.#imgField, this.#context);
 
-        const park = (localStorage.getItem("Parking") ?? "false") == "true";
+        const park = localStorage.getItem("Parking") === "true";
         this.#game.SetFigures();
         this.#game.SetParking(park);
         this.#SetDice(this.#game.Player, this.Dice, true);
@@ -795,7 +729,7 @@ class Canvas {
             this.#SetDice(this.#game.Player, this.Dice);
 
             if (this.#menu.GetCheck("sound"))
-                this.#sndDice.play();
+                await Globals.play(this.#sndDice);
 
             const res = this.#game.EvalDiceRoll(this.Dice);
             if (res.ft != null)    // figure already has been tracked

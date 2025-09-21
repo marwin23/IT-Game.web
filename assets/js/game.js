@@ -921,25 +921,25 @@ class Game {
     /// new parking flag
     /// </param>
     SetParking(p) {
-        var lstFig = new Array();   // Field.GameMaxFigure
-        var lstPark = new Array();  // Field.FieldDescription.parking.length
-        for(var i in Field.FieldDescription.parking) {
+        var figs = new Array();   // Field.GameMaxFigure
+        var park = new Array();  // Field.FieldDescription.parking.length
+        for(const i of Field.FieldDescription.parking) {
             const pos = Field.FieldDescription.positions[i];
             const tf = new GameFigure(null, pos.x, pos.y);
 
             const f = this.CheckFigure(tf);
             if (f != null)          // if figure on a parking position
-                lstFig.push(f);
+                figs.push(f);
 
-            lstPark.push(new GamePoint(pos));
+            park.push(new GamePoint(pos));
         }
 
-        for(var f in lstFig)
+        for(var f in figs)
             f.Delete(); // delete first
 
-        this.Canvas.OnParking( lstPark, p);
+        this.Canvas.OnParking( park, p);
 
-        for(var f in lstFig)
+        for(var f in figs)
             f.Set();    // set it again
 
         this.Parking = p;

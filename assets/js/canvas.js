@@ -101,7 +101,7 @@ class Menu {
 
         for( var image of this.#images) {
             if(n === image.n) {
-                mctx.strokeStyle = b ? "black" : this.#color;
+                mctx.strokeStyle = b ? "yellow" : this.#color;
                 mctx.lineWidth = 2;
                 mctx.strokeRect( image.x -1, 1, 18, 18);
 

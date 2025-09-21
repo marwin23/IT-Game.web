@@ -280,7 +280,7 @@ class GameInternal {
         const x = position.x - w / 2;
         const y = position.y - h / 2;
 
-        context.strokeStyle = "blue";   // TO DO: define
+        context.strokeStyle = "black";   // TO DO: define
         context.clearRect( x,y, w,h);
 
         context.drawImage(image, x,y, w,h, x,y, w,h);

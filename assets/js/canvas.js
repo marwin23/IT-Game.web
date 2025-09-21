@@ -217,7 +217,7 @@ class Menu {
         var r = false;
         for( var i = 0; i < this.#images.length; i++) {
             if(n === this.#images[i].n) {
-                r = this.#images[i].c;
+                r = this.#images[i].c ?? false;
                 break;
             }
         }
@@ -285,16 +285,6 @@ class Canvas {
     /// </summary>
     FiguresToSelect;
 
-    /// <summary>
-    /// background for the dice
-    /// </summary>
-    backGroundDice;
-
-    /// <summary>
-    /// background for parking zone
-    /// </summary>
-    backGroundPark;
-
     _init = false;
 
 
@@ -339,7 +329,12 @@ class Canvas {
         this.#OnPaint();
         this.#context.scale(2,2);
         this.#menu = new Menu(this.#context.canvas.width, this);
+        this.#CheckFigure();
         this.#CheckDiceRoll();
+
+        this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
+        this.#game.Parking = localStorage.getItem("Parking") == "true";
+        this.#game.JumpHouse = localStorage.getItem("Jump") == "true";
 
         document.getElementById("game").onmousedown = this.#OnMouseDown;
     }
@@ -348,7 +343,7 @@ class Canvas {
     /// set toolbar icons according to settings
     /// </summary>
     #CheckFigure() {
-        const fig = parseInt(localStorage.getItem("Figure")) ?? 0;
+        const fig = parseInt(localStorage.getItem("Figure"));
         this.#menu.SetCheck("ball", fig == 0);
         this.#menu.SetCheck("point", fig == 1);
         this.#menu.SetCheck("smiley", fig == 2);

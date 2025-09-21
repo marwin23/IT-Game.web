@@ -85,12 +85,14 @@ class GameFigure {
             } else {
                 this.Player = p;
                 this.Number = x;
+                this.HasSet = false;
             }
             this.Test = false;
         } else {
             this.Player = p;
             this.Position = new GamePoint(x,y);
             this.Test = true;
+            this.HasSet = false;
         }
     }
 
@@ -202,6 +204,7 @@ class GameFigure {
     CheckParking() {
         for (var index of Field.FieldDescription.parking) {
             const pos = Field.FieldDescription.positions[index];
+            console.log("CheckParking", pos, this.Position);
             if (GamePoint.Equals(this.Position, new GamePoint(pos)))
                 return true;
         }
@@ -1005,11 +1008,21 @@ class Game {
     /// </param>
     TrackFigureByOne(fig, last) {
         fig.Delete();
-        fig.Track();
 
-        if (!last)
+        if (!last) {
+            const f1 = this.CheckFigure(fig);
+            if( f1 != null)
+                f1.Set();
+            else {
+                if (this.Parking && fig.CheckParking())   // if figure was at parking position
+                    this.Canvas.OnParking( [fig.Position], true);
+            }
+
+            fig.Track();
             fig.Set();
+        }
         else {
+            fig.Track();
             const f2 = this.CheckFigure(fig);
             if (f2 == null) {
                 fig.Set();

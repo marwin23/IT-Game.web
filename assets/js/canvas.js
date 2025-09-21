@@ -613,6 +613,8 @@ class Canvas {
     async OnFigure(p,f,a) {
         console.log( "OnFigure", p, f, a);
 
+        const sound = this.#menu.GetCheck("sound");
+
         switch (a) {
             case Game.FigureAction.Init:
                 f.Data = new FigureData();
@@ -620,7 +622,7 @@ class Canvas {
 
             case Game.FigureAction.Set:
                 this.#SetFigure(p, f);
-                if (!this._init && this.#menu.GetCheck("sound"))
+                if (!this._init && sound)
                     if (f.InField && f.TrackNumber == 0)
                         await Globals.play(this.#sndStart);
                 break;
@@ -631,16 +633,12 @@ class Canvas {
 
             case Game.FigureAction.Track:
                 if (!this._init) {
-                    if (this.#menu.GetCheck("sound"))
-                        await Globals.play(this.#sndMove);
-                    else
-                        await Globals.sleep(300);
-
+                    await Globals.play(sound ? this.#sndMove : null);
                 }
                 break;
 
             case Game.FigureAction.Defeated:
-                if (!this._init && this.#menu.GetCheck("sound"))
+                if (!this._init && sound)
                     await Globals.play(this.#sndDefeat);
                 break;
         }
@@ -684,7 +682,7 @@ class Canvas {
         this._init = false;
     }
     */
-   
+
     #OnPaint() {
         console.log("OnPaint");
 

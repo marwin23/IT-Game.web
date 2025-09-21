@@ -37,6 +37,7 @@ class Globals {
                     m.play();
                     setTimeout(resolve, d < b ? b : d); // workaround
                 } else {
+                    console.log("play", b);
                     setTimeout(resolve, b);     // just sleep
                 }
         })

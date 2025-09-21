@@ -60,8 +60,9 @@ class Menu {
         { n: "Force",  d: false },
         { n: "Parking", d: true },
         { n: "Jump", d: false },
+        { n: "Sound", d: true },
         { n: "MaxDice", d: 6 },
-        { n: "Dice3", d: false },
+        { n: "Dice3", d: true },
         { n: "Figure", d: 0 }
     ];
 
@@ -233,6 +234,9 @@ class Canvas {
         this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
         this.#game.Parking = localStorage.getItem("Parking") == "true";
         this.#game.JumpHouse = localStorage.getItem("Jump") == "true";
+        this.#menu.SetCheck("force", this.#game.ForceDefeat);
+        this.#menu.SetCheck("dice3", localStorage.getItem("Dice3") == "true");
+        this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
         document.getElementById("game").onmousedown = this.#OnMouseDown;
         this._init = false;

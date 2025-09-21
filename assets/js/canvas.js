@@ -314,6 +314,7 @@ class Canvas {
     /// default constructor
     /// </summary>
     constructor() {
+        this._init = true;
         // Field.SetDescription();            // IT game field
 
         // set images
@@ -329,14 +330,16 @@ class Canvas {
         this.#OnPaint();
         this.#context.scale(2,2);
         this.#menu = new Menu(this.#context.canvas.width, this);
-        this.#CheckFigure();
-        this.#CheckDiceRoll();
 
         this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
         this.#game.Parking = localStorage.getItem("Parking") == "true";
         this.#game.JumpHouse = localStorage.getItem("Jump") == "true";
 
         document.getElementById("game").onmousedown = this.#OnMouseDown;
+        this._init = false;
+
+        this.#CheckFigure();
+        this.#CheckDiceRoll();
     }
 
     /// <summary>
@@ -348,6 +351,7 @@ class Canvas {
         this.#menu.SetCheck("point", fig == 1);
         this.#menu.SetCheck("smiley", fig == 2);
         this.#menu.SetCheck("star", fig == 3);
+        this.#OnPaint();
     }
     
     /// <summary>
@@ -453,19 +457,6 @@ class Canvas {
             for (var f of figures)
                 this.#DeleteFigure(this.#game.Player, f);
         }
-    }
-
-    /// <summary>
-    /// dispose background of figures
-    /// </summary>
-    DisposeFigures() {
-        if (!!this.game.Players)
-            for (var p of this.game.Players)
-                for (var f of p.Figures) {
-                    var fd = f.Data; //  as FigureData;
-                    if (!!fd)
-                        fd.DisposeBackGound();
-                }
     }
 
     /// <summary>
@@ -681,14 +672,17 @@ class Canvas {
     #OnPaint() {
         console.log("OnPaint");
 
-        const g = document.getElementById("game");
-        this.#context = g.getContext("2d");
-        GameInternal.DrawField(this.#imgField, this.#context);
+        if( this._init) {
+            const g = document.getElementById("game");
+            this.#context = g.getContext("2d");
+        } else {
+            GameInternal.DrawField(this.#imgField, this.#context);
 
-        const park = localStorage.getItem("Parking") === "true";
-        this.#game.SetFigures();
-        this.#game.SetParking(park);
-        this.#SetDice(this.#game.Player, this.Dice, true);
+            const park = localStorage.getItem("Parking") === "true";
+            this.#game.SetFigures();
+            this.#game.SetParking(park);
+            this.#SetDice(this.#game.Player, this.Dice, true);
+        }
     }
 
     /// <summary>

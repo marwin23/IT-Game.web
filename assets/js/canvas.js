@@ -199,6 +199,7 @@ class Canvas {
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
     
+    #canvas = document.getElementById("game");
     #text = document.getElementById("text");
 
     /// <summary>
@@ -342,7 +343,7 @@ class Canvas {
         console.log("DeleteFigures", figures);
 
         if (figures == null) {
-            for (var f of this.game.Player.Figures)
+            for (var f of this.#game.Player.Figures)
                 this.#DeleteFigure(this.#game.Player, f);
         } else {
             for (var f of figures)
@@ -403,7 +404,7 @@ class Canvas {
             this.#text.innerText = `${name}: roll dice.`;
         }
         else
-            this.#text.innerText = "";
+            this.#text.innerText = "---";
     }
 
     /// <summary>
@@ -507,6 +508,8 @@ class Canvas {
                 break;
 
             case Game.FigureAction.Track:
+                Globals.sleep(0);   // update
+
                 if (!this._init) {
                     await Globals.play(sound ? this.#sndMove : null);
                 }
@@ -562,8 +565,7 @@ class Canvas {
         console.log("OnPaint");
 
         if( this._init) {
-            const g = document.getElementById("game");
-            this.#context = g.getContext("2d");
+            this.#context = this.#canvas.getContext("2d");
         } else {
             GameInternal.DrawField(this.#imgField, this.#context);
 

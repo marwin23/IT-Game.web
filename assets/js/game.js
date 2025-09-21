@@ -202,7 +202,7 @@ class GameFigure {
     /// figure is at parking position
     /// </returns>
     CheckParking() {
-        for (var index of Field.FieldDescription.parking) {
+        for (const index of Field.FieldDescription.parking) {
             const pos = Field.FieldDescription.positions[index];
             console.log("CheckParking", pos, this.Position);
             if (GamePoint.Equals(this.Position, new GamePoint(pos)))
@@ -1009,20 +1009,20 @@ class Game {
     TrackFigureByOne(fig, last) {
         fig.Delete();
 
-        if (!last) {
-            const f1 = this.CheckFigure(fig);
-            if( f1 != null)
-                f1.Set();
-            else {
-                if (this.Parking && fig.CheckParking())   // if figure was at parking position
-                    this.Canvas.OnParking( [fig.Position], true);
-            }
+        const f1 = this.CheckFigure(fig);
+        if( f1 != null) {
+            f1.Set();
+        } else {
+            if (this.Parking && fig.CheckParking())   // if figure was at parking position
+                this.Canvas.OnParking( [fig.Position], true);
+        }
 
-            fig.Track();
+        fig.Track();
+        
+        if (!last) {
             fig.Set();
         }
         else {
-            fig.Track();
             const f2 = this.CheckFigure(fig);
             if (f2 == null) {
                 fig.Set();

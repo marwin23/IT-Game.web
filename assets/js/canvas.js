@@ -22,119 +22,8 @@ class FigureData
     /// <summary>
     /// background of the figure
     /// </summary>
-    backGround;
-
-    /// <summary>
-    /// get back ground of figure from the field.
-    /// </summary>
-    /// <param name="rect">
-    /// rectangle to get background from
-    /// </param>
-    /// <param name="game">
-    /// shadow copy of the field
-    /// </param>
-    GetBackGround(rect, game) {
-        this.DisposeBackGound();
-        this.backGround = GameInternal.GetBackGround(rect, game);
-    }
-
-    /// <summary>
-    /// set back ground of figure to field.
-    /// </summary>
-    /// <param name="rect">
-    /// rectangle to set background to.
-    /// </param>
-    /// <param name="ctrl">
-    /// control context of the field.
-    /// </param>
-    /// <param name="game">
-    /// shadow copy of the game
-    /// </param>
-    SetBackGround(rect, ctrl, game) {
-        if (!!this.backGround) {
-            GameInternal.SetBackGround(this.backGround, rect, ctrl, game);
-            this.DisposeBackGound();
-        }
-    }
-
-    /// <summary>
-    /// dispose figure backgound
-    /// </summary>
-    DisposeBackGound() {
-        if (!!this.backGround) {
-            backGround.Dispose();
-            backGround = null;
-        }
-    }
+    dummy;
 };
-
-/// <summary>
-/// physical position of top left corner in field
-/// </summary>
-class FieldPosition {
-    #gameRect;
-    #gameSize;
-
-    /// <summary>
-    /// calculate position and size of game in client window
-    /// </summary>
-    constructor(sizeCanvas, sizeField)
-    {
-        const dx = Globals.MulDiv(sizeCanvas.Height, sizeField.Width, sizeField.Height);
-        const dy = Globals.MulDiv(sizeCanvas.Width, sizeField.Height, sizeField.Width);
-        if (sizeCanvas.Height > dy) {
-            this.gameRect = new Rectangle(0, (sizeCanvas.Height - dy) / 2, sizeCanvas.Width, dy);
-            this.gameSize = new Size(sizeCanvas.Width, sizeField.Width);
-        } else {
-            this.gameRect = new Rectangle((sizeCanvas.Width - dx) / 2, 0, dx, sizeCanvas.Height);
-            this.gameSize = new Size(sizeCanvas.Height, sizeField.Height);
-        }
-    }
-
-    /// <summary>
-    /// calculate position on field
-    /// </summary>
-    /// <remarks>
-    /// conider that field is a square
-    /// </remarks>
-    /// <param name="imgsize">
-    /// size of position to determine position for.
-    /// </param>
-    /// <param name="pos">
-    /// position from algorithm
-    /// </param>
-    /// <returns>
-    /// position in client coordinates
-    /// </returns>
-    CalcPosition(imgsize, pos) {
-        const w = Globals.MulDiv(imgsize.Width, this.gameSize.Width, this.gameSize.Height);
-        const h = Globals.MulDiv(imgsize.Height, this.gameSize.Width, this.gameSize.Height);
-
-        const x = this.gameRect.Left + Globals.MulDiv(pos.Col, this.gameSize.Width, this.gameSize.Height) - w / 2;
-        const y = this.gameRect.Top + Globals.MulDiv(pos.Row, this.gameSize.Width, this.gameSize.Height) - h / 2;
-
-        return { x, y, w, h }; // new Rectangle(x, y, w, h);
-    }
-
-    /// <summary>
-    /// calculate position of an image in the field
-    /// </summary>
-    /// <param name="imgsize">
-    /// size of an image
-    /// </param>
-    /// <returns>
-    /// rectangle of the image
-    /// </returns>
-    CalcPosition(imgsize) {
-        const w = Globals.MulDiv(imgsize.Width, this.gameSize.Width, this.gameSize.Height);
-        const h = Globals.MulDiv(imgsize.Height, this.gameSize.Width, this.gameSize.Height);
-
-        const x = this.gameRect.Left;
-        const y = this.gameRect.Top;
-
-        return { x, y, w, h }; // new Rectangle(x, y, w, h);
-    }
-}
 
 /// <summary>
 /// canvas of the menu
@@ -309,6 +198,8 @@ class Canvas {
     #imgFigStar0 = document.getElementById("star0");
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
+    
+    #text = document.getElementById("text");
 
     /// <summary>
     /// default constructor
@@ -507,14 +398,12 @@ class Canvas {
         this.DiceToSelect = select;
 
         GameInternal.DrawDice(img, this.#context, p.FieldPlayer.diceroll, dice - 1);
-/*
         if (select) {
             var name = GameInternal.GetPlayerName(p);
-            this.tssGame.Text = string.Format("{0}: roll dice.", name);
+            this.#text.innerText = `${name}: roll dice.`;
         }
         else
-            this.tssGame.Text = string.Empty;
-*/
+            this.#text.innerText = "";
     }
 
     /// <summary>
@@ -735,13 +624,14 @@ class Canvas {
                     }
                 } else if (pd.Figures.length == 1) {
                     var f = pd.Figures[0];
-                    // this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
+
+                    this.#text.innerTextText = `${name}: track figure ${f.Number}.`;
                     await this.#game.TrackFigure(f, this.Dice);
                 } else {
                     // set figures to select
                     this.#DeleteFigures(pd.Figures);
                     this.#SetFigures(pd.Figures, true);
-                    // this.tssGame.Text = string.Format("{0}: select figure to track.", name);
+                    this.#text.innerText = `${name}: select figure to track.`
 
                     hit = false;
                 }
@@ -752,9 +642,8 @@ class Canvas {
                 hit = true;
                 this.#DeleteFigures(pd.Figures);
                 this.#SetFigures(pd.Figures);
-                // this.tssGame.Text = string.Empty;
 
-                // this.tssGame.Text = string.Format("{0}: track figure {1}.", name, f.Number);
+                this.#text.innerTextText = `${name}: track figure ${f.Number}.`;
                 await this.#game.TrackFigure(f, this.Dice);
             }
         }
@@ -768,7 +657,7 @@ class Canvas {
                 this.#SetDice(this.#game.Player, this.Dice, true);
             else {
                 if (!this.#game.SelectPlayer()) {
-                    // this.tssGame.Text = "Game finished!";
+                    this.#text.innerTextText = "Game finished!";
                     this.#PrintRanking();
                 } else
                     this.#SetDice(this.#game.Player, this.Dice, true);

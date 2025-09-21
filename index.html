@@ -25,46 +25,47 @@
 	    <link rel="mask-icon" href="assets/favicons/favicon-safari-masked.svg" color="#FFFFFF" />
 	  </head>
     <body style="background:#08218c; width:100%; height:100%">
+		<div style="display:none;">
+			<img id="field" src="assets/images/field.webp"/>
+			<img id="parking" src="assets/images/parking.webp"/>
+			<img id="dice0" src="assets/images/dice0.webp"/>
+			<img id="dice1" src="assets/images/dice1.webp"/>
+			<img id="ball0" src="assets/images/ball0.webp"/>
+			<img id="ball1" src="assets/images/ball1.webp"/>
+			<img id="point0" src="assets/images/point0.webp"/>
+			<img id="point1" src="assets/images/point1.webp"/>
+			<img id="smiley0" src="assets/images/smiley0.webp"/>
+			<img id="smiley1" src="assets/images/smiley1.webp"/>
+			<img id="star0" src="assets/images/star0.webp"/>
+			<img id="star1" src="assets/images/star1.webp"/>
+
+			<img id="new" src="assets/images/new.webp"/>
+			<img id="force" src="assets/images/force.webp"/>
+			<img id="jump" src="assets/images/jump.webp"/>
+			<img id="dice3" src="assets/images/dice3.webp"/>
+			<img id="dice6" src="assets/images/dice6.webp"/>
+			<img id="dice7" src="assets/images/dice7.webp"/>
+			<img id="dice8" src="assets/images/dice8.webp"/>
+			<img id="dice9" src="assets/images/dice9.webp"/>
+			<img id="ball" src="assets/images/ball.webp"/>
+			<img id="point" src="assets/images/point.webp"/>
+			<img id="smiley" src="assets/images/smiley.webp"/>
+			<img id="star" src="assets/images/star.webp"/>
+			<img id="player" src="assets/images/player.webp"/>
+			<img id="ranking" src="assets/images/ranking.webp"/>
+			<img id="sound" src="assets/images/sound.webp"/>
+
+			<audio id="start" src="assets/audio/Start.mp3" preload="auto"></audio>
+			<audio id="dice" src="assets/audio/Dice.mp3" preload="auto"></audio>
+			<audio id="move" src="assets/audio/Move.mp3" preload="auto"></audio>
+			<audio id="defeat" src="assets/audio/Defeat.mp3" preload="auto"></audio>
+			<audio id="out" src="assets/audio/Out.mp3" preload="auto"></audio>
+		</div>
 		<table>
 			<td>
 				<canvas id="menu" style="display:block;background-color:#08218c;"></canvas>
 				<canvas id="game" style="display:block;background-color:#08218c;"></canvas>
-				<div style="display:none;">
-					<img id="field" src="assets/images/field.webp"/>
-					<img id="parking" src="assets/images/parking.webp"/>
-					<img id="dice0" src="assets/images/dice0.webp"/>
-					<img id="dice1" src="assets/images/dice1.webp"/>
-					<img id="ball0" src="assets/images/ball0.webp"/>
-					<img id="ball1" src="assets/images/ball1.webp"/>
-					<img id="point0" src="assets/images/point0.webp"/>
-					<img id="point1" src="assets/images/point1.webp"/>
-					<img id="smiley0" src="assets/images/smiley0.webp"/>
-					<img id="smiley1" src="assets/images/smiley1.webp"/>
-					<img id="star0" src="assets/images/star0.webp"/>
-					<img id="star1" src="assets/images/star1.webp"/>
-
-					<img id="new" src="assets/images/new.webp"/>
-					<img id="force" src="assets/images/force.webp"/>
-					<img id="jump" src="assets/images/jump.webp"/>
-					<img id="dice3" src="assets/images/dice3.webp"/>
-					<img id="dice6" src="assets/images/dice6.webp"/>
-					<img id="dice7" src="assets/images/dice7.webp"/>
-					<img id="dice8" src="assets/images/dice8.webp"/>
-					<img id="dice9" src="assets/images/dice9.webp"/>
-					<img id="ball" src="assets/images/ball.webp"/>
-					<img id="point" src="assets/images/point.webp"/>
-					<img id="smiley" src="assets/images/smiley.webp"/>
-					<img id="star" src="assets/images/star.webp"/>
-					<img id="player" src="assets/images/player.webp"/>
-					<img id="ranking" src="assets/images/ranking.webp"/>
-					<img id="sound" src="assets/images/sound.webp"/>
-
-					<audio id="start" src="assets/audio/Start.mp3" preload="auto"></audio>
-					<audio id="dice" src="assets/audio/Dice.mp3" preload="auto"></audio>
-					<audio id="move" src="assets/audio/Move.mp3" preload="auto"></audio>
-					<audio id="defeat" src="assets/audio/Defeat.mp3" preload="auto"></audio>
-					<audio id="out" src="assets/audio/Out.mp3" preload="auto"></audio>
-				</div>
+				<span id="text"></span>
 			</td>
 			<td>
 				<form id="playerForm" style="display:none;">

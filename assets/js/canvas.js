@@ -30,24 +30,24 @@ class FigureData
 /// </summary>
 class Menu {
     #images = [
-        { n: "player", x: 5 },
-        { n: "new", x: 25 },
-        { n: "force", x: 45 },
-        { n: "jump", x: 65 },
-        { n: "dice3", x: 85 },
+        { n: "player", x: 0 },
+        { n: "new", x: 20 },
+        { n: "ranking", x: 40 },
+        { n: "force", x: 60 },
+        { n: "jump", x: 80 },
+        { n: "dice3", x: 100 },
+        { n: "sound", x: 120 },
 
-        { n: "dice6", x: 110 },
-        { n: "dice7", x: 130 },
-        { n: "dice8", x: 150 },
-        { n: "dice9", x: 170 },
+        { n: "dice6", x: 150 },
+        { n: "dice7", x: 170 },
+        { n: "dice8", x: 190 },
+        { n: "dice9", x: 210 },
 
-        { n: "ball", x: 195 },
-        { n: "point", x: 215 },
-        { n: "smiley", x: 235 },
-        { n: "star", x: 255 },
+        { n: "ball", x: 240 },
+        { n: "point", x: 260 },
+        { n: "smiley", x: 280 },
+        { n: "star", x: 300 },
 
-        { n: "ranking", x: 280 },
-        { n: "sound", x: 300 }
     ];
 
     #storage = [
@@ -72,7 +72,7 @@ class Menu {
     /// </summary>
     #CheckPoint(x,y) {
         for( var i = 0; i < this.#images.length; i++) {
-            const r = new Rectangle(this.#images[i].x, 2, 16, 16);
+            const r = new Rectangle(this.#images[i].x +5, 2, 16, 16);
             if( r.contains( x, y)) {
                 return this.#images[i].n;
             }
@@ -92,7 +92,7 @@ class Menu {
         for( var i = 0; i < this.#images.length; i++) {
             if(n === this.#images[i].n) {
                 mctx.strokeStyle = b ? "black" : "#08218c";
-                mctx.strokeRect( this.#images[i].x -1 , 1, 18, 18);
+                mctx.strokeRect( this.#images[i].x -1 +5, 1, 18, 18);
                 this.#images[i].c = b;
                 break;
             }
@@ -121,15 +121,16 @@ class Menu {
         const mctx = m.getContext("2d");
 
         mctx.scale(2,2);
-        mctx.canvas.width = w;
+        mctx.canvas.width = 400; // w;
         mctx.canvas.height = 20;
 
         for( var i = 0; i < this.#images.length; i++) {
             var icon = document.getElementById(this.#images[i].n);
             icon.pos = this.#images[i].x;
             icon.onload = function() {
-                mctx.drawImage( this, this.pos, 2, this.width, this.height);
+                mctx.drawImage( this, this.pos + 5, 2, this.width, this.height);
             }
+            mctx.drawImage( icon, this.pos + 5, 2, this.width, this.height);
         }
 
         this.#game = g;

@@ -71,10 +71,12 @@ class Menu {
     /// return menu name selected.
     /// </summary>
     #CheckPoint(x,y) {
-        for( var i = 0; i < this.#images.length; i++) {
-            const r = new Rectangle(this.#images[i].x +5, 2, 16, 16);
+        console.log( "CheckPoint", x,y);
+
+        for( const image of this.#images) {
+            const r = new Rectangle(image.x, 2, 16, 16);
             if( r.contains( x, y)) {
-                return this.#images[i].n;
+                return image.n;
             }
         }
         return null;
@@ -88,12 +90,15 @@ class Menu {
 
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
+        mctx.globalAlpha = 1.0;
 
-        for( var i = 0; i < this.#images.length; i++) {
-            if(n === this.#images[i].n) {
-                mctx.strokeStyle = b ? "black" : "#08218c";
-                mctx.strokeRect( this.#images[i].x -1 +5, 1, 18, 18);
-                this.#images[i].c = b;
+        for( var image of this.#images) {
+            if(n === image.n) {
+                mctx.strokeStyle = b ? "black" : "blue";
+                mctx.lineWidth = 2;
+                mctx.strokeRect( image.x -1, 1, 18, 18);
+
+                image.c = b;
                 break;
             }
         }
@@ -104,9 +109,9 @@ class Menu {
     /// </summary>
     GetCheck(n) {
         var r = false;
-        for( var i = 0; i < this.#images.length; i++) {
-            if(n === this.#images[i].n) {
-                r = this.#images[i].c ?? false;
+        for( const image of this.#images) {
+            if(n === image.n) {
+                r = image.c ?? false;
                 break;
             }
         }
@@ -121,16 +126,17 @@ class Menu {
         const mctx = m.getContext("2d");
 
         mctx.scale(2,2);
-        mctx.canvas.width = 400; // w;
+        mctx.canvas.width = 400;
         mctx.canvas.height = 20;
 
-        for( var i = 0; i < this.#images.length; i++) {
-            var icon = document.getElementById(this.#images[i].n);
-            icon.pos = this.#images[i].x;
+        for( const image of this.#images) {
+            var icon = document.getElementById(image.n);
+            icon.pos = image.x;
+            console.log( "Menu icon", icon);
             icon.onload = function() {
-                mctx.drawImage( this, this.pos + 5, 2, this.width, this.height);
+                mctx.drawImage( this, this.pos, 2, this.width, this.height);
             }
-            mctx.drawImage( icon, this.pos + 5, 2, this.width, this.height);
+            // mctx.drawImage( icon, this.pos, 2, this.width, this.height);
         }
 
         this.#game = g;
@@ -138,7 +144,7 @@ class Menu {
     }
 
     #handleClick = (ev) => {
-        const n = this.#CheckPoint(ev.clientX,ev.clientY);
+        const n = this.#CheckPoint(ev.offsetX,ev.offsetY);
         if( !!n)
             this.#game.OnMenu(n);
     };
@@ -589,6 +595,7 @@ class Canvas {
     #OnMouseDown = async(e) => {
         console.log("OnMouseDown", e, this);
 
+        const sound = this.#menu.GetCheck("sound");
         var hit = false;
 
         if (this.#game.Player == null)
@@ -604,11 +611,9 @@ class Canvas {
             hit = true;
 
             this.Dice = this.#RollDice();
-            this.#DeleteDice(this.#game.Player);
-            this.#SetDice(this.#game.Player, this.Dice);
-
-            if (this.#menu.GetCheck("sound"))
-                await Globals.play(this.#sndDice);
+            // this.#DeleteDice(this.#game.Player);
+            this.#SetDice(this.#game.Player, this.Dice, false);
+            await Globals.play(sound ? this.#sndDice : null, 1000);
 
             const res = this.#game.EvalDiceRoll(this.Dice);
             if (res.ft != null)    // figure already has been tracked
@@ -616,11 +621,11 @@ class Canvas {
                 pd.Figures = res.ft;
 
                 if (pd.Figures.length == 0) {
-                    if( this.#menu.GetCheck("dice3") && game.CheckCorner()) {
+                    if( this.#menu.GetCheck("dice3") && this.#game.CheckCorner()) {
                         pd.NumRolls++;
                         if (pd.NumRolls < 3)
                         {
-                            this.#DeleteDice(this.#game.Player);
+                            // this.#DeleteDice(this.#game.Player);
                             this.#SetDice(this.#game.Player, this.Dice, true);
                             return;
                         }
@@ -791,8 +796,7 @@ class Canvas {
     /// <summary>
     /// print ranking dialog
     /// </summary>
-    #PrintRanking()
-    {
+    #PrintRanking() {
         const rank = this.#game.GetRanking();
         GameInternal.PrintRanking(rank, this);
     }

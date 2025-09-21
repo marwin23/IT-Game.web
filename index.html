@@ -24,7 +24,7 @@
 	    <link name="msapplication-config" content="assets/favicons/ieconfig.xml" />
 	    <link rel="mask-icon" href="assets/favicons/favicon-safari-masked.svg" color="#FFFFFF" />
 	  </head>
-    <body style="background:#08218c; width:100%; height:100%">
+    <body style="background:blue; width:100%; height:100%">
 		<div style="display:none;">
 			<img id="field" src="assets/images/field.webp"/>
 			<img id="parking" src="assets/images/parking.webp"/>
@@ -63,8 +63,8 @@
 		</div>
 		<table>
 			<td>
-				<canvas id="menu" style="display:block;background-color:#08218c;"></canvas>
-				<canvas id="game" style="display:block;background-color:#08218c;"></canvas>
+				<canvas id="menu" style="display:block;background-color:blue;width:400px;height:20px;margin:5px;"></canvas>
+				<canvas id="game" style="display:block;background-color:blue;width:400px;height:400x;"></canvas>
 				<span id="text">---</span>
 			</td>
 			<td>
@@ -97,9 +97,29 @@
 					</table>
 				</form>
 			</td>
-				<td>
+			<td>
 				<form id="rankingForm" style="display:none;">
-					
+					<table>
+						<tr>
+							<td><span>winner:</span></td>
+							<td><span id="winner">---</span></td>
+						</tr>
+						<tr>
+							<td><span>2nd:</span></td>
+							<td><span id="second">---</span></td>
+						</tr>
+						<tr>
+							<td><span>3rd:</span></td>
+							<td><span id="third">---</span></td>
+						</tr>
+						<tr>
+							<td><span>4th:</span></td>
+							<td><span id="fourth">---</span></td>
+						</tr>
+					</table>
+					<table>
+						<td><button type="cancel" id="rankingCancel">OK</button></td>
+					</table>
 				</form>
 			</td>
 		</table>

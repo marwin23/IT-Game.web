@@ -1006,7 +1006,7 @@ class Game {
     /// <param name="last">
     /// last field
     /// </param>
-    TrackFigureByOne(fig, last) {
+    async TrackFigureByOne(fig, last) {
         fig.Delete();
 
         const f1 = this.CheckFigure(fig);
@@ -1021,11 +1021,13 @@ class Game {
         
         if (!last) {
             fig.Set();
-        }
-        else {
+            await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
+        } else {
             const f2 = this.CheckFigure(fig);
             if (f2 == null) {
                 fig.Set();
+                await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
+                
                 if (this.Player.CheckFinish()) {
                     this.Player.Ranking = ++this.Ranking;
                     this.Canvas.OnFinished( this.Player);
@@ -1036,6 +1038,7 @@ class Game {
                 f2.Delete();            // delete figure from the field
                 f2.Defeated();
                 fig.Set();
+                await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
                 f2.Set();
             }
         }
@@ -1052,10 +1055,7 @@ class Game {
     /// </param>
     async TrackFigure(fig, dice) {
         for (var i = 1; i <= dice; i++)
-        {
-            await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
-            this.TrackFigureByOne(fig, i == dice);
-        }
+            await this.TrackFigureByOne(fig, i == dice);
     };
 
     /// <summary>

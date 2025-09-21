@@ -31,13 +31,11 @@ class Globals {
     /// </summary>
     static async play(m, b = 300) {
         return new Promise(resolve => {
+                console.log("play", b);
                 if( m != null) {
-                    const d = Math.ceil(m.duration * 1000);
-                    console.log("play", m.id, d);
                     m.play();
-                    setTimeout(resolve, d < b ? b : d); // workaround
+                    m.onended = resolve;
                 } else {
-                    console.log("play", b);
                     setTimeout(resolve, b);     // just sleep
                 }
         })
@@ -281,6 +279,10 @@ class GameInternal {
         const h = back.height;
         const x = position.x - w / 2;
         const y = position.y - h / 2;
+
+        context.strokeStyle = "blue";   // TO DO: define
+        context.clearRect( x,y, w,h);
+
         context.drawImage(image, x,y, w,h, x,y, w,h);
     }
 
@@ -380,22 +382,19 @@ class GameInternal {
     }
 
     /// <summary>
-    /// 
+    /// print ranking of players finished
     /// </summary>
     /// <param name="rank"></param>
     /// <param name="owner"></param>
-    static PrintRanking(rank, owner)
-    {
+    static PrintRanking(rank) {
         if (!rank)
             return;
 
-        var dlg = new RankingForm();
-        if (rank.length > 0) dlg.First = GetPlayerName(rank[0]);
-        if (rank.length > 1) dlg.Second = GetPlayerName(rank[1]);
-        if (rank.length > 2) dlg.Third = GetPlayerName(rank[2]);
-        if (rank.length > 3) dlg.Forth = GetPlayerName(rank[3]);
-
-        dlg.ShowDialog(owner);
+        if (rank.length > 0) document.getElementById("winner").innerText = GetPlayerName(rank[0]);
+        if (rank.length > 1) document.getElementById("second").innerText = GetPlayerName(rank[1]);
+        if (rank.length > 2) document.getElementById("third").innerText = GetPlayerName(rank[2]);
+        if (rank.length > 3) document.getElementById("forth").innerText = GetPlayerName(rank[3]);
+        document.getElementById("rankingForm").style.display = "block";
     }
 }
 

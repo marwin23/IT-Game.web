@@ -249,6 +249,7 @@ class Canvas {
         this.#game.Parking = localStorage.getItem("Parking") == "true";
         this.#game.JumpHouse = localStorage.getItem("Jump") == "true";
 
+        this.#menu.SetCheck("new", false);
         this.#menu.SetCheck("force", this.#game.ForceDefeat);
         this.#menu.SetCheck("jump", this.#game.JumpHouse);
         this.#menu.SetCheck("dice3", localStorage.getItem("Dice3") == "true");
@@ -301,6 +302,7 @@ class Canvas {
         for (var p of this.#game.Players)
             p.Data = new PlayerData();
 
+        this.#menu.SetCheck("new", true);
         this._init = false;
 
         console.log("InitGame 2");
@@ -313,6 +315,7 @@ class Canvas {
     /// </summary>
     #ShutGame() {
         document.body.onbeforeunload = null;
+        this.#menu.SetCheck("new", false);
     };
     
     /// <summary>
@@ -698,11 +701,13 @@ class Canvas {
 
         switch(n) {
             case "new": {
-                this.#InitGame();
+                if( !this.#menu.GetCheck("new")) {
+                    this.#InitGame();
 
-                this.#game.SelectPlayer(true);
-                this.Dice = this.#RollDice();
-                this.#OnPaint();
+                    this.#game.SelectPlayer(true);
+                    this.Dice = this.#RollDice();
+                    this.#OnPaint();
+                }
             }
             break;
 

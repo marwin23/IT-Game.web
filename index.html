@@ -61,68 +61,60 @@
 			<audio id="defeat" src="assets/audio/Defeat.mp3" preload="auto"></audio>
 			<audio id="out" src="assets/audio/Out.mp3" preload="auto"></audio>
 		</div>
-		<table>
-			<td>
-				<canvas id="menu" style="display:block;width:400px;height:20px;margin:5px;"></canvas>
-				<canvas id="game" style="display:block;width:400px;height:400x;"></canvas>
-				<span id="text">---</span>
-			</td>
-			<td>
-				<form id="playerForm" style="display:none;">
-					<table>
-						<tr>
-							<td><label for="orangeChk">Orange</label></td>
-							<td><input type="checkbox" id="orangeChk" name="orangeChk"></td>
-							<td><input type="text" id="orangeName" name="orangeName"></input></td>
-						</tr>
-						<tr>
-							<td><label for="yellowChk">Yellow</label></td>
-							<td><input type="checkbox" id="yellowChk" name="yellowChk"></td>
-							<td><input type="text" id="yellowName" name="yellowName"></td>
-						</tr>
-						<tr>
-							<td><label for="greenChk">Green</label></td>
-							<td><input type="checkbox" id="greenChk" name="greenChk"></td>
-							<td><input type="text" id="greenName" name="greenName"></td>
-						</tr>
-						<tr>
-							<td><label for="blueChk">Blue</label></td>
-							<td><input type="checkbox" id="blueChk" name="blueChk"></td>
-							<td><input type="text" id="blueName" name="blueName"></td>
-						</tr>
-					</table>
-					<table>
-						<td><button type="submit" id="playerSubmit">Submit</button></td>
-						<td><button type="cancel" id="playerCancel">Cancel</button></td>
-					</table>
-				</form>
-			</td>
-			<td>
-				<form id="rankingForm" style="display:none;">
-					<table>
-						<tr>
-							<td><span>winner:</span></td>
-							<td><span id="winner">---</span></td>
-						</tr>
-						<tr>
-							<td><span>2nd:</span></td>
-							<td><span id="second">---</span></td>
-						</tr>
-						<tr>
-							<td><span>3rd:</span></td>
-							<td><span id="third">---</span></td>
-						</tr>
-						<tr>
-							<td><span>4th:</span></td>
-							<td><span id="fourth">---</span></td>
-						</tr>
-					</table>
-					<table>
-						<td><button type="cancel" id="rankingCancel">OK</button></td>
-					</table>
-				</form>
-			</td>
-		</table>
+		<canvas id="menu" style="display:block;width:400px;height:20px;margin:5px;"></canvas>
+		<canvas id="game" style="display:block;width:400px;height:400x;"></canvas>
+		<span id="text">---</span>
+		<dialog id="playerForm">
+			<table>
+				<tr>
+					<td><label for="orangeChk">Orange</label></td>
+					<td><input type="checkbox" id="orangeChk" name="orangeChk"></td>
+					<td><input type="text" id="orangeName" name="orangeName"></input></td>
+				</tr>
+				<tr>
+					<td><label for="yellowChk">Yellow</label></td>
+					<td><input type="checkbox" id="yellowChk" name="yellowChk"></td>
+					<td><input type="text" id="yellowName" name="yellowName"></td>
+				</tr>
+				<tr>
+					<td><label for="greenChk">Green</label></td>
+					<td><input type="checkbox" id="greenChk" name="greenChk"></td>
+					<td><input type="text" id="greenName" name="greenName"></td>
+				</tr>
+				<tr>
+					<td><label for="blueChk">Blue</label></td>
+					<td><input type="checkbox" id="blueChk" name="blueChk"></td>
+					<td><input type="text" id="blueName" name="blueName"></td>
+				</tr>
+			</table>
+			<table>
+				<td><button autofocus id="playerSubmit">Submit</button></td>
+				<td><button type="cancel" id="playerCancel">Cancel</button></td>
+			</table>
+		</dialog>
+		<dialog id="rankingForm">
+			<table>
+				<tr>
+					<td><span>winner:</span></td>
+					<td><span id="winner">---</span></td>
+				</tr>
+				<tr>
+					<td><span>2nd:</span></td>
+					<td><span id="second">---</span></td>
+				</tr>
+				<tr>
+					<td><span>3rd:</span></td>
+					<td><span id="third">---</span></td>
+				</tr>
+				<tr>
+					<td><span>4th:</span></td>
+					<td><span id="fourth">---</span></td>
+				</tr>
+			</table>
+			<table>
+				<td><button autofocus id="rankingOk">OK</button></td>
+			</table>
+		</dialog>
 		<script>
 			javascript:activateDocument();
 		</script>

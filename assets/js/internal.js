@@ -340,8 +340,8 @@ class GameInternal {
         document.getElementById("blueChk").checked = players[3];
         document.getElementById("blueName").value = localStorage.getItem("Blue");
 
-        document.getElementById("playerForm").style.display = "block";
-        document.getElementById("playerSubmit").onsubmit = (ev) => {
+        document.getElementById("playerForm").showModal();
+        document.getElementById("playerSubmit").onclick = (ev) => {
             ev.preventDefault(); 
             console.log("Submit", ev);
 
@@ -356,8 +356,12 @@ class GameInternal {
             players[3] = document.getElementById("blueChk").checked;
             localStorage.setItem("Players", players.map(p => p ? "1" : "0").join(','));
 
-            document.getElementById("playerForm").style.display = "none";
-            return true;
+            document.getElementById("playerForm").close();
+        }
+
+        document.getElementById("playerCancel").onclick = (ev) => {
+            ev.preventDefault(); 
+            document.getElementById("playerForm").close();
         }
 
         return false;
@@ -396,7 +400,13 @@ class GameInternal {
         if (rank.length > 1) document.getElementById("second").innerText = GetPlayerName(rank[1]);
         if (rank.length > 2) document.getElementById("third").innerText = GetPlayerName(rank[2]);
         if (rank.length > 3) document.getElementById("forth").innerText = GetPlayerName(rank[3]);
-        document.getElementById("rankingForm").style.display = "block";
+        document.getElementById("rankingForm").showModal();
+
+        document.getElementById("rankingOk").onclick = (ev) => {
+            ev.preventDefault(); 
+            document.getElementById("rankingForm").close();
+        }
+
     }
 }
 

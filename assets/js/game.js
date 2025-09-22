@@ -324,14 +324,17 @@ class GameFigure {
     /// <returns>
     /// figure has not been set before
     /// </returns>
-    Set() {
+    async Set() {
         console.log("Set", this.HasSet);
 
         const bSet = this.HasSet;
         this.HasSet = true;
 
-        if (!this.Test)
+        if (!this.Test) {
             this.Player.Game.Canvas.OnFigure(this.Player, this, Game.FigureAction.Set);
+            if( this.InField && this.TrackNumber == 0)
+                await this.Player.Game.Canvas.OnFigure(this.Player, this, Game.FigureAction.Start);
+        }
 
         return !bSet;
     }
@@ -637,24 +640,29 @@ class Game {
         Init: 1,
 
         /// <summary>
-        /// figure is set
+        /// figure is set on start
         /// </summary>
         Set: 2,
 
         /// <summary>
+        /// figure is set
+        /// </summary>
+        Set: 3,
+
+        /// <summary>
         /// figure is about to deleted from the field
         /// </summary>
-        Delete: 3,
+        Delete: 4,
 
         /// <summary>
         /// figure is defeated
         /// </summary>
-        Defeated: 4,
+        Defeated: 5,
 
         /// <summary>
         /// process tracking figure
         /// </summary>
-        Track: 5
+        Track: 6
     });
 
 
@@ -1131,11 +1139,11 @@ class Game {
     /// Null if one already has been tracked.
     /// figures to defeat
     /// </returns>
-    EvalDiceRoll(dice) {
+    async EvalDiceRoll(dice) {
         var track = true;   // figure can be tracked
         if (dice == 6) {
             var fig = this.Player.GetFigureFromCorner();
-            if (!!fig)
+            if (fig != null)
             {
                 track = false;      // do not track figure
                 var tfig = new GameFigure(fig);
@@ -1156,13 +1164,13 @@ class Game {
                         fig.SetStart();
                         fig2.Defeated();    // figure defeated
 
-                        fig.Set();          // set to start position
-                        fig2.Set();
+                        await fig.Set();    // set to start position
+                        await fig2.Set();
                     }
-                } else {                   // figure set to start position
+                } else {                    // figure set to start position
                     fig.Delete();           // delete figure from corner
                     fig.SetStart();
-                    fig.Set();              // set figure to start position
+                    await fig.Set();              // set figure to start position
                 }
             }
         }

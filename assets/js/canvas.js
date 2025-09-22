@@ -191,7 +191,6 @@ class Canvas {
 
     _init = false;
 
-
     #sndStart = document.getElementById("start");
     #sndMove = document.getElementById("move");
     #sndDefeat = document.getElementById("defeat");
@@ -288,17 +287,30 @@ class Canvas {
     /// initialize game
     /// </summary>
     #InitGame() {
+        console.log("InitGame 1");
+
         this._init = true;
-        var ps = localStorage.getItem("Players");
-        var players = Array.from(ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1));
+        const ps = localStorage.getItem("Players");
+        const players = Array.from(ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1));
         this.#game.SetPlayers(players);
 
         for (var p of this.#game.Players)
             p.Data = new PlayerData();
 
         this._init = false;
+
+        console.log("InitGame 2");
+
+        document.body.onbeforeunload = () => { return true; };
     }
 
+    /// <summary>
+    /// initialize game
+    /// </summary>
+    #ShutGame() {
+        document.body.onbeforeunload = null;
+    };
+    
     /// <summary>
     /// set figure on field.
     /// </summary>
@@ -525,9 +537,11 @@ class Canvas {
 
             case Game.FigureAction.Set:
                 this.#SetFigure(p, f);
+                break;
+
+            case Game.FigureAction.Start:
                 if (!this._init && sound)
-                    if (f.InField && f.TrackNumber == 0)
-                        await Globals.play(this.#sndStart);
+                    await Globals.play(this.#sndStart);
                 break;
 
             case Game.FigureAction.Delete:
@@ -556,7 +570,8 @@ class Canvas {
     /// player finished
     /// </param>
     OnFinished(p) {
-
+        if( p == null)
+            this.#ShutGame();
     }
 
     #OnPaint() {
@@ -606,7 +621,7 @@ class Canvas {
             this.#SetDice(this.#game.Player, this.Dice, false);
             await Globals.play(sound ? this.#sndDice : null, 1000);
 
-            const res = this.#game.EvalDiceRoll(this.Dice);
+            const res = await this.#game.EvalDiceRoll(this.Dice);
             if (res.ft != null)    // figure already has been tracked
             {
                 pd.Figures = res.ft;

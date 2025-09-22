@@ -72,6 +72,7 @@ class Menu {
     ];
 
     #game;
+    #back;
     #color;
 
     /// <summary>
@@ -101,7 +102,7 @@ class Menu {
 
         for( var image of this.#images) {
             if(n === image.n) {
-                mctx.strokeStyle = b ? "yellow" : this.#color;
+                mctx.strokeStyle = b ? this.#color : this.#back;
                 mctx.lineWidth = 2;
                 mctx.strokeRect( image.x -1, 1, 18, 18);
 
@@ -126,7 +127,7 @@ class Menu {
         return r;
     }
 
-    constructor(c,g) {
+    constructor(g,c,b) {
         this.#InitStorage();
 
         const m = document.getElementById("menu");
@@ -148,6 +149,7 @@ class Menu {
 
         this.#game = g;
         this.#color = c;
+        this.#back = b;
         m.onclick = this.#handleClick;
     }
 
@@ -215,7 +217,8 @@ class Canvas {
     
     #canvas = document.getElementById("game");
     #text = document.getElementById("text");
-    #color;         // blackground color
+    #color;         // foreground color
+    #back;          // blackground color
 
     /// <summary>
     /// default constructor
@@ -234,12 +237,13 @@ class Canvas {
             [ this.#imgFigStar0, this.#imgFigStar1 ]
         ];
 
-        // blackground color
-        this.#color = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
+        // colors
+        this.#color = window.getComputedStyle( document.body ,null).getPropertyValue('color');
+        this.#back = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
 
         this.#OnPaint();
         this.#context.scale(2,2);
-        this.#menu = new Menu(this.#color, this);
+        this.#menu = new Menu(this, this.#color, this.#back);
 
         this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
         this.#game.Parking = localStorage.getItem("Parking") == "true";

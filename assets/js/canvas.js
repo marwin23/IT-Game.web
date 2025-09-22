@@ -256,6 +256,10 @@ class Canvas {
 
         this.#CheckFigure();
         this.#CheckDiceRoll();
+
+        this.#imgField.onload = () => {
+            this.#OnPaint();
+        }
     }
 
     /// <summary>

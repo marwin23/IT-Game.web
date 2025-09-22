@@ -33,8 +33,10 @@ class Globals {
         return new Promise(resolve => {
                 console.log("play", b);
                 if( m != null) {
+                    // const d = Math.ceil(m.duration * 1000);
                     m.play();
                     m.onended = resolve;
+                    // setTimeout(resolve, d < b ? b : d);
                 } else {
                     setTimeout(resolve, b);     // just sleep
                 }

@@ -252,10 +252,9 @@ class Canvas {
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
         document.getElementById("game").onmousedown = this.#OnMouseDown;
-        this._init = false;
-
         this.#CheckFigure();
         this.#CheckDiceRoll();
+        this._init = false;
 
         this.#imgField.onload = () => {
             this.#OnPaint();

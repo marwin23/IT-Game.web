@@ -133,18 +133,14 @@ class Menu {
         const m = document.getElementById("menu");
         const mctx = m.getContext("2d");
 
-        mctx.scale(2,2);
         mctx.canvas.width = 400;
         mctx.canvas.height = 20;
+        // mctx.scale(1.2,1.0);
 
         for( const image of this.#images) {
             var icon = document.getElementById(image.n);
-            icon.pos = image.x;
-            console.log( "Menu icon", icon);
-            icon.onload = function() {
-                mctx.drawImage( this, this.pos, 2, this.width, this.height);
-            }
-            // mctx.drawImage( icon, this.pos, 2, this.width, this.height);
+            console.log( "Menu icon", icon.n);
+            mctx.drawImage( icon, image.x, 2, icon.width, icon.height);
         }
 
         this.#game = g;
@@ -260,9 +256,7 @@ class Canvas {
         this.#CheckDiceRoll();
         this._init = false;
 
-        this.#imgField.onload = () => {
-            this.#OnPaint();
-        }
+        this.#OnPaint();
     }
 
     /// <summary>

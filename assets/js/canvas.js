@@ -309,6 +309,8 @@ class Canvas {
     /// </summary>
     #ShutGame() {
         document.body.onbeforeunload = null;
+        clearTimeout(this.#id);
+        this.#id = null;
         this.#menu.SetCheck("new", false);
         this.#game.SetPlayers(null);
         this.Dice = 0;

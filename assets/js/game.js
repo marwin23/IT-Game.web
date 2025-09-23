@@ -983,7 +983,7 @@ class Game {
         if (!this.Players)
             return [];
 
-        var ranking = this.Players.filter(p => p.CheckFinish());
+        var ranking = Array.from(this.Players.filter(p => p.CheckFinish()));
         ranking.sort((p1, p2) => p1.Ranking - p2.Ranking);
         return ranking;
     }

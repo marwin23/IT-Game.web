@@ -330,14 +330,14 @@ class GameInternal {
     /// </summary>
     static SelectPlayers() {
         const p = localStorage.getItem("Players");
-        var players = Array.from(p.split(',').map( (p) => p == "1"));
-        document.getElementById("orangeChk").checked = players[0];
+        var players = Array.from(p.split(',').map( (p) => parseInt(p)));
+        document.getElementById("orangeStrategy").value = players[0];
         document.getElementById("orangeName").value = localStorage.getItem("Orange");
-        document.getElementById("yellowChk").checked = players[2];
+        document.getElementById("yellowStrategy").value = players[1];
         document.getElementById("yellowName").value = localStorage.getItem("Yellow");
-        document.getElementById("greenChk").checked = players[3];
+        document.getElementById("greenStrategy").value = players[2];
         document.getElementById("greenName").value = localStorage.getItem("Green");
-        document.getElementById("blueChk").checked = players[3];
+        document.getElementById("blueStrategy").value = players[3];
         document.getElementById("blueName").value = localStorage.getItem("Blue");
 
         document.getElementById("playerDlg").showModal();
@@ -350,11 +350,11 @@ class GameInternal {
             localStorage.setItem("Green", document.getElementById("greenName").value);
             localStorage.setItem("Blue", document.getElementById("blueName").value);
 
-            players[0] = document.getElementById("orangeChk").checked;
-            players[1] = document.getElementById("yellowChk").checked;
-            players[2] = document.getElementById("greenChk").checked;
-            players[3] = document.getElementById("blueChk").checked;
-            localStorage.setItem("Players", players.map(p => p ? "1" : "0").join(','));
+            players[0] = document.getElementById("orangeStrategy").value;
+            players[1] = document.getElementById("yellowStrategy").value;
+            players[2] = document.getElementById("greenStrategy").value;
+            players[3] = document.getElementById("blueStrategy").value;
+            localStorage.setItem("Players", players.map(p => p).join(','));
 
             document.getElementById("playerDlg").close();
         }

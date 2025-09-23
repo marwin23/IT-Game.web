@@ -366,19 +366,24 @@ class GamePlayer
     /// </summary>
     static StrategyDefinition = Object.freeze({
         /// <summary>
+        /// player is not available
+        /// </summary>
+        None: 0,
+
+        /// <summary>
         /// player is choosing
         /// </summary>
-        Manual: 0,
+        Manual: 1,
 
         /// <summary>
         /// track one figure as far as possible
         /// </summary>
-        One: 1,
+        One: 2,
 
         /// <summary>
         /// track all figures as far as possible
         /// </summary>
-        All: 2
+        All: 3
     });
 
     /// <summary>
@@ -391,7 +396,7 @@ class GamePlayer
     /// <param name="player">
     /// player index in field
     /// </param>
-    constructor(game, player) {
+    constructor(game, player, strategy) {
         if( player == null) {
             console.log( "GamePlayer", game);
             const p = game;
@@ -412,7 +417,7 @@ class GamePlayer
             }
 
             this.Game = game;
-            this.Strategy = GamePlayer.StrategyDefinition.Manual;
+            this.Strategy = strategy;
             this.CreateFigures();
 
             console.log( "GamePlayer", l, this);
@@ -722,15 +727,18 @@ class Game {
     /// <param name="players">
     /// field index of players
     /// </param>
-    SetPlayers(players) {
-        if( players != null) {
-            this.Players = Array.from(players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c)));
+    SetPlayers(ps) {
+        if( ps != null) {
+            this.Players = Array
+                .from(ps.split(',').entries()
+                .filter( p => parseInt(p[1]) > 0)
+                .map( p => new GamePlayer(this, p[0], parseInt(p[1]))));
             this.SetFiguresToCorner(true);          // set initial position
         } else {
             this.Players = null;
         }
 
-        console.log("SetPlayers", players, this.Players);
+        console.log("SetPlayers", ps, this.Players);
     }
 
     /// <summary>

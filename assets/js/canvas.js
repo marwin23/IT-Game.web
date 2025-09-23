@@ -156,7 +156,7 @@ class Menu {
     };
 
     #InitStorage() {
-        localStorage.clear();   // TEST
+        // localStorage.clear();   // TEST
 
         for( const s of this.#storage) {
             localStorage.setItem(s.n, localStorage.getItem(s.n) ?? s.d);
@@ -290,8 +290,7 @@ class Canvas {
 
         this._init = true;
         const ps = localStorage.getItem("Players");
-        const players = Array.from(ps.split(',').entries().map( p => p[1] == "1" ? p[0] : -1));
-        this.#game.SetPlayers(players);
+        this.#game.SetPlayers(ps);
 
         for (var p of this.#game.Players)
             p.Data = new PlayerData();
@@ -299,7 +298,7 @@ class Canvas {
         this.#menu.SetCheck("new", true);
         this._init = false;
 
-        console.log("InitGame 2");
+        console.log("InitGame 2", ps);
 
         document.body.onbeforeunload = () => { return true; };
     }

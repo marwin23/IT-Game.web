@@ -680,8 +680,10 @@ class Canvas {
     /// player finished
     /// </param>
     OnFinished(p) {
+        /*
         if( p == null)
             this.#ShutGame();
+        */
     }
 
     #OnPaint() {

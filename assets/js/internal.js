@@ -68,56 +68,6 @@ class Rectangle {
 /// </summary>
 class GameInternal {
     /// <summary>
-    /// get back ground of image from the field
-    /// </summary>
-    /// <param name="rect">
-    /// rectangle to get background from
-    /// </param>
-    /// <param name="game">
-    /// shadow copy of the field
-    /// </param>
-    /// <returns>
-    /// bitmap for parking zone
-    /// </returns>
-    static GetBackGround(rect, game)
-    {
-        /*
-        // create backgound image
-        const back = new Bitmap(rect.Width, rect.Height, game);
-
-        // obtain a graphic object from that bitmap
-        using (var g = Graphics.FromImage(back))
-        {
-            var dest = new Rectangle(0, 0, rect.Width, rect.Height);
-            g.DrawImage(game, dest, rect, GraphicsUnit.Pixel);
-        }
-
-        return back;
-        */
-    }
-
-    /// <summary>
-    /// set back ground of image to field.
-    /// </summary>
-    /// <param name="back">
-    /// background image
-    /// </param>
-    /// <param name="rect">
-    /// rectangle to set background to.
-    /// </param>
-    /// <param name="ctrl">
-    /// shadow copy of the field.
-    /// </param>
-    /// <param name="game">
-    /// shadow copy of game field
-    /// </param>
-    static SetBackGround(back, rect, ctrl, game)
-    {
-        if (!!back)
-            DrawBitmap(back, rect, ctrl, game);
-    }
-
-    /// <summary>
     /// draw image to field
     /// </summary>
     /// <param name="image">
@@ -391,20 +341,20 @@ class GameInternal {
     /// print ranking of players finished
     /// </summary>
     /// <param name="rank"></param>
-    /// <param name="owner"></param>
     static PrintRanking(rank) {
-        if (!rank)
-            return;
+        console.log( "PrintRanking", rank);
 
-        if (rank.length > 0) document.getElementById("winner").innerText = GetPlayerName(rank[0]);
-        if (rank.length > 1) document.getElementById("second").innerText = GetPlayerName(rank[1]);
-        if (rank.length > 2) document.getElementById("third").innerText = GetPlayerName(rank[2]);
-        if (rank.length > 3) document.getElementById("fourth").innerText = GetPlayerName(rank[3]);
-        document.getElementById("rankingDlg").showModal();
+        if (rank!= null) {
+            if (rank.length > 0) document.getElementById("winner").innerText = GameInternal.GetPlayerName(rank[0]);
+            if (rank.length > 1) document.getElementById("second").innerText = GameInternal.GetPlayerName(rank[1]);
+            if (rank.length > 2) document.getElementById("third").innerText = GameInternal.GetPlayerName(rank[2]);
+            if (rank.length > 3) document.getElementById("fourth").innerText = GameInternal.GetPlayerName(rank[3]);
+            document.getElementById("rankingDlg").showModal();
 
-        document.getElementById("rankingOk").onclick = (ev) => {
-            ev.preventDefault(); 
-            document.getElementById("rankingDlg").close();
+            document.getElementById("rankingOk").onclick = (ev) => {
+                ev.preventDefault(); 
+                document.getElementById("rankingDlg").close();
+            }
         }
     }
 

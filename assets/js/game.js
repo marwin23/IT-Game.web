@@ -622,7 +622,9 @@ class GamePlayer
     /// all figures in house
     /// </returns>
     CheckFinish() {
-        return this.Figures.filter(f => f.InHouse).length === this.Figures.length;
+        const b = !this.Figures.some(f => !f.InHouse);
+        console.log("CheckFinish", b);
+        return b;
     }
 };
 
@@ -980,11 +982,13 @@ class Game {
     /// player in ascending order
     /// </returns>
     GetRanking() {
-        if (!this.Players)
-            return [];
+        var ranking = [];
 
-        var ranking = Array.from(this.Players.filter(p => p.CheckFinish()));
-        ranking.sort((p1, p2) => p1.Ranking - p2.Ranking);
+        if (this.Players) {
+            ranking = Array.from(this.Players.filter(p => p.CheckFinish()));
+            ranking.sort((p1, p2) => p1.Ranking - p2.Ranking);
+        }
+        console.log("GetRanking", ranking, this.Players);
         return ranking;
     }
 

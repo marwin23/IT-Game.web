@@ -169,8 +169,9 @@ class Menu {
 /// </summary>
 class Canvas {
     #game = new Game(this);
-    #menu;
-    #context;
+    #menu;      // menu canvas
+    #context;   // context of canvas
+    #id;        // id for timer event
 
     /// <summary>
     /// dice pips
@@ -497,6 +498,111 @@ class Canvas {
     }
 
     /// <summary>
+    /// check rolling dice.
+    /// </summary>
+    async #EvalDiceRoll() {
+        var hit = true;
+
+        if (this.#game.Player == null)
+            return;
+
+        const pd = this.#game.Player.Data; // PlayerData;
+        if (pd == null)
+            return;
+
+        const name = GameInternal.GetPlayerName(this.#game.Player);
+        const sound = this.#menu.GetCheck("sound");
+
+        this.Dice = this.#RollDice();
+        // this.#DeleteDice(this.#game.Player);
+        this.#SetDice(this.#game.Player, this.Dice, false);
+        await Globals.play(sound ? this.#sndDice : null);
+
+        const res = await this.#game.EvalDiceRoll(this.Dice);
+        if (res.ft != null)    // figure already has been tracked
+        {
+            pd.Figures = res.ft;
+
+            if (pd.Figures.length == 0) {
+                if( this.#menu.GetCheck("dice3") && this.#game.CheckCorner()) {
+                    pd.NumRolls++;
+                    console.log("NumRolls", pd.NumRolls);
+                    if (pd.NumRolls < 3)
+                    {
+                        // this.#DeleteDice(this.#game.Player);
+                        this.#SetDice(this.#game.Player, this.Dice, true);
+
+                        if( this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
+                            this.#id = setTimeout( this.#OnTime, 500);
+                        }
+                        return;
+                    }
+                }
+            } else if (pd.Figures.length == 1) {
+                const f = pd.Figures[0];
+                this.#text.innerText = `${name}: track figure ${f.Number}.`;
+                await this.#game.TrackFigure(f, this.Dice);
+            } else {
+                // computer plays
+                if( this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
+                    const f = pd.Figures[0];
+                    this.#text.innerText = `${name}: track figure ${f.Number}.`;
+                    await this.#game.TrackFigure(f, this.Dice);
+                } else {
+                    // set figures to select
+                    this.#DeleteFigures(pd.Figures);
+                    this.#SetFigures(pd.Figures, true);
+                    this.#text.innerText = `${name}: select figure to be tracked.`
+
+                    hit = false;
+                }
+            }
+        }
+
+        return hit;
+    }
+
+    /// <summary>
+    /// select next player
+    /// </summary>
+    #NextPlayer() {
+        var next = true;
+
+        if (this.#game.Player == null)
+            return;
+
+        const pd = this.#game.Player.Data; // PlayerData;
+        if (pd == null)
+            return;
+
+        pd.NumRolls = 0;
+        this.#id = null;
+
+        this.#DeleteDice(this.#game.Player);
+
+        if (this.Dice == 6)
+            this.#SetDice(this.#game.Player, this.Dice, true);
+        else {
+            // next player
+            if (!this.#game.SelectPlayer()) {
+                this.#text.innerText = "Game finished!";
+                this.#PrintRanking();
+                this.#ShutGame();
+                next = false;
+            } else {
+                this.#SetDice(this.#game.Player, this.Dice, true);
+            }
+        }
+
+        if( next) {
+            // computer plays
+            if( this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
+                this.#id = setTimeout( this.#OnTime, 0);
+            }
+        }
+    }
+
+    /// <summary>
     /// set or delete parking zones in field.
     /// </summary>
     /// <param name="l">
@@ -603,10 +709,11 @@ class Canvas {
     /// event argument (not used here)
     /// </param>
     #OnMouseDown = async(e) => {
+        var hit = false;
         console.log("OnMouseDown", e, this);
 
-        const sound = this.#menu.GetCheck("sound");
-        var hit = false;
+        if( this.#id != null)
+            return;
 
         if (this.#game.Player == null)
             return;
@@ -618,43 +725,7 @@ class Canvas {
         const name = GameInternal.GetPlayerName(this.#game.Player);
 
         if (this.#IsDice(this.#game.Player, e.offsetX, e.offsetY)) {
-            hit = true;
-
-            this.Dice = this.#RollDice();
-            // this.#DeleteDice(this.#game.Player);
-            this.#SetDice(this.#game.Player, this.Dice, false);
-            await Globals.play(sound ? this.#sndDice : null, 1000);
-
-            const res = await this.#game.EvalDiceRoll(this.Dice);
-            if (res.ft != null)    // figure already has been tracked
-            {
-                pd.Figures = res.ft;
-
-                if (pd.Figures.length == 0) {
-                    if( this.#menu.GetCheck("dice3") && this.#game.CheckCorner()) {
-                        pd.NumRolls++;
-                        console.log("NumRolls", pd.NumRolls);
-                        if (pd.NumRolls < 3)
-                        {
-                            // this.#DeleteDice(this.#game.Player);
-                            this.#SetDice(this.#game.Player, this.Dice, true);
-                            return;
-                        }
-                    }
-                } else if (pd.Figures.length == 1) {
-                    var f = pd.Figures[0];
-
-                    this.#text.innerTextText = `${name}: track figure ${f.Number}.`;
-                    await this.#game.TrackFigure(f, this.Dice);
-                } else {
-                    // set figures to select
-                    this.#DeleteFigures(pd.Figures);
-                    this.#SetFigures(pd.Figures, true);
-                    this.#text.innerText = `${name}: select figure to track.`
-
-                    hit = false;
-                }
-            }
+            hit = await this.#EvalDiceRoll();
         } else {
             const f = this.#GetFigure(pd.Figures, e.offsetX, e.offsetY);
             if (f != null) {
@@ -662,26 +733,27 @@ class Canvas {
                 this.#DeleteFigures(pd.Figures);
                 this.#SetFigures(pd.Figures);
 
-                this.#text.innerTextText = `${name}: track figure ${f.Number}.`;
+                this.#text.innerText = `${name}: track figure ${f.Number}.`;
                 await this.#game.TrackFigure(f, this.Dice);
             }
         }
 
         if (hit) {
-            pd.NumRolls = 0;
-
-            this.#DeleteDice(this.#game.Player);
-
-            if (this.Dice == 6)
-                this.#SetDice(this.#game.Player, this.Dice, true);
-            else {
-                if (!this.#game.SelectPlayer()) {
-                    this.#text.innerTextText = "Game finished!";
-                    this.#PrintRanking();
-                } else
-                    this.#SetDice(this.#game.Player, this.Dice, true);
-            }
+            this.#NextPlayer();
         }
+    }
+
+    /// <summary>
+    /// automatic dice on on computer plays
+    /// </summary>
+    #OnTime = async(e) => {
+        console.log("OnMouseDown", e, this);
+
+        clearTimeout(this.#id);
+        this.#id == null;
+
+        if( await this.#EvalDiceRoll())
+           this.#NextPlayer();
     }
 
     /// <summary>
@@ -704,6 +776,12 @@ class Canvas {
                     this.#game.SelectPlayer(true);
                     this.Dice = this.#RollDice();
                     this.#OnPaint();
+
+                    // computer plays
+                    if( this.#game.Player != null && 
+                        this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
+                        this.#id = setTimeout( this.#OnTime, 0);
+                    }
                 } else {
                     GameInternal.QueryStop( () => { this.#ShutGame() });
                 }

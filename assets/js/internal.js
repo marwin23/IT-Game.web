@@ -340,10 +340,10 @@ class GameInternal {
         document.getElementById("blueChk").checked = players[3];
         document.getElementById("blueName").value = localStorage.getItem("Blue");
 
-        document.getElementById("playerForm").showModal();
+        document.getElementById("playerDlg").showModal();
         document.getElementById("playerSubmit").onclick = (ev) => {
             ev.preventDefault(); 
-            console.log("Submit", ev);
+            console.log("OK", ev);
 
             localStorage.setItem("Orange", document.getElementById("orangeName").value);
             localStorage.setItem("Yellow", document.getElementById("yellowName").value);
@@ -356,12 +356,12 @@ class GameInternal {
             players[3] = document.getElementById("blueChk").checked;
             localStorage.setItem("Players", players.map(p => p ? "1" : "0").join(','));
 
-            document.getElementById("playerForm").close();
+            document.getElementById("playerDlg").close();
         }
 
         document.getElementById("playerCancel").onclick = (ev) => {
             ev.preventDefault(); 
-            document.getElementById("playerForm").close();
+            document.getElementById("playerDlg").close();
         }
 
         return false;
@@ -400,13 +400,30 @@ class GameInternal {
         if (rank.length > 1) document.getElementById("second").innerText = GetPlayerName(rank[1]);
         if (rank.length > 2) document.getElementById("third").innerText = GetPlayerName(rank[2]);
         if (rank.length > 3) document.getElementById("forth").innerText = GetPlayerName(rank[3]);
-        document.getElementById("rankingForm").showModal();
+        document.getElementById("rankingDlg").showModal();
 
         document.getElementById("rankingOk").onclick = (ev) => {
             ev.preventDefault(); 
-            document.getElementById("rankingForm").close();
+            document.getElementById("rankingDlg").close();
+        }
+    }
+
+    /// <summary>
+    /// query cancel playing game
+    /// </summary>
+    static QueryStop(f) {
+        document.getElementById("stopDlg").showModal();
+
+        document.getElementById("stopOk").onclick = (ev) => {
+            ev.preventDefault(); 
+            document.getElementById("stopDlg").close(true);
+            f();
         }
 
+        document.getElementById("stopCancel").onclick = (ev) => {
+            ev.preventDefault(); 
+            document.getElementById("stopDlg").close(false);
+        }
     }
 }
 

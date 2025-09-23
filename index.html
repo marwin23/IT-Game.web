@@ -73,72 +73,91 @@
 		<canvas id="menu" style="display:block;width:400px;height:20px;margin:5px;"></canvas>
 		<canvas id="game" style="display:block;width:400px;height:400x;"></canvas>
 		<span id="text">---</span>
-		<dialog id="playerForm" class="colors">
-			<table>
-				<tr>
-					<td>
-						<div class="checkbox-wrapper">
-							<input type="checkbox" id="orangeChk" role="switch" name="orangeChk">
-							<label for="orangeChk">Orange</label>
-						</div>
-					</td>
-					<td><input type="text" id="orangeName" name="orangeName"class="form-control"></td>
-				</tr>
-				<tr>
-					<td>
-						<div class="checkbox-wrapper">
-							<input type="checkbox" id="yellowChk" role="switch" name="yellowChk">
-							<label for="yellowChk">Yellow</label>
-						</div>
-					</td>
-					<td><input type="text" id="yellowName" name="yellowName" class="form-control"></td>
-				</tr>
-				<tr>
-					<td>
-						<div class="checkbox-wrapper">
-							<input type="checkbox" id="greenChk" role="switch" name="greenChk">
-							<label for="greenChk">Green</label>
-						</div>
-					</td>
-					<td><input type="text" id="greenName" name="greenName" class="form-control"></td>
-				</tr>
-				<tr>
-					<td>
-						<div class="checkbox-wrapper">
-							<input type="checkbox" id="blueChk" role="switch" name="blueChk">
-							<label for="blueChk">Blue</label>
-						</div>
-					</td>
-					<td><input type="text" id="blueName" name="blueName" class="form-control"></td>
-				</tr>
-			</table>
-			<table>
-				<td><button autofocus id="playerSubmit" class="btn">Submit</button></td>
-				<td><button type="cancel" id="playerCancel" class="btn">Cancel</button></td>
-			</table>
+		<dialog id="playerDlg" class="colors">
+			<div class="setting-elements">
+				<div class="setting-element">
+					<div class="checkbox-wrapper">
+						<input type="checkbox" id="orangeChk" role="switch" name="orangeChk">
+						<label for="orangeChk">Orange</label>
+					</div>
+				</div>
+				<div class="setting-element">
+					<input type="text" id="orangeName" name="orangeName"class="form-control">
+				</div>
+				<div class="setting-element">
+					<div class="checkbox-wrapper">
+						<input type="checkbox" id="yellowChk" role="switch" name="yellowChk">
+						<label for="yellowChk">Yellow</label>
+					</div>
+				</div>
+				<div class="setting-element">
+					<input type="text" id="yellowName" name="yellowName" class="form-control">
+				</div>
+				<div class="setting-element">
+					<div class="checkbox-wrapper">
+						<input type="checkbox" id="greenChk" role="switch" name="greenChk">
+						<label for="greenChk">Green</label>
+					</div>
+				</div>
+				<div class="setting-element">
+					<input type="text" id="greenName" name="greenName" class="form-control">
+				</div>
+				<div class="setting-element">
+					<div class="checkbox-wrapper">
+						<input type="checkbox" id="blueChk" role="switch" name="blueChk">
+						<label for="blueChk">Blue</label>
+					</div>
+				</div>
+				<div class="setting-element">
+					<input type="text" id="blueName" name="blueName" class="form-control">
+				</div>
+				<div class="setting-element">
+					<button autofocus id="playerSubmit" class="btn">OK</button>
+					<button type="cancel" id="playerCancel" class="btn">Cancel</button>
+				</div>
+			</div>
 		</dialog>
-		<dialog id="rankingForm" class="colors">
-			<table>
-				<tr>
-					<td><span>winner:</span></td>
-					<td><span id="winner" class="form-control">---</span></td>
-				</tr>
-				<tr>
-					<td><span>2nd:</span></td>
-					<td><span id="second" class="form-control">---</span></td>
-				</tr>
-				<tr>
-					<td><span>3rd:</span></td>
-					<td><span id="third" class="form-control">---</span></td>
-				</tr>
-				<tr>
-					<td><span>4th:</span></td>
-					<td><span id="fourth" class="form-control">---</span></td>
-				</tr>
+		<dialog id="rankingDlg" class="colors">
+			<div class="setting-elements">
+				<div class="setting-element">
+					<span>winner:</span>
+				</div>
+				<div class="setting-element">
+					<span id="winner" class="form-control">---</span>
+				</div>
+				<div class="setting-element">
+					<span>2nd:</span>
+				</div>
+				<div class="setting-element">
+					<span id="second" class="form-control">---</span>
+				</div>
+				<div class="setting-element">
+					<span>3rd:</span>
+				</div>
+				<div class="setting-element">
+					<span id="third" class="form-control">---</span>
+				</div>
+				<div class="setting-element">
+					<span>4th:</span>
+				</div>
+				<div class="setting-element">
+					<span id="fourth" class="form-control">---</span>
+				</div>
 			</table>
 			<table>
 				<td><button autofocus id="rankingOk" class="btn">OK</button></td>
 			</table>
+		</dialog>
+		<dialog id="stopDlg" class="colors">
+			<div class="setting-elements">
+				<div class="setting-element">
+					<span>Do you want to stop the game?</span>
+				</div>
+				<div class="setting-element">
+					<button id="stopOk" class="btn">OK</button>
+					<button autofocus id="stopCancel" class="btn">Cancel</button>
+				</div>
+			</div>
 		</dialog>
 		<script>
 			javascript:activateDocument();

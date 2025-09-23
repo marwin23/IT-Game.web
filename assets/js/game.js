@@ -723,8 +723,12 @@ class Game {
     /// field index of players
     /// </param>
     SetPlayers(players) {
-        this.Players = Array.from(players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c)));
-        this.SetFiguresToCorner(true);          // set initial position
+        if( players != null) {
+            this.Players = Array.from(players.filter( (p) => p >= 0).map(c => new GamePlayer(this, c)));
+            this.SetFiguresToCorner(true);          // set initial position
+        } else {
+            this.Players = null;
+        }
 
         console.log("SetPlayers", players, this.Players);
     }

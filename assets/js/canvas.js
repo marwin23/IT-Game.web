@@ -316,6 +316,10 @@ class Canvas {
     #ShutGame() {
         document.body.onbeforeunload = null;
         this.#menu.SetCheck("new", false);
+        this.#game.SetPlayers(null);
+        this.Dice = 0;
+        this.#text.innerText = "---";
+        this.#OnPaint();
     };
     
     /// <summary>
@@ -707,6 +711,8 @@ class Canvas {
                     this.#game.SelectPlayer(true);
                     this.Dice = this.#RollDice();
                     this.#OnPaint();
+                } else {
+                    GameInternal.QueryStop( () => { this.#ShutGame() });
                 }
             }
             break;

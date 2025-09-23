@@ -399,7 +399,7 @@ class GameInternal {
         if (rank.length > 0) document.getElementById("winner").innerText = GetPlayerName(rank[0]);
         if (rank.length > 1) document.getElementById("second").innerText = GetPlayerName(rank[1]);
         if (rank.length > 2) document.getElementById("third").innerText = GetPlayerName(rank[2]);
-        if (rank.length > 3) document.getElementById("forth").innerText = GetPlayerName(rank[3]);
+        if (rank.length > 3) document.getElementById("fourth").innerText = GetPlayerName(rank[3]);
         document.getElementById("rankingDlg").showModal();
 
         document.getElementById("rankingOk").onclick = (ev) => {

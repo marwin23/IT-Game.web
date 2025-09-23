@@ -891,7 +891,7 @@ class Canvas {
     /// </summary>
     #PrintRanking() {
         const rank = this.#game.GetRanking();
-        GameInternal.PrintRanking(rank, this);
+        GameInternal.PrintRanking(rank);
     }
 };
 

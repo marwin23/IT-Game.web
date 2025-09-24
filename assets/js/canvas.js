@@ -35,25 +35,26 @@ class FigureData
 /// </summary>
 class Menu {
     #images = [
-        { n: "player", x: 0 },
-        { n: "new", x: 20 },
-        { n: "ranking", x: 40 },
-        { n: "force", x: 60 },
-        { n: "jump", x: 80 },
-        { n: "dice3", x: 100 },
-        { n: "park", x: 120 },
-        { n: "sound", x: 140 },
+        [   { n: "player", x: 0 },
+            { n: "new", x: 20 },
+            { n: "ranking", x: 40 },
+            { n: "sound", x: 60 },
 
-        { n: "dice6", x: 170 },
-        { n: "dice7", x: 190 },
-        { n: "dice8", x: 210 },
-        { n: "dice9", x: 230 },
+            { n: "force", x: 90 },
+            { n: "jump", x: 110 },
+            { n: "dice3", x: 130 },
+            { n: "park", x: 150 },
+        ], [    
+            { n: "dice6", x: 0 },
+            { n: "dice7", x: 20 },
+            { n: "dice8", x: 40 },
+            { n: "dice9", x: 60 },
 
-        { n: "ball", x: 260 },
-        { n: "point", x: 280 },
-        { n: "smiley", x: 300 },
-        { n: "star", x: 320 },
-
+            { n: "ball", x: 90 },
+            { n: "point", x: 110 },
+            { n: "smiley", x: 130 },
+            { n: "star", x: 150 },
+        ]
     ];
 
     #storage = [
@@ -83,12 +84,15 @@ class Menu {
     #CheckPoint(x,y) {
         console.log( "CheckPoint", x,y);
 
-        for( const image of this.#images) {
-            const r = new Rectangle(image.x, 2, 16, 16);
-            if( r.contains( x, y)) {
-                return image.n;
+        for( var r = 0; r < this.#images.length;  r++) {
+            for( const image of this.#images[r]) {
+                const rect = new Rectangle(image.x, 2 + r*25, 16, 16);
+                if( rect.contains( x, y)) {
+                    return image.n;
+                }
             }
         }
+
         return null;
     }
 
@@ -98,16 +102,16 @@ class Menu {
     SetCheck(n,b) {
         console.log("SetCheck", n, b);
 
-        this.#context.globalAlpha = 1.0;
+        for( var r = 0; r < this.#images.length;  r++) {
+            for( var image of this.#images[r]) {
+                if(n === image.n) {
+                    this.#context.strokeStyle = b ? this.#color : this.#back;
+                    this.#context.lineWidth = 2;
+                    this.#context.strokeRect( image.x -1, 1 + r * 25, 18, 18);
 
-        for( var image of this.#images) {
-            if(n === image.n) {
-                this.#context.strokeStyle = b ? this.#color : this.#back;
-                this.#context.lineWidth = 2;
-                this.#context.strokeRect( image.x -1, 1, 18, 18);
-
-                image.c = b;
-                break;
+                    image.c = b;
+                    return;
+                }
             }
         }
     }
@@ -117,7 +121,7 @@ class Menu {
     /// </summary>
     GetCheck(n) {
         var r = false;
-        for( const image of this.#images) {
+        for( const image of this.#images.flat()) {
             if(n === image.n) {
                 r = image.c ?? false;
                 break;
@@ -133,14 +137,15 @@ class Menu {
         const m = document.getElementById("menu");
         this.#context = m.getContext("2d");
 
-        this.#context.canvas.width = 400;
-        this.#context.canvas.height = 20;
+        this.#context.canvas.width = 200;
+        this.#context.canvas.height = 60;
         // mctx.scale(1.5,1.5);
 
-        for( const image of this.#images) {
-            var icon = document.getElementById(image.n);
-            console.log( "Menu icon", icon.n);
-            this.#context.drawImage( icon, image.x, 2);
+        for( var r = 0; r < this.#images.length;  r++) {
+            for( const image of this.#images[r]) {
+                var icon = document.getElementById(image.n);
+                this.#context.drawImage( icon, image.x, 2 + r*25);
+            }
         }
 
         this.#game = g;

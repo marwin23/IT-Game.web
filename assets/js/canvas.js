@@ -75,6 +75,7 @@ class Menu {
     #game;
     #back;
     #color;
+    #context;
 
     /// <summary>
     /// return menu name selected.
@@ -97,15 +98,13 @@ class Menu {
     SetCheck(n,b) {
         console.log("SetCheck", n, b);
 
-        const m = document.getElementById("menu");
-        const mctx = m.getContext("2d");
-        mctx.globalAlpha = 1.0;
+        this.#context.globalAlpha = 1.0;
 
         for( var image of this.#images) {
             if(n === image.n) {
-                mctx.strokeStyle = b ? this.#color : this.#back;
-                mctx.lineWidth = 2;
-                mctx.strokeRect( image.x -1, 1, 18, 18);
+                this.#context.strokeStyle = b ? this.#color : this.#back;
+                this.#context.lineWidth = 2;
+                this.#context.strokeRect( image.x -1, 1, 18, 18);
 
                 image.c = b;
                 break;
@@ -132,16 +131,16 @@ class Menu {
         this.#InitStorage();
 
         const m = document.getElementById("menu");
-        const mctx = m.getContext("2d");
+        this.#context = m.getContext("2d");
 
-        mctx.canvas.width = 400;
-        mctx.canvas.height = 20;
-        // mctx.scale(1.2,1.0);
+        this.#context.canvas.width = 400;
+        this.#context.canvas.height = 20;
+        // mctx.scale(1.5,1.5);
 
         for( const image of this.#images) {
             var icon = document.getElementById(image.n);
             console.log( "Menu icon", icon.n);
-            mctx.drawImage( icon, image.x, 2, icon.width, icon.height);
+            this.#context.drawImage( icon, image.x, 2);
         }
 
         this.#game = g;
@@ -151,7 +150,11 @@ class Menu {
     }
 
     #handleClick = (ev) => {
-        const n = this.#CheckPoint(ev.offsetX,ev.offsetY);
+        console.log("handleClick", ev);
+        const x = Globals.MulDiv(ev.offsetX, 1, 2);
+        const y = Globals.MulDiv(ev.offsetY, 1, 2);
+        
+        const n = this.#CheckPoint(x,y);
         if( !!n)
             this.#game.OnMenu(n);
     };
@@ -240,7 +243,6 @@ class Canvas {
         this.#back = window.getComputedStyle( document.body ,null).getPropertyValue('background-color');
 
         this.#OnPaint();
-        this.#context.scale(2,2);
         this.#menu = new Menu(this, this.#color, this.#back);
 
         this.#game.ForceDefeat = localStorage.getItem("Force") == "true";
@@ -695,6 +697,8 @@ class Canvas {
 
         if( this._init) {
             this.#context = this.#canvas.getContext("2d");
+            this.#context.width = this.#imgField.width;
+            this.#context.height = this.#imgField.height;
         } else {
             GameInternal.DrawField(this.#imgField, this.#context);
 
@@ -715,7 +719,9 @@ class Canvas {
     /// event argument (not used here)
     /// </param>
     #OnMouseDown = async(e) => {
-        var hit = false;
+
+        const x = Globals.MulDiv( e.offsetX, 1, 2);     // TODO: set to window sizes
+        const y = Globals.MulDiv( e.offsetY, 1, 2);
         console.log("OnMouseDown", e, this);
 
         if( this.#id != null)
@@ -727,13 +733,14 @@ class Canvas {
         const pd = this.#game.Player.Data; // PlayerData;
         if (pd == null)
             return;
-
+        
         const name = GameInternal.GetPlayerName(this.#game.Player);
+        var hit = false;
 
-        if (this.#IsDice(this.#game.Player, e.offsetX, e.offsetY)) {
+        if (this.#IsDice(this.#game.Player, x,y)) {
             hit = await this.#EvalDiceRoll();
         } else {
-            const f = this.#GetFigure(pd.Figures, e.offsetX, e.offsetY);
+            const f = this.#GetFigure(pd.Figures, x,y);
             if (f != null) {
                 hit = true;
                 this.#DeleteFigures(pd.Figures);

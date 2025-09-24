@@ -755,34 +755,36 @@ class Game {
     SelectPlayer(first = false) {
         var run = false;
 
-        var play = Array.from(this.Players.filter(p => !p.CheckFinish()));
-        if (play.length > 0) {
-            if (first) {
-                // find first player in the game
-                this.Player = play[0];
-                run = true;
-            } else {
-                // no player active
-                if (!this.Player)
-                    run = this.SelectPlayer(true);  // get first player in game
-                else
-                {
-                    var index = play.findIndex((p) => p.Equals(this.Player));
-                    if (index < 0)                      // current player not found
+        if( this.Players != null) {
+            const play = Array.from(this.Players.filter(p => !p.CheckFinish()));
+            if (play.length > 0) {
+                if (first) {
+                    // find first player in the game
+                    this.Player = play[0];
+                    run = true;
+                } else {
+                    // no player active
+                    if (!this.Player)
                         run = this.SelectPlayer(true);  // get first player in game
-                    else {
-                        // next player
-                        index++;
-                        if (index >= play.length)
-                            index = 0;
+                    else
+                    {
+                        var index = play.findIndex((p) => p.Equals(this.Player));
+                        if (index < 0)                      // current player not found
+                            run = this.SelectPlayer(true);  // get first player in game
+                        else {
+                            // next player
+                            index++;
+                            if (index >= play.length)
+                                index = 0;
 
-                        this.Player = play[index];
-                        run = true;
+                            this.Player = play[index];
+                            run = true;
+                        }
                     }
                 }
             }
         }
-
+        
         // check if game is entriely finished
         if (!run)
             this.Canvas.OnFinished();

@@ -150,9 +150,10 @@ class Menu {
     }
 
     #handleClick = (ev) => {
-        console.log("handleClick", ev);
-        const x = Globals.MulDiv(ev.offsetX, 1, 2);
-        const y = Globals.MulDiv(ev.offsetY, 1, 2);
+        const c = this.#context.canvas;
+        const x = Globals.MulDiv(ev.offsetX, c.width, c.offsetWidth);
+        const y = Globals.MulDiv(ev.offsetY, c.height, c.offsetHeight);
+        console.log("handleClick", ev, x,y);
         
         const n = this.#CheckPoint(x,y);
         if( !!n)
@@ -719,10 +720,10 @@ class Canvas {
     /// event argument (not used here)
     /// </param>
     #OnMouseDown = async(e) => {
-
-        const x = Globals.MulDiv( e.offsetX, 1, 2);     // TODO: set to window sizes
-        const y = Globals.MulDiv( e.offsetY, 1, 2);
-        console.log("OnMouseDown", e, this);
+        const c = this.#context.canvas;
+        const x = Globals.MulDiv(e.offsetX, c.width, c.offsetWidth);
+        const y = Globals.MulDiv(e.offsetY, c.height, c.offsetHeight);
+        console.log("OnMouseDown", e, x,y);
 
         if( this.#id != null)
             return;

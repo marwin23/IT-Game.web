@@ -965,12 +965,12 @@ class Game {
             park.push(new GamePoint(pos));
         }
 
-        for(var f in figs)
+        for(const f of figs)
             f.Delete(); // delete first
 
         this.Canvas.OnParking( park, p);
 
-        for(var f in figs)
+        for(const f of figs)
             f.Set();    // set it again
 
         this.Parking = p;

@@ -41,17 +41,18 @@ class Menu {
         { n: "force", x: 60 },
         { n: "jump", x: 80 },
         { n: "dice3", x: 100 },
-        { n: "sound", x: 120 },
+        { n: "park", x: 120 },
+        { n: "sound", x: 140 },
 
-        { n: "dice6", x: 150 },
-        { n: "dice7", x: 170 },
-        { n: "dice8", x: 190 },
-        { n: "dice9", x: 210 },
+        { n: "dice6", x: 170 },
+        { n: "dice7", x: 190 },
+        { n: "dice8", x: 210 },
+        { n: "dice9", x: 230 },
 
-        { n: "ball", x: 240 },
-        { n: "point", x: 260 },
-        { n: "smiley", x: 280 },
-        { n: "star", x: 300 },
+        { n: "ball", x: 260 },
+        { n: "point", x: 280 },
+        { n: "smiley", x: 300 },
+        { n: "star", x: 320 },
 
     ];
 
@@ -249,6 +250,7 @@ class Canvas {
         this.#menu.SetCheck("new", false);
         this.#menu.SetCheck("force", this.#game.ForceDefeat);
         this.#menu.SetCheck("jump", this.#game.JumpHouse);
+        this.#menu.SetCheck("park", this.#game.Parking);
         this.#menu.SetCheck("dice3", localStorage.getItem("Dice3") == "true");
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
@@ -842,18 +844,19 @@ class Canvas {
             }
             break;
 
+            case "park": {
+                const c = !this.#menu.GetCheck(n);
+                this.#menu.SetCheck(n, c)
+                localStorage.setItem("Parking", c);
+                this.#game.SetParking(c);
+            }
+            break;
+
             case "jump": {
                 const c = !this.#menu.GetCheck(n);
                 this.#menu.SetCheck(n, c)
                 localStorage.setItem("Jump", c);
                 this.#game.JumpHouse = c;
-            }
-            break;
-
-            case "parking": {
-                const c = !this.#menu.GetCheck(n);
-                this.#menu.SetCheck(n, c)
-                localStorage.setItem("Parking", c);
             }
             break;
 

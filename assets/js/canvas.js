@@ -35,25 +35,25 @@ class FigureData
 /// </summary>
 class Menu {
     #images = [
-        [   { n: "player", x: 0 },
-            { n: "new", x: 20 },
-            { n: "ranking", x: 40 },
-            { n: "sound", x: 60 },
+        [   { n: "player", x: 10 },
+            { n: "new", x: 30 },
+            { n: "ranking", x: 50 },
+            { n: "sound", x: 70 },
 
-            { n: "force", x: 90 },
-            { n: "jump", x: 110 },
-            { n: "dice3", x: 130 },
-            { n: "park", x: 150 },
+            { n: "force", x: 100 },
+            { n: "jump", x: 120 },
+            { n: "dice3", x: 140 },
+            { n: "park", x: 160 },
         ], [    
-            { n: "dice6", x: 0 },
-            { n: "dice7", x: 20 },
-            { n: "dice8", x: 40 },
-            { n: "dice9", x: 60 },
+            { n: "dice6", x: 10 },
+            { n: "dice7", x: 30 },
+            { n: "dice8", x: 50 },
+            { n: "dice9", x: 70 },
 
-            { n: "ball", x: 90 },
-            { n: "point", x: 110 },
-            { n: "smiley", x: 130 },
-            { n: "star", x: 150 },
+            { n: "ball", x: 100 },
+            { n: "point", x: 120 },
+            { n: "smiley", x: 140 },
+            { n: "star", x: 160 },
         ]
     ];
 
@@ -764,16 +764,18 @@ class Canvas {
             return;
 
         var hit = false;
+        var dlg = true;
 
         if (this.#IsDice(x,y)) {
             hit = await this.#EvalDiceRoll();
+            dlg = false;
         } else {
             hit = await this.#CheckFigures(x,y);
         }
 
         if (hit) {
             this.#NextPlayer();
-        } else {
+        } else if( dlg) {
             if( this.#setting.open)
                 this.#setting.close();
             else

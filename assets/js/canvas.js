@@ -158,7 +158,7 @@ class Menu {
         this.#context.canvas.height = Menu.#lineWidth * Menu.#images.length;
         this.#context.textBaseline = "top"
         this.#context.fillStyle = this.#color;
-        this.#context.font = "7px Public Sans";
+        this.#context.font = "8px Public Sans";
 
         for( var r = 0; r < Menu.#images.length;  r++) {
             const lineWidth = r*Menu.#lineWidth;
@@ -172,7 +172,7 @@ class Menu {
 
                     const text = icon.getAttribute("data-text").split(' ');
                     for( var t = 0;  t < text.length;  t++)
-                        this.#context.fillText( text[t], pos, 20 + lineWidth + t*7);
+                        this.#context.fillText( text[t], pos, 20 + lineWidth + t*8);
 
                     pos += 30;
                 } else {

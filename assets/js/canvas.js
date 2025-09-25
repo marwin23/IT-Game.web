@@ -771,6 +771,7 @@ class Canvas {
             dlg = false;
         } else {
             hit = await this.#CheckFigures(x,y);
+            dlg = !hit;
         }
 
         if (hit) {
@@ -780,6 +781,8 @@ class Canvas {
                 this.#setting.close();
             else
                 this.#setting.show();
+        } else {
+            this.#setting.close();
         }
     }
 

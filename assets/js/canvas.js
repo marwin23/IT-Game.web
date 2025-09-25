@@ -34,30 +34,30 @@ class FigureData
 /// canvas of the menu
 /// </summary>
 class Menu {
-    #images = [
-        [   { n: "player", x: 10 },
-            { n: "new", x: 30 },
-            { n: "ranking", x: 50 },
-            { n: "sound", x: 70 },
-
-            { n: "force", x: 100 },
-            { n: "jump", x: 120 },
-            { n: "dice3", x: 140 },
-            { n: "park", x: 160 },
+    static #images = [
+        [   { n: "player" },
+            { n: "new" },
+            { n: "ranking" },
+            { n: "sound" },
+            { n: null },
+            { n: "force" },
+            { n: "jump" },
+            { n: "dice3" },
+            { n: "park" },
         ], [    
-            { n: "dice6", x: 10 },
-            { n: "dice7", x: 30 },
-            { n: "dice8", x: 50 },
-            { n: "dice9", x: 70 },
-
-            { n: "ball", x: 100 },
-            { n: "point", x: 120 },
-            { n: "smiley", x: 140 },
-            { n: "star", x: 160 },
+            { n: "dice6" },
+            { n: "dice7" },
+            { n: "dice8" },
+            { n: "dice9" },
+            { n: null },
+            { n: "ball" },
+            { n: "point" },
+            { n: "smiley" },
+            { n: "star" },
         ]
     ];
 
-    #storage = [
+    static #storage = [
         { n: "Players", d: "1,1,1,1" },
         { n: "Orange", d: "orange" },
         { n: "Yellow", d: "yellow" },
@@ -73,6 +73,8 @@ class Menu {
         { n: "Figure", d: 0 }
     ];
 
+    static #lineWidth = 40;
+
     #game;
     #back;
     #color;
@@ -84,12 +86,18 @@ class Menu {
     #CheckPoint(x,y) {
         console.log( "CheckPoint", x,y);
 
-        for( var r = 0; r < this.#images.length;  r++) {
-            for( const image of this.#images[r]) {
-                const rect = new Rectangle(image.x, 2 + r*25, 16, 16);
+        for( var r = 0; r < Menu.#images.length;  r++) {
+            const lineWidth = r*Menu.#lineWidth;
+
+            var pos = 10;
+            for( var i = 0;  i < Menu.#images[r].length;  i++) {
+                const image = Menu.#images[r][i];
+                const rect = new Rectangle(pos, 2 + lineWidth, 16, 16);
                 if( rect.contains( x, y)) {
                     return image.n;
                 }
+
+                pos += image.n != null ? 30 : 15;
             }
         }
 
@@ -102,16 +110,22 @@ class Menu {
     SetCheck(n,b) {
         console.log("SetCheck", n, b);
 
-        for( var r = 0; r < this.#images.length;  r++) {
-            for( var image of this.#images[r]) {
+        for( var r = 0; r < Menu.#images.length;  r++) {
+            const lineWidth = r*Menu.#lineWidth;
+
+            var pos = 10;
+            for( var i = 0;  i < Menu.#images[r].length;  i++) {
+                const image = Menu.#images[r][i];
                 if(n === image.n) {
                     this.#context.strokeStyle = b ? this.#color : this.#back;
                     this.#context.lineWidth = 2;
-                    this.#context.strokeRect( image.x -1, 1 + r * 25, 18, 18);
+                    this.#context.strokeRect( pos -1, 1 + lineWidth, 18, 18);
 
                     image.c = b;
                     return;
                 }
+
+                pos += image.n != null ? 30 : 15;
             }
         }
     }
@@ -121,7 +135,7 @@ class Menu {
     /// </summary>
     GetCheck(n) {
         var r = false;
-        for( const image of this.#images.flat()) {
+        for( const image of Menu.#images.flat()) {
             if(n === image.n) {
                 r = image.c ?? false;
                 break;
@@ -133,24 +147,40 @@ class Menu {
 
     constructor(g,c,b) {
         this.#InitStorage();
+        this.#game = g;
+        this.#color = c;
+        this.#back = b;
 
         const m = document.getElementById("menu");
         this.#context = m.getContext("2d");
 
-        this.#context.canvas.width = 200;
-        this.#context.canvas.height = 60;
-        // mctx.scale(1.5,1.5);
+        this.#context.canvas.width = 300;
+        this.#context.canvas.height = Menu.#lineWidth * Menu.#images.length;
+        this.#context.textBaseline = "top"
+        this.#context.fillStyle = this.#color;
+        this.#context.font = "7px Public Sans";
 
-        for( var r = 0; r < this.#images.length;  r++) {
-            for( const image of this.#images[r]) {
-                var icon = document.getElementById(image.n);
-                this.#context.drawImage( icon, image.x, 2 + r*25);
+        for( var r = 0; r < Menu.#images.length;  r++) {
+            const lineWidth = r*Menu.#lineWidth;
+
+            var pos = 10;
+            for( var i = 0;  i < Menu.#images[r].length;  i++) {
+                const image = Menu.#images[r][i];
+                if( image.n != null) {
+                    const icon = document.getElementById(image.n);
+                    this.#context.drawImage( icon, pos, 2 + lineWidth);
+
+                    const text = icon.getAttribute("data-text").split(' ');
+                    for( var t = 0;  t < text.length;  t++)
+                        this.#context.fillText( text[t], pos, 20 + lineWidth + t*7);
+
+                    pos += 30;
+                } else {
+                    pos += 15;
+                }
             }
         }
 
-        this.#game = g;
-        this.#color = c;
-        this.#back = b;
         m.onclick = this.#handleClick;
     }
 
@@ -168,7 +198,7 @@ class Menu {
     #InitStorage() {
         // localStorage.clear();   // TEST
 
-        for( const s of this.#storage) {
+        for( const s of Menu.#storage) {
             localStorage.setItem(s.n, localStorage.getItem(s.n) ?? s.d);
         }
     }

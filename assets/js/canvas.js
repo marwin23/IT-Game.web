@@ -222,6 +222,7 @@ class Canvas {
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
     
+    #setting = document.getElementById("setting");
     #canvas = document.getElementById("game");
     #text = document.getElementById("text");
     #color;         // foreground color
@@ -407,9 +408,6 @@ class Canvas {
         }
     }
 
-    /// <summary>
-    /// get figure according to position
-    /// </summary>
     /// <param name="figures">
     /// figures to check.
     /// </param>
@@ -476,18 +474,17 @@ class Canvas {
     /// <summary>
     /// determine if point is in dice.
     /// </summary>
-    /// <param name="p">
-    /// current player.
-    /// </param>
     /// <param name="x,y">
     /// point in screen coordinates.
     /// </param>
     /// <returns>
     /// point is in dice.
     /// </returns>
-    #IsDice(p, x, y) {
+    #IsDice(x, y) {
         var ret = false;
-        if (this.DiceToSelect) {
+
+        const p = this.#game.Player; 
+        if (p != null && this.DiceToSelect) {
             const pos = p.FieldPlayer.diceroll;
             const size = this.#imgDice1.height;
             const rect = new Rectangle( pos.x - size / 2, pos.y - size / 2, size, size);
@@ -572,6 +569,39 @@ class Canvas {
         }
 
         return hit;
+    }
+
+
+    /// <summary>
+    /// check figures is in coordinates
+    /// </summary>
+    /// <param name="x,y">
+    /// point in screen coordinates.
+    /// </param>
+    /// <returns>
+    /// figure tracked.
+    /// </returns>
+    async #CheckFigures(x,y) {
+        if (this.#game.Player == null)
+            return false;
+
+        const pd = this.#game.Player.Data; // PlayerData;
+        if (pd == null)
+            return false;
+
+        const f = this.#GetFigure(pd.Figures, x,y);
+        if (f != null) {
+            this.#DeleteFigures(pd.Figures);
+            this.#SetFigures(pd.Figures);
+
+            const name = GameInternal.GetPlayerName(this.#game.Player);
+            this.#text.innerText = `${name}: track figure ${f.Number}.`;
+            await this.#game.TrackFigure(f, this.Dice);
+
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -733,32 +763,21 @@ class Canvas {
         if( this.#id != null)
             return;
 
-        if (this.#game.Player == null)
-            return;
-
-        const pd = this.#game.Player.Data; // PlayerData;
-        if (pd == null)
-            return;
-        
-        const name = GameInternal.GetPlayerName(this.#game.Player);
         var hit = false;
 
-        if (this.#IsDice(this.#game.Player, x,y)) {
+        if (this.#IsDice(x,y)) {
             hit = await this.#EvalDiceRoll();
         } else {
-            const f = this.#GetFigure(pd.Figures, x,y);
-            if (f != null) {
-                hit = true;
-                this.#DeleteFigures(pd.Figures);
-                this.#SetFigures(pd.Figures);
-
-                this.#text.innerText = `${name}: track figure ${f.Number}.`;
-                await this.#game.TrackFigure(f, this.Dice);
-            }
+            hit = await this.#CheckFigures(x,y);
         }
 
         if (hit) {
             this.#NextPlayer();
+        } else {
+            if( this.#setting.open)
+                this.#setting.close();
+            else
+                this.#setting.show();
         }
     }
 

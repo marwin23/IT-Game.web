@@ -484,7 +484,7 @@ class Canvas {
         var ret = false;
 
         const p = this.#game.Player; 
-        if (p != null && this.DiceToSelect) {
+        if (p != null ) {
             const pos = p.FieldPlayer.diceroll;
             const size = this.#imgDice1.height;
             const rect = new Rectangle( pos.x - size / 2, pos.y - size / 2, size, size);
@@ -571,6 +571,16 @@ class Canvas {
         return hit;
     }
 
+    /// <summary>
+    /// check if coordinates are figures of current player
+    /// </summary>
+    #IsFigure(x,y) {
+        if (this.#game.Player == null)
+            return false;
+
+        const f = this.#GetFigure(this.#game.Player.Figures, x,y);
+        return f != null;
+    }
 
     /// <summary>
     /// check figures is in coordinates
@@ -763,26 +773,24 @@ class Canvas {
         if( this.#id != null)
             return;
 
-        var hit = false;
-        var dlg = true;
+        if( this.#IsDice(x,y) || this.#IsFigure(x,y)) {
+            this.#setting.close();
+            
+            var hit = false;
+            if (this.DiceToSelect && this.#IsDice(x,y)) {
+                hit = await this.#EvalDiceRoll();
+            } else {
+                hit = await this.#CheckFigures(x,y);
+            }
 
-        if (this.#IsDice(x,y)) {
-            hit = await this.#EvalDiceRoll();
-            dlg = false;
+            if (hit) {
+                this.#NextPlayer();
+            }
         } else {
-            hit = await this.#CheckFigures(x,y);
-            dlg = !hit;
-        }
-
-        if (hit) {
-            this.#NextPlayer();
-        } else if( dlg) {
             if( this.#setting.open)
                 this.#setting.close();
             else
                 this.#setting.show();
-        } else {
-            this.#setting.close();
         }
     }
 

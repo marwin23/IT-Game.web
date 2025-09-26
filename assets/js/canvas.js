@@ -366,10 +366,11 @@ class Canvas {
     /// </summary>
     #ShutGame() {
         document.body.onbeforeunload = null;
+
         clearTimeout(this.#id);
         this.#id = null;
 
-        this.this.#OnSetting(true);
+        this.#OnSetting(true);
         this.#menu.SetCheck("new", false);
         this.#game.SetPlayers(null);
         this.Dice = 0;
@@ -852,7 +853,7 @@ class Canvas {
     /// automatic dice on on computer plays
     /// </summary>
     #OnTime = async(e) => {
-        console.log("OnMouseDown", e, this);
+        console.log("OnTime", e, this);
 
         clearTimeout(this.#id);
         this.#id == null;

@@ -612,7 +612,7 @@ class Canvas {
         if (pd == null)
             return false;
 
-        if( pd.Figures.length > 0) {
+        if( pd.Figures != null && pd.Figures.length > 0) {
             // figure must not be checked
             // const f = this.#GetFigure(this.#game.Player.Figures, x,y);
             // return f != null;
@@ -668,6 +668,7 @@ class Canvas {
             return;
 
         pd.NumRolls = 0;
+        pd.Figures = null;
         this.#id = null;
 
         this.#DeleteDice(this.#game.Player);

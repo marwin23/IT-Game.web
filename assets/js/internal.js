@@ -337,6 +337,18 @@ class GameInternal {
     }
 
     /// <summary>
+    /// load url
+    /// </summary>
+    static async getData(url) {
+        const response = await fetch(url);
+        if (response.ok) {
+            return response.text();
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// print ranking of players finished
     /// </summary>
     /// <param name="rank"></param>

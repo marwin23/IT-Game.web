@@ -278,7 +278,7 @@ class GameInternal {
     /// <summary>
     /// select players for game
     /// </summary>
-    static SelectPlayers() {
+    static SelectPlayers(f) {
         const p = localStorage.getItem("Players");
         var players = Array.from(p.split(',').map( (p) => parseInt(p)));
         document.getElementById("orangeStrategy").value = players[0];
@@ -291,9 +291,9 @@ class GameInternal {
         document.getElementById("blueName").value = localStorage.getItem("Blue");
 
         document.getElementById("playerDlg").showModal();
-        document.getElementById("playerSubmit").onclick = (ev) => {
-            ev.preventDefault(); 
-            console.log("OK", ev);
+        document.getElementById("playerSubmit").onclick = (e) => {
+            e.preventDefault(); 
+            console.log("OK", e);
 
             localStorage.setItem("Orange", document.getElementById("orangeName").value);
             localStorage.setItem("Yellow", document.getElementById("yellowName").value);
@@ -307,14 +307,13 @@ class GameInternal {
             localStorage.setItem("Players", players.map(p => p).join(','));
 
             document.getElementById("playerDlg").close();
+            f();
         }
 
         document.getElementById("playerCancel").onclick = (ev) => {
             ev.preventDefault(); 
             document.getElementById("playerDlg").close();
         }
-
-        return false;
     }
 
     /// <summary>

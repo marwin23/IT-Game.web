@@ -328,7 +328,9 @@ class Canvas {
     /// initialize game
     /// </summary>
     #InitGame() {
-        console.log("InitGame 1");
+        console.log("InitGame");
+
+        this.#setting.close();
 
         this._init = true;
         const ps = localStorage.getItem("Players");
@@ -340,9 +342,18 @@ class Canvas {
         this.#menu.SetCheck("new", true);
         this._init = false;
 
-        console.log("InitGame 2", ps);
-
         document.body.onbeforeunload = () => { return true; };
+
+        // start game
+        this.#game.SelectPlayer(true);
+        this.Dice = this.#RollDice();
+        this.#OnPaint();
+
+        // computer plays
+        if( this.#game.Player != null && 
+            this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
+            this.#id = setTimeout( this.#OnTime, 0);
+        }
     }
 
     /// <summary>
@@ -352,6 +363,8 @@ class Canvas {
         document.body.onbeforeunload = null;
         clearTimeout(this.#id);
         this.#id = null;
+
+        this.#setting.close();
         this.#menu.SetCheck("new", false);
         this.#game.SetPlayers(null);
         this.Dice = 0;
@@ -862,27 +875,27 @@ class Canvas {
 
         switch(n) {
             case "new": {
-                if( !this.#menu.GetCheck("new")) {
-                    this.#InitGame();
-
-                    this.#game.SelectPlayer(true);
-                    this.Dice = this.#RollDice();
-                    this.#OnPaint();
-
-                    // computer plays
-                    if( this.#game.Player != null && 
-                        this.#game.Player.Strategy > GamePlayer.StrategyDefinition.Manual) {
-                        this.#id = setTimeout( this.#OnTime, 0);
-                    }
+                if( this.#menu.GetCheck(n)) {
+                    GameInternal.QueryStop( () => { 
+                        this.#ShutGame();
+                    });
                 } else {
-                    GameInternal.QueryStop( () => { this.#ShutGame() });
+                    this.#InitGame();
                 }
             }
             break;
 
             case "player": {
-                if( GameInternal.SelectPlayers())
-                    this.#InitGame();
+                if( this.#menu.GetCheck("new")) {
+                    GameInternal.QueryStop( () => { 
+                        this.#ShutGame();
+                        GameInternal.SelectPlayers( () => {
+                            this.#InitGame();
+                        });
+                    }); 
+                } else {
+                    GameInternal.SelectPlayers( () => { this.#InitGame(); })
+                }
             }
             break;
 

@@ -295,21 +295,11 @@ class Canvas {
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
         this.#canvas.onmousedown = this.#OnMouseDown;
+
         document.body.onkeydown = async(e) => {
             console.log("onkeydown", e);
             if( e.key == "F1") {
-                // show help
-                const response = await fetch("assets/help/rules.en.md");
-                if (response.ok) {
-                    const text = await response.text();
-                    if( text != null) {
-                        const conv = new showdown.Converter();
-                        const html = conv.makeHtml(text);
-                        document.getElementById("help").innerHTML = html;
-                        const help = document.getElementById("helpDlg");
-                        help.showModal();
-                    }
-                }
+                await GameInternal.ShowHelp();
             }
         }
         this.#hamburger.onclick = (e) => {

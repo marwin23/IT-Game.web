@@ -386,6 +386,27 @@ class GameInternal {
             document.getElementById("stopDlg").close(false);
         }
     }
+
+    /// <summary>
+    /// show help file in html
+    /// </summary>
+    static async ShowHelp() {
+        const help = document.getElementById("helpDlg");
+        const response = await fetch("assets/help/rules.en.md");
+        if (response.ok) {
+            const text = await response.text();
+            if( text != null) {
+                const conv = new showdown.Converter();
+                const html = conv.makeHtml(text);
+                document.getElementById("help").innerHTML = html;
+                help.showModal();
+            }
+        }
+        document.getElementById("helpOk").onclick = (ev) => {
+            ev.preventDefault(); 
+            help.close();
+        }
+    }
 }
 
 // --- end of file ---

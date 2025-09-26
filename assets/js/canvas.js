@@ -608,8 +608,18 @@ class Canvas {
         if (this.#game.Player == null)
             return false;
 
-        const f = this.#GetFigure(this.#game.Player.Figures, x,y);
-        return f != null;
+        const pd = this.#game.Player.Data; // PlayerData;
+        if (pd == null)
+            return false;
+
+        if( pd.Figures.length > 0) {
+            // figure must not be checked
+            // const f = this.#GetFigure(this.#game.Player.Figures, x,y);
+            // return f != null;
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>

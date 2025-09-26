@@ -252,6 +252,7 @@ class Canvas {
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
     
+    #hamburger = document.getElementById("hamburger");
     #setting = document.getElementById("setting");
     #canvas = document.getElementById("game");
     #text = document.getElementById("text");
@@ -293,7 +294,11 @@ class Canvas {
         this.#menu.SetCheck("dice3", localStorage.getItem("Dice3") == "true");
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
-        document.getElementById("game").onmousedown = this.#OnMouseDown;
+        this.#canvas.onmousedown = this.#OnMouseDown;
+        this.#hamburger.onclick = (e) => {
+            e.preventDefault();
+            this.#OnSetting();
+        }
         this.#CheckFigure();
         this.#CheckDiceRoll();
         this._init = false;
@@ -330,7 +335,7 @@ class Canvas {
     #InitGame() {
         console.log("InitGame");
 
-        this.#setting.close();
+        this.#OnSetting(true);
 
         this._init = true;
         const ps = localStorage.getItem("Players");
@@ -364,7 +369,7 @@ class Canvas {
         clearTimeout(this.#id);
         this.#id = null;
 
-        this.#setting.close();
+        this.this.#OnSetting(true);
         this.#menu.SetCheck("new", false);
         this.#game.SetPlayers(null);
         this.Dice = 0;
@@ -819,6 +824,8 @@ class Canvas {
     /// event argument (not used here)
     /// </param>
     #OnMouseDown = async(e) => {
+        e.preventDefault();
+
         const c = this.#context.canvas;
         const x = Globals.MulDiv(e.offsetX, c.width, c.offsetWidth);
         const y = Globals.MulDiv(e.offsetY, c.height, c.offsetHeight);
@@ -826,7 +833,7 @@ class Canvas {
 
         // computer is not playing
         if( this.#id == null && this.#IsDice(x,y) || this.#IsFigure(x,y)) {
-            this.#setting.close();
+            this.#OnSetting(true);
 
             var hit = false;
             if (this.DiceToSelect && this.#IsDice(x,y)) {
@@ -838,11 +845,6 @@ class Canvas {
             if (hit) {
                 this.#NextPlayer();
             }
-        } else {
-            if( this.#setting.open)
-                this.#setting.close();
-            else
-                this.#setting.show();
         }
     }
 
@@ -987,6 +989,19 @@ class Canvas {
                 this.#CheckFigure();
             }
             break;
+        }
+    }
+
+    /// <summary>
+    /// handle setting dialog
+    /// </summary>
+    #OnSetting(c) {
+        if( this.#setting.open || !!c) {
+            document.body.classList.remove('hamburger-active')
+            this.#setting.close();
+        } else {
+            document.body.classList.add('hamburger-active');
+            this.#setting.show();
         }
     }
 

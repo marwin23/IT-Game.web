@@ -44,6 +44,8 @@ class Menu {
             { n: "jump" },
             { n: "dice3" },
             { n: "park" },
+            { n: null },
+            { n: "help" }
         ], [    
             { n: "dice6" },
             { n: "dice7" },
@@ -299,7 +301,6 @@ class Canvas {
         document.body.onkeydown = async(e) => {
             console.log("onkeydown", e);
             if( e.key == "F1") {
-                await GameInternal.ShowHelp();
             }
         }
         this.#hamburger.onclick = (e) => {
@@ -971,6 +972,11 @@ class Canvas {
                 const c = !this.#menu.GetCheck(n);
                 this.#menu.SetCheck(n, c)
                 localStorage.setItem("Sound", c);
+            }
+            break;
+
+            case "help": {
+                GameInternal.ShowHelp();
             }
             break;
 

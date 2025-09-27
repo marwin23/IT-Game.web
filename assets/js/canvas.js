@@ -254,7 +254,7 @@ class Canvas {
     #imgFigStar1 = document.getElementById("star1");
     #imgFig;
     
-    #hamburger = document.getElementById("hamburger");
+    #hamburger = document.getElementById("hamburger-menu");
     #setting = document.getElementById("setting");
     #canvas = document.getElementById("game");
     #text = document.getElementById("text");
@@ -297,12 +297,6 @@ class Canvas {
         this.#menu.SetCheck("sound", localStorage.getItem("Sound") == "true");
 
         this.#canvas.onmousedown = this.#OnMouseDown;
-
-        document.body.onkeydown = async(e) => {
-            console.log("onkeydown", e);
-            if( e.key == "F1") {
-            }
-        }
         this.#hamburger.onclick = (e) => {
             e.preventDefault();
             this.#OnSetting();

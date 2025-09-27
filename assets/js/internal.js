@@ -373,17 +373,18 @@ class GameInternal {
     /// query cancel playing game
     /// </summary>
     static QueryStop(f) {
-        document.getElementById("stopDlg").showModal();
+        const dlg = document.getElementById("stopDlg");
+        dlg.showModal();
 
         document.getElementById("stopOk").onclick = (ev) => {
             ev.preventDefault(); 
-            document.getElementById("stopDlg").close(true);
+            dlg.close(true);
             f();
         }
 
         document.getElementById("stopCancel").onclick = (ev) => {
             ev.preventDefault(); 
-            document.getElementById("stopDlg").close(false);
+            dlg.close(false);
         }
     }
 
@@ -404,7 +405,7 @@ class GameInternal {
                 help.showModal();
             }
         }
-        document.getElementById("helpOk").onclick = (ev) => {
+        document.getElementById("hamburger-close").onclick = (ev) => {
             ev.preventDefault(); 
             help.close();
         }

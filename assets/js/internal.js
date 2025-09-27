@@ -392,14 +392,15 @@ class GameInternal {
     /// </summary>
     static async ShowHelp() {
         const help = document.getElementById("helpDlg");
-        const src = document.getElementById("help-src").getAttribute("src");
+        const content = document.getElementById("help-content");
+        const src = content.getAttribute("src");
         const response = await fetch(src);
         if (response.ok) {
             const text = await response.text();
             if( text != null) {
                 const conv = new showdown.Converter();
                 const html = conv.makeHtml(text);
-                document.getElementById("help-content").innerHTML = html;
+                content.innerHTML = html;
                 help.showModal();
             }
         }

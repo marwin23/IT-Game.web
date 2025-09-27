@@ -356,15 +356,16 @@ class GameInternal {
         console.log( "PrintRanking", rank);
 
         if (rank!= null) {
+            const dlg = document.getElementById("rankingDlg");
             if (rank.length > 0) document.getElementById("winner").innerText = GameInternal.GetPlayerName(rank[0]);
             if (rank.length > 1) document.getElementById("second").innerText = GameInternal.GetPlayerName(rank[1]);
             if (rank.length > 2) document.getElementById("third").innerText = GameInternal.GetPlayerName(rank[2]);
             if (rank.length > 3) document.getElementById("fourth").innerText = GameInternal.GetPlayerName(rank[3]);
-            document.getElementById("rankingDlg").showModal();
+            dlg.showModal();
 
-            document.getElementById("rankingOk").onclick = (ev) => {
+            document.getElementById("ranking-close").onclick = (ev) => {
                 ev.preventDefault(); 
-                document.getElementById("rankingDlg").close();
+                dlg.close();
             }
         }
     }
@@ -405,7 +406,7 @@ class GameInternal {
                 help.showModal();
             }
         }
-        document.getElementById("hamburger-close").onclick = (ev) => {
+        document.getElementById("help-close").onclick = (ev) => {
             ev.preventDefault(); 
             help.close();
         }

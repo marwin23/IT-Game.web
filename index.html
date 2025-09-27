@@ -29,6 +29,8 @@
 				color: yellowgreen;
 			    outline: none;
 			}
+
+			/* https://kulturbanause.de/blog/animiertes-hamburger-icon-html-css-javascript/ */
 			.hamburger-icon-container {
 				color: transparent;
 				height: 1.7em;
@@ -77,6 +79,34 @@
 			}
 
 			.hamburger-active .hamburger-icon:before {
+				transform: rotate(90deg)
+			}
+
+    		.close-icon-container {
+				color: transparent;
+				height: 1.7em;
+				width: 1.7em;
+				position: absolute;
+				right: 0;
+				top: 0;
+				cursor: pointer;
+				background: currentColor;
+				border:solid currentColor;
+			}
+			.close-icon,
+			.close-icon:after {
+				content: '';
+				position: absolute;
+				height: 3px;
+				width: 1.7em;
+				background: yellowgreen;
+			}
+			.close-icon {
+				top: 0.75em;
+				transform: rotate(-45deg)
+			}
+			.close-icon:after {
+				top: 0em;
 				transform: rotate(90deg)
 			}
 		</style>
@@ -206,6 +236,10 @@
 			</div>
 		</dialog>
 		<dialog id="rankingDlg" class="colors">
+			<div class="close-icon-container">
+				<span id="ranking-close" class="close-icon"></span>
+			</div>
+			<br/>
 			<div class="setting-elements">
 				<div class="setting-element">
 					<span>winner:</span>
@@ -233,11 +267,6 @@
 				</div>
 			</div>
 			<br/>
-		    <div class="setting-elements">
-				<div class="setting-element">
-					<button autofocus id="rankingOk" class="btn">OK</button>
-				</div>
-			</div>
 		</dialog>
 		<dialog id="stopDlg" class="colors">
 			<div class="setting-elements">
@@ -251,9 +280,10 @@
 			</div>
 		</dialog>
 		<dialog id="helpDlg" class="colors">
-			<div id="hamburger-close" class="hamburger-icon-container">
-				<span class="hamburger-icon hamburger-active"></span>
+			<div class="close-icon-container">
+				<span id="help-close" class="close-icon"></span>
 			</div>
+			<br/>
 			<div>
 				<div id="help-content" src="assets/help/rules.en.md"></div>
 			</div>

@@ -348,6 +348,10 @@ class GameInternal {
         return null;
     }
 
+    static #PrintPlayer(p) {
+        return `${GameInternal.GetPlayerName(p)} (${p.TrackNumber})`;
+    }
+
     /// <summary>
     /// print ranking of players finished
     /// </summary>
@@ -357,10 +361,10 @@ class GameInternal {
 
         if (rank!= null) {
             const dlg = document.getElementById("rankingDlg");
-            if (rank.length > 0) document.getElementById("winner").innerText = GameInternal.GetPlayerName(rank[0]);
-            if (rank.length > 1) document.getElementById("second").innerText = GameInternal.GetPlayerName(rank[1]);
-            if (rank.length > 2) document.getElementById("third").innerText = GameInternal.GetPlayerName(rank[2]);
-            if (rank.length > 3) document.getElementById("fourth").innerText = GameInternal.GetPlayerName(rank[3]);
+            if (rank.length > 0) document.getElementById("winner").innerText = GameInternal.#PrintPlayer(rank[0]);
+            if (rank.length > 1) document.getElementById("second").innerText = GameInternal.#PrintPlayer(rank[1]);
+            if (rank.length > 2) document.getElementById("third").innerText = GameInternal.#PrintPlayer(rank[2]);
+            if (rank.length > 3) document.getElementById("fourth").innerText = GameInternal.#PrintPlayer(rank[3]);
             dlg.showModal();
 
             document.getElementById("ranking-close").onclick = (ev) => {

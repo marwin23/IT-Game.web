@@ -315,6 +315,10 @@ class GameFigure {
         }
 
         this.TrackNumber++;
+
+        if (!this.Test)
+           this.Player.TrackNumber++;
+
         return true;                // figure tracked
     }
 
@@ -513,6 +517,11 @@ class GamePlayer
     /// </summary>
     // public List<GameFigure> Figures { get; private set; }
     Figures;
+
+    /// <summary>
+    /// number of fields all figures has been tracked
+    /// </summary>
+    TrackNumber;
 
     /// <summary>
     /// ranking of the player
@@ -761,6 +770,11 @@ class Game {
                 if (first) {
                     // find first player in the game
                     this.Player = play[0];
+
+                    // start game for all players
+                    for( var p of play)
+                        p.TrackNumber = 0;
+                    
                     run = true;
                 } else {
                     // no player active

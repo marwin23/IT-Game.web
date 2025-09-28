@@ -358,21 +358,35 @@ class GameInternal {
         if (rank!= null) {
             const dlg = document.getElementById("rankingDlg");
             if (rank.length > 0) {
-                document.getElementById("winner").innerText = GameInternal.GetPlayerName(rank[0]);
+                document.getElementById("winner").hidden = false;
+                document.getElementById("winner-name").innerText = GameInternal.GetPlayerName(rank[0]);
                 document.getElementById("winner-tracks").innerText = rank[0].TrackNumber;
+            } else {
+                document.getElementById("winner").hidden = true;
             }
             if (rank.length > 1) {
-                document.getElementById("second").innerText = GameInternal.GetPlayerName(rank[1]);
+                document.getElementById("second").hidden = false;
+                document.getElementById("second-name").innerText = GameInternal.GetPlayerName(rank[1]);
                 document.getElementById("second-tracks").innerText = rank[1].TrackNumber;
+            } else {
+                document.getElementById("second").hidden = true;
             }
             if (rank.length > 2) {
-                document.getElementById("third").innerText = GameInternal.GetPlayerName(rank[2]);
+                document.getElementById("third").hidden = false;
+                document.getElementById("third-name").innerText = GameInternal.GetPlayerName(rank[2]);
                 document.getElementById("third-tracks").innerText = rank[2].TrackNumber;
+            } else {
+                document.getElementById("third").hidden = true;
             }
             if (rank.length > 3) {
-                document.getElementById("fourth").innerText = GameInternal.GetPlayerName(rank[3]);
+                document.getElementById("fourth").hidden = false;
+                document.getElementById("fourth-name").innerText = GameInternal.GetPlayerName(rank[3]);
                 document.getElementById("fourth-tracks").innerText = rank[3].TrackNumber;
+            } else {
+                document.getElementById("fourth").hidden = true;
             }
+            document.getElementById("none").hidden = rank.length !== 0;
+            
             dlg.showModal();
 
             document.getElementById("ranking-close").onclick = (ev) => {

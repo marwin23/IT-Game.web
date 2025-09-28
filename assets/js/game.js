@@ -406,6 +406,7 @@ class GamePlayer
             const p = game;
             this.Game = p.Game;
             this.FieldPlayer = p.FieldPlayer;   // just copy reference
+            this.TrackNumber = p.TrackNumber;
             this.Name = p.Name;
             this.Data = p.Data;
 
@@ -422,6 +423,7 @@ class GamePlayer
 
             this.Game = game;
             this.Strategy = strategy;
+            this.TrackNumber = 0;
             this.CreateFigures();
 
             console.log( "GamePlayer", l, this);
@@ -770,11 +772,6 @@ class Game {
                 if (first) {
                     // find first player in the game
                     this.Player = play[0];
-
-                    // start game for all players
-                    for( var p of play)
-                        p.TrackNumber = 0;
-                    
                     run = true;
                 } else {
                     // no player active

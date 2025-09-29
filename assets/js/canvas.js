@@ -834,10 +834,10 @@ class Canvas {
         const y = Globals.MulDiv(e.offsetY, c.height, c.offsetHeight);
         console.log("OnMouseDown", e, x,y);
 
+        this.#OnSetting(true);
+
         // computer is not playing
         if( this.#id == null && this.#IsDice(x,y) || this.#IsFigure(x,y)) {
-            this.#OnSetting(true);
-
             var hit = false;
             if (this.DiceToSelect && this.#IsDice(x,y)) {
                 hit = await this.#EvalDiceRoll();

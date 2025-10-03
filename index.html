@@ -40,6 +40,11 @@
 				height:auto;
 				max-width:700px;
 			}
+			.canvas-dialog {
+				position: element(game);
+				margin-left: 20%;
+				margin-top: 20%;
+			}
 
 			/* https://kulturbanause.de/blog/animiertes-hamburger-icon-html-css-javascript/ */
 			.hamburger-icon-container {
@@ -165,7 +170,7 @@
 		<dialog id="setting" class="colors menu">
 			<canvas id="menu" style="width:100%;height:auto;margin:0;"></canvas>
 		</dialog>
-		<dialog id="playerDlg" class="colors">
+		<dialog id="playerDlg" class="colors canvas-dialog">
 			<div class="setting-elements margin-bottom-md">
 				<div class="setting-element">
 					<label for="orangeStrategy">Strategy for Orange</label>
@@ -242,7 +247,7 @@
 				</div>
 			</div>
 		</dialog>
-		<dialog id="rankingDlg" class="colors">
+		<dialog id="rankingDlg" class="colors canvas-dialog">
 			<div id="ranking-close" class="close-icon-container margin-bottom-md">
 				<span class="close-icon"></span>
 			</div>
@@ -288,7 +293,7 @@
 			</div>
 			<div id="none" class="margin-top-md">No valid players or players in game.</div>
 		</dialog>
-		<dialog id="stopDlg" class="colors">
+		<dialog id="stopDlg" class="colors canvas-dialog">
 			<div class="setting-elements">
 				<div class="setting-element">
 					<span>Do you want to stop the game?</span>
@@ -299,7 +304,7 @@
 				</div>
 			</div>
 		</dialog>
-		<dialog id="helpDlg" class="colors">
+		<dialog id="helpDlg" class="colors canvas-dialog">
 			<div class="close-icon-container margin-bottom-md">
 				<span id="help-close" class="close-icon"></span>
 			</div>

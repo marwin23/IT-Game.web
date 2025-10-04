@@ -40,12 +40,6 @@
 				height:auto;
 				max-width:700px;
 			}
-			.canvas-dialog {
-				position: element(game);
-				margin-left: 20%;
-				margin-top: 20%;
-			}
-
 			/* https://kulturbanause.de/blog/animiertes-hamburger-icon-html-css-javascript/ */
 			.hamburger-icon-container {
 				color: transparent;
@@ -167,157 +161,160 @@
 			<audio id="defeat" src="assets/audio/Defeat.mp3" preload="auto"></audio>
 			<audio id="out" src="assets/audio/Out.mp3" preload="auto"></audio>
 		</div>	
-		<dialog id="setting" class="colors menu">
-			<canvas id="menu" style="width:100%;height:auto;margin:0;"></canvas>
-		</dialog>
-		<dialog id="playerDlg" class="colors canvas-dialog">
-			<div class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="orangeStrategy">Strategy for Orange</label>
-					<div class="select-wrapper">
-						<select id="orangeStrategy" required="required">
-							<option value="0">Not Available</option>
-							<option value="1">Manual</option>
-							<option value="2">One</option>
-							<option value="3">All</option>
-						</select>
-					</div>
-				</div>
-				<div class="setting-element">
-   					<label for="orangeName">Orange Name</label>
-					<input type="text" id="orangeName" name="orangeName"class="form-control">
-				</div>
-			</div>
-		    <div class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="yellowStrategy">Strategy for Yellow</label>
-					<div class="select-wrapper">
-						<select id="yellowStrategy" required="required">
-							<option value="0">Not Available</option>
-							<option value="1">Manual</option>
-							<option value="2">One</option>
-							<option value="3">All</option>
-						</select>
-					</div>
-				</div>
-				<div class="setting-element">
-   					<label for="yellowName">Yellow Name</label>
-					<input type="text" id="yellowName" name="yellowName" class="form-control">
-				</div>
-			</div>
-		    <div class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="greenStrategy">Strategy for Green</label>
-					<div class="select-wrapper">
-						<select id="greenStrategy" required="required">
-							<option value="0">Not Available</option>
-							<option value="1">Manual</option>
-							<option value="2">One</option>
-							<option value="3">All</option>
-						</select>
-					</div>
-				</div>
-				<div class="setting-element">
-   					<label for="greenName">Green Name</label>
-					<input type="text" id="greenName" name="greenName" class="form-control">
-				</div>
-			</div>
-		    <div class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="blueStrategy">Strategy for Blue</label>
-					<div class="select-wrapper">
-						<select id="blueStrategy" required="required">
-							<option value="0">Not Available</option>
-							<option value="1">Manual</option>
-							<option value="2">One</option>
-							<option value="3">All</option>
-						</select>
-					</div>
-				</div>
-				<div class="setting-element">
-   					<label for="blueName">Blue Name</label>
-					<input type="text" id="blueName" name="blueName" class="form-control">
-				</div>
-			</div>
-		    <div class="setting-elements">
-				</div>
-				<div class="setting-element">
-					<button autofocus id="playerSubmit" class="btn">OK</button>
-					<button type="cancel" id="playerCancel" class="btn">Cancel</button>
-				</div>
-			</div>
-		</dialog>
-		<dialog id="rankingDlg" class="colors canvas-dialog">
-			<div id="ranking-close" class="close-icon-container margin-bottom-md">
-				<span class="close-icon"></span>
-			</div>
-			<div id="winner" class="setting-elements margin-bottom-md margin-top-md">
-				<div class="setting-element">
-					<label for="winner-name">Winner:</label>
-					<div id="winner-name" class="form-control">---</div>
-				</div>
-				<div class="setting-element">
-					<label for="winner-tracks">Total tracks for Winner:</label>
-					<div id="winner-tracks" class="form-control">---</div>
-				</div>
-			</div>
-			<div id="second" class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="second-name">2nd:</label>
-					<div id="second-name" class="form-control">---</div>
-				</div>
-				<div class="setting-element">
-					<label for="second-tracks">Total tracks for 2nd:</label>
-					<div id="second-tracks" class="form-control">---</div>
-				</div>
-			</div>
-			<div id="third" class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="third-name">3rd:</label>
-					<div id="third-name" class="form-control">---</div>
-				</div>
-				<div class="setting-element">
-					<label for="third-tracks">Total tracks for 3rd:</label>
-					<div id="third-tracks" class="form-control">---</div>
-				</div>
-			</div>
-			<div id="fourth" class="setting-elements margin-bottom-md">
-				<div class="setting-element">
-					<label for="fourth-name">4th:</label>
-					<div id="fourth-name" class="form-control">---</div>
-				</div>
-				<div class="setting-element">
-					<label for="fourth-tracks">Total tracks for 4th:</label>
-					<div id="fourth-tracks" class="form-control">---</div>
-				</div>
-			</div>
-			<div id="none" class="margin-top-md">No valid players or players in game.</div>
-		</dialog>
-		<dialog id="stopDlg" class="colors canvas-dialog">
-			<div class="setting-elements">
-				<div class="setting-element">
-					<span>Do you want to stop the game?</span>
-				</div>
-				<div class="setting-element">
-					<button id="stopOk" class="btn">OK</button>
-					<button autofocus id="stopCancel" class="btn">Cancel</button>
-				</div>
-			</div>
-		</dialog>
-		<dialog id="helpDlg" class="colors canvas-dialog">
-			<div class="close-icon-container margin-bottom-md">
-				<span id="help-close" class="close-icon"></span>
-			</div>
-			<div>
-				<div id="help-content" src="assets/help/rules.en.md"></div>
-			</div>
-		</dialog>
+		<!-- Hamburger Icon -->
 		<div id="hamburger-menu" class="hamburger-icon-container margin-bottom-md">
   			<span class="hamburger-icon"></span>
 		</div>
-		<div>
+		<div style="display:flex;flex-direction:column;align-items:center;width:100%;height:100%;">
 			<canvas id="game" style="width:100%;height:auto;max-width:800px;"></canvas>
 			<div id="text">---</div>
+		</div>
+		<dialog id="setting" class="colors menu">
+			<canvas id="menu" style="width:100%;height:auto;margin:0;"></canvas>
+		</dialog>
+		<div class="dialog-container">
+			<dialog id="playerDlg" class="colors canvas-dialog">
+				<div class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="orangeStrategy">Strategy for Orange</label>
+						<div class="select-wrapper">
+							<select id="orangeStrategy" required="required">
+								<option value="0">Not Available</option>
+								<option value="1">Manual</option>
+								<option value="2">One</option>
+								<option value="3">All</option>
+							</select>
+						</div>
+					</div>
+					<div class="setting-element">
+						<label for="orangeName">Orange Name</label>
+						<input type="text" id="orangeName" name="orangeName"class="form-control">
+					</div>
+				</div>
+				<div class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="yellowStrategy">Strategy for Yellow</label>
+						<div class="select-wrapper">
+							<select id="yellowStrategy" required="required">
+								<option value="0">Not Available</option>
+								<option value="1">Manual</option>
+								<option value="2">One</option>
+								<option value="3">All</option>
+							</select>
+						</div>
+					</div>
+					<div class="setting-element">
+						<label for="yellowName">Yellow Name</label>
+						<input type="text" id="yellowName" name="yellowName" class="form-control">
+					</div>
+				</div>
+				<div class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="greenStrategy">Strategy for Green</label>
+						<div class="select-wrapper">
+							<select id="greenStrategy" required="required">
+								<option value="0">Not Available</option>
+								<option value="1">Manual</option>
+								<option value="2">One</option>
+								<option value="3">All</option>
+							</select>
+						</div>
+					</div>
+					<div class="setting-element">
+						<label for="greenName">Green Name</label>
+						<input type="text" id="greenName" name="greenName" class="form-control">
+					</div>
+				</div>
+				<div class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="blueStrategy">Strategy for Blue</label>
+						<div class="select-wrapper">
+							<select id="blueStrategy" required="required">
+								<option value="0">Not Available</option>
+								<option value="1">Manual</option>
+								<option value="2">One</option>
+								<option value="3">All</option>
+							</select>
+						</div>
+					</div>
+					<div class="setting-element">
+						<label for="blueName">Blue Name</label>
+						<input type="text" id="blueName" name="blueName" class="form-control">
+					</div>
+				</div>
+				<div class="setting-elements">
+					</div>
+					<div class="setting-element">
+						<button autofocus id="playerSubmit" class="btn">OK</button>
+						<button type="cancel" id="playerCancel" class="btn">Cancel</button>
+					</div>
+				</div>
+			</dialog>
+			<dialog id="rankingDlg" class="colors canvas-dialog">
+				<div id="ranking-close" class="close-icon-container margin-bottom-md">
+					<span class="close-icon"></span>
+				</div>
+				<div id="winner" class="setting-elements margin-bottom-md margin-top-md">
+					<div class="setting-element">
+						<label for="winner-name">Winner:</label>
+						<div id="winner-name" class="form-control">---</div>
+					</div>
+					<div class="setting-element">
+						<label for="winner-tracks">Total tracks for Winner:</label>
+						<div id="winner-tracks" class="form-control">---</div>
+					</div>
+				</div>
+				<div id="second" class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="second-name">2nd:</label>
+						<div id="second-name" class="form-control">---</div>
+					</div>
+					<div class="setting-element">
+						<label for="second-tracks">Total tracks for 2nd:</label>
+						<div id="second-tracks" class="form-control">---</div>
+					</div>
+				</div>
+				<div id="third" class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="third-name">3rd:</label>
+						<div id="third-name" class="form-control">---</div>
+					</div>
+					<div class="setting-element">
+						<label for="third-tracks">Total tracks for 3rd:</label>
+						<div id="third-tracks" class="form-control">---</div>
+					</div>
+				</div>
+				<div id="fourth" class="setting-elements margin-bottom-md">
+					<div class="setting-element">
+						<label for="fourth-name">4th:</label>
+						<div id="fourth-name" class="form-control">---</div>
+					</div>
+					<div class="setting-element">
+						<label for="fourth-tracks">Total tracks for 4th:</label>
+						<div id="fourth-tracks" class="form-control">---</div>
+					</div>
+				</div>
+				<div id="none" class="margin-top-md">No valid players or players in game.</div>
+			</dialog>
+			<dialog id="stopDlg" class="colors canvas-dialog">
+				<div class="setting-elements">
+					<div class="setting-element">
+						<span>Do you want to stop the game?</span>
+					</div>
+					<div class="setting-element">
+						<button id="stopOk" class="btn">OK</button>
+						<button autofocus id="stopCancel" class="btn">Cancel</button>
+					</div>
+				</div>
+			</dialog>
+			<dialog id="helpDlg" class="colors canvas-dialog">
+				<div class="close-icon-container margin-bottom-md">
+					<span id="help-close" class="close-icon"></span>
+				</div>
+				<div>
+					<div id="help-content" src="assets/help/rules.en.md"></div>
+				</div>
+			</dialog>
 		</div>
     </body>
 </html>

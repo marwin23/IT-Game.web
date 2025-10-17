@@ -1,6 +1,6 @@
 // IT-Game Code
 function activateDocument() {
-    const c = new Canvas();
+    return new Canvas();
 };
 
 // --- end of file ---

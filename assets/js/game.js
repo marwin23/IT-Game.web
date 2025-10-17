@@ -299,19 +299,16 @@ class GameFigure {
                 return false;
 
             this.Position = new GamePoint(this.Player.FieldPlayer.house[++this.GameIndex]);
+        } else if (this.GameIndex == this.Player.FieldPlayer.Hahead) {  // figure in the field and ahead the house
+            this.InHouse = true;
+            this.GameIndex = 0;
+            this.Position = new GamePoint(this.Player.FieldPlayer.house[this.GameIndex]);
         } else {                    // figure in the field
-            // figure is ahead the house
-            if (this.GameIndex == this.Player.FieldPlayer.Hahead) {  
-                this.InHouse = true;
+            this.GameIndex++;       // track figure
+            if (this.GameIndex == Field.FieldDescription.positions.length)
                 this.GameIndex = 0;
-                this.Position = new GamePoint(this.Player.FieldPlayer.house[this.GameIndex]);
-            } else {
-                this.GameIndex++;   // track figure
-                if (this.GameIndex == Field.FieldDescription.positions.length)
-                    this.GameIndex = 0;
 
-                this.Position = new GamePoint(Field.FieldDescription.positions[this.GameIndex]);
-            }
+            this.Position = new GamePoint(Field.FieldDescription.positions[this.GameIndex]);
         }
 
         this.TrackNumber++;
@@ -410,7 +407,7 @@ class GamePlayer
             this.Name = p.Name;
             this.Data = p.Data;
 
-            this.Ranking = this.Ranking;
+            this.Ranking = p.Ranking;
             this.Figures = p.Figures.filter(f => new GameFigure(f));
             this.Strategy = p.Strategy;
         } else {
@@ -435,7 +432,7 @@ class GamePlayer
     /// </summary>
     CreateFigures() {
         this.Figures = new Array();     // Field.GameMaxFigure
-        for (var n = 1; n <= Field.GameMaxFigure; n++) {
+        for (let n = 1; n <= Field.GameMaxFigure; n++) {
             const f = new GameFigure(this, n);
             this.Game.Canvas.OnFigure(this, f, Game.FigureAction.Init);
             this.Figures.push(f);
@@ -554,7 +551,7 @@ class GamePlayer
     SetFigures() {
         console.log("SetFigures", this.Figures);
 
-        for(var fig of this.Figures)
+        for(let fig of this.Figures)
             fig.Set();
     }
 
@@ -562,7 +559,7 @@ class GamePlayer
     /// delete all figures from the field
     /// </summary>
     DeleteFigures() {
-        for (var fig of this.Figures)
+        for (let fig of this.Figures)
             fig.Delete();
     }
 
@@ -576,10 +573,10 @@ class GamePlayer
         console.log("SetFiguresToCorner", force);
 
         if (force) {
-            for(var fig of this.Figures)
+            for(let fig of this.Figures)
                 fig.SetCorner();
         } else {
-            for(var fig of this.Figures.filter(f => f.InField))
+            for(let fig of this.Figures.filter(f => f.InField))
                 fig.SetCorner();
         }
     }
@@ -660,7 +657,7 @@ class Game {
         /// <summary>
         /// figure is set on start
         /// </summary>
-        Set: 2,
+        Start: 2,
 
         /// <summary>
         /// figure is set
@@ -741,14 +738,14 @@ class Game {
     /// field index of players
     /// </param>
     SetPlayers(ps) {
-        if( ps != null) {
+        if (ps == null) {
+            this.Players = null;
+        } else {
             this.Players = Array
                 .from(ps.split(',').entries()
-                .filter( p => parseInt(p[1]) > 0)
-                .map( p => new GamePlayer(this, p[0], parseInt(p[1]))));
+                .filter( p => Number.parseInt(p[1]) > 0)
+                .map( p => new GamePlayer(this, p[0], Number.parseInt(p[1]))));
             this.SetFiguresToCorner(true);          // set initial position
-        } else {
-            this.Players = null;
         }
 
         console.log("SetPlayers", ps, this.Players);
@@ -764,43 +761,30 @@ class Game {
     /// game continues
     /// </returns>
     SelectPlayer(first = false) {
-        var run = false;
+        if (this.Players == null)
+            return false;
 
-        if( this.Players != null) {
-            const play = Array.from(this.Players.filter(p => !p.CheckFinish()));
-            if (play.length > 0) {
-                if (first) {
-                    // find first player in the game
-                    this.Player = play[0];
-                    run = true;
-                } else {
-                    // no player active
-                    if (!this.Player)
-                        run = this.SelectPlayer(true);  // get first player in game
-                    else
-                    {
-                        var index = play.findIndex((p) => p.Equals(this.Player));
-                        if (index < 0)                      // current player not found
-                            run = this.SelectPlayer(true);  // get first player in game
-                        else {
-                            // next player
-                            index++;
-                            if (index >= play.length)
-                                index = 0;
-
-                            this.Player = play[index];
-                            run = true;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // check if game is entriely finished
-        if (!run)
+        const play = Array.from(this.Players.filter(p => p.CheckFinish() === false));
+        if (play.length === 0) {
             this.Canvas.OnFinished();
+            return false;
+        }
 
-        return run;
+        if (first || !this.Player) {
+            this.Player = play[0];
+            return true;
+        }
+
+        let index = play.findIndex((p) => p.Equals(this.Player));
+        if (index < 0)
+            return this.SelectPlayer(true);  // get first player in game
+
+        index++;
+        if (index >= play.length)
+            index = 0;
+
+        this.Player = play[index];
+        return true;
     }
 
     /// <summary>
@@ -824,6 +808,43 @@ class Game {
     /// check if a figure can be tracked
     /// </summary>
     /// <param name="f1">
+    /// figure to check
+    /// </param>
+    /// <param name="num">
+    /// number of fields to track
+    /// </param>
+    /// <returns>
+    /// figure that can be tracked
+    /// number of figures to jump over
+    /// true if tracking was aborted
+    /// </returns>
+    #simulateTrackForCheck(f1, num) {
+        let tf = new GameFigure(f1);
+        tf.Test = true;
+
+        let f = null;
+        let numfig = 0;
+
+        for (let i = num; i > 0; i--) {
+            if (!tf.Track())
+                return { f: null, numfig, aborted: true };
+
+            f = this.CheckFigure(tf);
+            if (f == null) continue;
+
+            if (tf.InHouse && this.JumpHouse === false)
+                return { f: null, numfig, aborted: true };
+
+            if (i > 1 && !GameFigure.HaveSameColor(tf, f)) numfig++;
+        }
+
+        return { f, numfig, aborted: false };
+    }
+
+    /// <summary>
+    /// check if a figure can be tracked
+    /// </summary>
+    /// <param name="f1">
     /// figure to be checked
     /// </param>
     /// <param name="num">number of field positions</param>
@@ -834,36 +855,15 @@ class Game {
     /// </returns>
     CheckTrackFigure(f1, num, defeat) {
         console.log( "CheckTrackFigure", f1, num, defeat);
+        if (num <= 0) return { num: -1, fd: null };
 
-        var f = null;
-        var numfig = 0;         // number of foreign figures to jump over
-        var res = { num: -1, fd: null };
-
-        var tf = new GameFigure(f1);
-        tf.Test = true;
-
-        for (var i = num; i > 0; i--)
-        {
-            if (!tf.Track())    // track figure
-                return res;
-
-            f = this.CheckFigure(tf);
-            if (f != null) {
-                if (!this.JumpHouse && tf.InHouse)
-                    return res;
-
-                if (i > 1)              // if last field not reached
-                {
-                    // figure from another player
-                    if (!GameFigure.HaveSameColor(tf, f))
-                        numfig++;
-                }
-            }
-        }
+        const res = { num: -1, fd: null };
+        const { f, numfig, aborted } = this.#simulateTrackForCheck(f1, num);
+        if (aborted) return res;
 
         // if there is not another figure on the same position
         // figure cannot be tracked if force defeat is active
-        if (!f) {
+        if (f == null) {
             res.num = defeat ? -1 : numfig;
             return res;
         }
@@ -888,7 +888,7 @@ class Game {
         console.log("SetStart", this.Players);
 
         if (this.Players != null)
-            for (var pl of this.Players)
+            for (let pl of this.Players)
                 pl.Figures[0].SetStart();
     }
 
@@ -899,7 +899,7 @@ class Game {
         console.log("SetFigures", this.Players);
 
         if (this.Players != null)
-            for (var pl of this.Players)
+            for (let pl of this.Players)
                 pl.SetFigures();
     }
 
@@ -910,7 +910,7 @@ class Game {
         console.log("DeleteFigures", this.Players);
 
         if (this.Players != null)
-            for (var pl of this.Players)
+            for (let pl of this.Players)
                 pl.DeleteFigures();
     }
 
@@ -924,7 +924,7 @@ class Game {
         console.log( "SetFiguresToCorner", force);
 
         if (this.Players != null)
-            for (var pl of this.Players)
+            for (let pl of this.Players)
                 pl.SetFiguresToCorner(force);
 
         this.Ranking = 0;
@@ -940,7 +940,7 @@ class Game {
     /// strategy to set
     /// </param>
     SetStrategy(strategy) {
-        for(var pl in this.Players)
+        for(let pl in this.Players)
             pl.Strategy = strategy;
     }
 
@@ -963,8 +963,8 @@ class Game {
     /// new parking flag
     /// </param>
     SetParking(p) {
-        var figs = new Array();   // Field.GameMaxFigure
-        var park = new Array();  // Field.FieldDescription.parking.length
+        let figs = new Array();   // Field.GameMaxFigure
+        let park = new Array();  // Field.FieldDescription.parking.length
         for(const i of Field.FieldDescription.parking) {
             const pos = Field.FieldDescription.positions[i];
             const tf = new GameFigure(null, pos.x, pos.y);
@@ -995,7 +995,7 @@ class Game {
     /// player in ascending order
     /// </returns>
     GetRanking() {
-        var ranking = [];
+        let ranking = [];
 
         if (this.Players) {
             ranking = Array.from(this.Players.filter(p => p.CheckFinish()));
@@ -1021,8 +1021,8 @@ class Game {
         fig.Track();
 
         if (last) {
-            var f2 = this.CheckFigure(fig);
-            if (!f2) {
+            let f2 = this.CheckFigure(fig);
+            if (f2 == null) {
                 fig.Set();
                 if (this.Player.CheckFinish()) {
                     this.Player.Ranking = ++this.Ranking;
@@ -1051,16 +1051,16 @@ class Game {
         fig.Delete();
 
         const f1 = this.CheckFigure(fig);
-        if( f1 != null) {
-            f1.Set();
-        } else {
+        if (f1 == null) {
             if (this.Parking && fig.CheckParking())   // if figure was at parking position
                 this.Canvas.OnParking( [fig.Position], true);
+        } else {
+            f1.Set();
         }
 
         fig.Track();
         
-        if (!last) {
+        if (last === false) {
             fig.Set();
             await this.Canvas.OnFigure(this.Player, fig, Game.FigureAction.Track);
         } else {
@@ -1095,7 +1095,7 @@ class Game {
     /// number of dice pips
     /// </param>
     async TrackFigure(fig, dice) {
-        for (var i = 1; i <= dice; i++)
+        for (let i = 1; i <= dice; i++)
             await this.TrackFigureByOne(fig, i == dice);
     };
 
@@ -1107,12 +1107,12 @@ class Game {
     /// figures that can be defeated
     /// </returns>
     #CheckStrategy(dice) {
-        var lstfd = new Array();   // figures to defeat Field.GameMaxFigure
-        var lstft = new Array();   // figures to track Field.GameMaxFigure
+        let lstfd = new Array();   // figures to defeat Field.GameMaxFigure
+        let lstft = new Array();   // figures to track Field.GameMaxFigure
 
         if (this.ForceDefeat || this.Player.Strategy != GamePlayer.StrategyDefinition.Manual) {
             // at first determine if other figures can be defeated
-            for (var f of this.Player.Figures) {
+            for (let f of this.Player.Figures) {
                 const res = this.CheckTrackFigure(f, dice, true);
                 console.log( "CheckTrackFigure", res);
                 if( res.num >= 0) {
@@ -1127,7 +1127,7 @@ class Game {
             }
         }
 
-        for(var f of this.Player.Figures) {
+        for(let f of this.Player.Figures) {
             const res = this.CheckTrackFigure(f, dice, false);
             console.log( "CheckTrackFigure", res);
             if ( res.num >= 0) {
@@ -1169,101 +1169,40 @@ class Game {
     /// figures to defeat
     /// </returns>
     async EvalDiceRoll(dice) {
-        var track = true;   // figure can be tracked
+        let track = true;   // figure can be tracked
         if (dice == 6) {
-            var fig = this.Player.GetFigureFromCorner();
+            let fig = this.Player.GetFigureFromCorner();
             if (fig != null)
             {
                 track = false;      // do not track figure
-                var tfig = new GameFigure(fig);
+                let tfig = new GameFigure(fig);
                 tfig.Test = true;
 
                 tfig.SetStart();
 
-                var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (fig2 != null)           // if there is a figure
-                {
-                    if (GameFigure.HaveSameColor(fig2, tfig)) {
-                        // track only this figure
-                        return { ft: [ fig2 ], fd: null };
-                    } else {
-                        fig2.Delete();      // delete from start position
-                        fig.Delete();       // delete figure from corner
-
-                        fig.SetStart();
-                        fig2.Defeated();    // figure defeated
-
-                        await fig.Set();    // set to start position
-                        await fig2.Set();
-                    }
-                } else {                    // figure set to start position
-                    fig.Delete();           // delete figure from corner
+                let fig2 = this.CheckFigure(tfig);  // get figure at start positions
+                if (fig2 == null) {                 // figure set to start position
+                    fig.Delete();                   // delete figure from corner
                     fig.SetStart();
-                    await fig.Set();              // set figure to start position
+                    await fig.Set();                // set figure to start position
+                } else if (GameFigure.HaveSameColor(fig2, tfig)) {
+                    // track only this figure
+                    return { ft: [ fig2 ], fd: null };
+                } else {
+                    fig2.Delete();                  // delete from start position
+                    fig.Delete();                   // delete figure from corner
+
+                    fig.SetStart();
+                    fig2.Defeated();                // figure defeated
+
+                    await fig.Set();                // set to start position
+                    await fig2.Set();
                 }
             }
         }
 
         if (!track)                         // if figure cannot be tracked anymore
             return { ft: null, fd: null };
-
-        return this.#CheckStrategy(dice);
-    }
-
-    /// <summary>
-    /// check dice roll. This function is for async behaviour.
-    /// </summary>
-    /// <remarks>
-    /// If the dice roll is 6, a figure is set from the corner to the start position.
-    /// If there is a figure from another player, it will be defeated.
-    /// If there is a figure which belong to me, it will be tracked by 6 fields
-    /// although a own figure is defeated.
-    /// If the dice roll is not a 6 or no figure is at the corner anymore,
-    /// the figures are determined which can be tracked.
-    /// </remarks>
-    /// <param name="dice">
-    /// number of dice pips to track
-    /// </param>
-    /// <returns>
-    /// Figures that can be tracked.
-    /// Null if one already has been tracked.
-    /// figures to defeat
-    /// figure to set
-    /// </returns>
-    CheckDiceRoll(dice) {
-        fdefeat = null;
-        fset = null;
-
-        var track = true;           // figure can be tracked
-        if (dice == 6) {
-            var fig = this.Player.GetFigureFromCorner();
-            if (fig != null) {
-                track = false;      // do not track figure
-                var tfig = new GameFigure(fig);
-                tfig.Test = true;
-                tfig.SetStart();
-
-                var fig2 = this.CheckFigure(tfig);  // get figure at start positions
-                if (fig2 != null)                   // if there is a figure
-                {
-                    if (GameFigure.HaveSameColor(fig2, tfig)) {
-                        // track only this figure
-                        return { ft: [ fig2 ], fd: null, fs: null };
-                    }
-                    else {
-                        fig.SetStart();
-                        fdefeat = [ fig2 ];     // figure defeated
-                        fset = fig;
-                    }
-                } else {                        // figure set to start position
-                    fig.SetStart();
-                    fset = fig;
-                }
-            }
-        }
-
-        if (!track)                         // if figure cannot be tracked anymore
-            return { ft: null, fd: null, fs: null };
 
         return this.#CheckStrategy(dice);
     }

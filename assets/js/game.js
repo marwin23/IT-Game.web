@@ -835,7 +835,8 @@ class Game {
             if (tf.InHouse && this.JumpHouse === false)
                 return { f: null, numfig, aborted: true };
 
-            if (i > 1 && !GameFigure.HaveSameColor(tf, f)) numfig++;
+            if (i > 1 && !GameFigure.HaveSameColor(tf, f))
+                numfig++;
         }
 
         return { f, numfig, aborted: false };

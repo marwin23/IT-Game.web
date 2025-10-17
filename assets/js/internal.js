@@ -32,7 +32,7 @@ class Globals {
     static async play(m, b = 300) {
         return new Promise(resolve => {
                 console.log("play", b);
-                if( m != null) {
+                if( m) {
                     // const d = Math.ceil(m.duration * 1000);
                     m.play();
                     m.onended = resolve;
@@ -280,7 +280,7 @@ class GameInternal {
     /// </summary>
     static SelectPlayers(f) {
         const p = localStorage.getItem("Players");
-        var players = Array.from(p.split(',').map( (p) => parseInt(p)));
+        let players = Array.from(p.split(',').map( (p) => Number.parseInt(p)));
         document.getElementById("orangeStrategy").value = players[0];
         document.getElementById("orangeName").value = localStorage.getItem("Orange");
         document.getElementById("yellowStrategy").value = players[1];

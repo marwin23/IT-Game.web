@@ -551,20 +551,22 @@ class Canvas {
     /// check rolling dice.
     /// </summary>
     async #EvalDiceRoll() {
-        if (this.#game.Player == null) return;
+        if (this.#game.Player == null)
+            return false;
 
         const pd = this.#game.Player.Data; // PlayerData
-        if (pd == null) return;
+        if (pd == null)
+            return false;
 
-        const name = GameInternal.GetPlayerName(this.#game.Player);
         const sound = this.#menu.GetCheck("sound");
 
         await this.#rollDiceAndIndicate(sound);
 
         const res = await this.#game.EvalDiceRoll(this.Dice);
-        if (res.ft == null) return true;
+        if (res.ft == null)
+            return true;
 
-        return await this.#handleRollOutcome(pd, res, name);
+        return await this.#handleRollOutcome(pd, res);
     }
 
     async #rollDiceAndIndicate(sound) {
@@ -573,8 +575,9 @@ class Canvas {
         await Globals.play(sound ? this.#sndDice : null);
     }
 
-    async #handleRollOutcome(pd, res, name) {
+    async #handleRollOutcome(pd, res) {
         pd.Figures = res.ft;
+        const name = GameInternal.GetPlayerName(this.#game.Player);
 
         if (pd.Figures.length == 0) {
             if (this.#menu.GetCheck("dice3") && this.#game.CheckCorner()) {
@@ -643,18 +646,17 @@ class Canvas {
             return false;
 
         const f = this.#GetFigure(pd.Figures, x,y);
-        if (f != null) {
-            this.#DeleteFigures(pd.Figures);
-            this.#SetFigures(pd.Figures);
+        if (f == null)
+            return false;
 
-            const name = GameInternal.GetPlayerName(this.#game.Player);
-            this.#text.innerText = `${name}: track figure ${f.Number}.`;
-            await this.#game.TrackFigure(f, this.Dice);
+        this.#DeleteFigures(pd.Figures);
+        this.#SetFigures(pd.Figures);
 
-            return true;
-        }
+        const name = GameInternal.GetPlayerName(this.#game.Player);
+        this.#text.innerText = `${name}: track figure ${f.Number}.`;
+        await this.#game.TrackFigure(f, this.Dice);
 
-        return false;
+        return true;
     }
 
     /// <summary>
@@ -731,6 +733,7 @@ class Canvas {
     async OnFigure(p,f,a) {
         console.log( "OnFigure", p, f, a);
 
+        const name = GameInternal.GetPlayerName(p);
         const sound = this.#menu.GetCheck("sound");
 
         switch (a) {
@@ -743,8 +746,11 @@ class Canvas {
                 break;
 
             case Game.FigureAction.Start:
-                if (!this._init && sound)
-                    await Globals.play(this.#sndStart);
+                if (!this._init) {
+                    this.#text.innerText = `${name} is set to field.`
+                    if( sound)
+                        await Globals.play(this.#sndStart);
+                }
                 break;
 
             case Game.FigureAction.Delete:
@@ -760,8 +766,11 @@ class Canvas {
                 break;
 
             case Game.FigureAction.Defeated:
-                if (!this._init && sound)
-                    await Globals.play(this.#sndDefeat);
+                if (!this._init) {
+                    this.#text.innerText = `${name} is defeated.`
+                    if( sound)
+                        await Globals.play(this.#sndDefeat);
+                }
                 break;
         }
     }

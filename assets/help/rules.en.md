@@ -3,19 +3,19 @@
 ## Impressum ##
 
 ### Address ###
-Jupiter Software
-Marwin Freutel
-Ehinger Berg 189
-47259 Duisburg
+- Jupiter Software
+- Marwin Freutel
+- Ehinger Berg 189
+- 47259 Duisburg
 
 ### Contact ###
-Fon: 0176 6333 8566
-mailto:ludo@jupiter-software.de
+- Fon: 0176 6333 8566
+- mailto:ludo@jupiter-software.de
 
 ## Game materials ##
-Game board
-1 dice
-4 pieces in each color
+- Game board
+- 1 dice
+- 4 pieces in each color
 
 ## Game description ##
 The aim of this entertaining game is to roll your own game pieces as quickly as possible from your starting square across the board to the finish. At the same time, you try to annoy your fellow players and hit their game pieces as often as possible so that they have to start again from the beginning.
@@ -49,8 +49,7 @@ If only two people are playing, each player receives two opposite colors (one pl
 The player whose turn it is can either move one of their own pieces or a neutral piece. The neutral color is then initially only used for capturing. The player who gets all of their pieces to the finish line wins, but only once the four neutral pieces have also reached their destination. If several players have already got all of their pieces to the finish line, the player who gets the last neutral piece to the finish line wins.
 
 ### Rolling three times: ###
-If you do not have any pieces on the board because all of your pieces have been captured and are waiting on the B fields to be used, you may roll the dice three times. This also applies if one or more pieces have already reached their destination fields, but only if they cannot advance any further from there may roll the dice three times. This also applies if one or more pieces have already reached their destination fields, but only if they cannot advance any further from there. (Example: One
-playing piece is already on field c in the destination, the other three are waiting on the B fields. The player may not roll the dice three times because the piece on field c could still advance with a "1".
+If you do not have any pieces on the board because all of your pieces have been captured and are waiting on the B fields to be used, you may roll the dice three times. This also applies if one or more pieces have already reached their destination fields, but only if they cannot advance any further from there may roll the dice three times. This also applies if one or more pieces have already reached their destination fields, but only if they cannot advance any further from there. Example: One playing piece is already on field c in the destination, the other three are waiting on the B fields. The player may not roll the dice three times because the piece on field c could still advance with a "1".
 
 ### Skipping in the finish area is not allowed: ###
 No pieces may be skipped on the destination squares. The last piece to "come home" can only enter the destination on square a.

@@ -1,5 +1,17 @@
 # Ludo #
 
+## Impressum ##
+
+### Address ###
+Jupiter Software
+Marwin Freutel
+Ehinger Berg 189
+47259 Duisburg
+
+### Contact ###
+Fon: 0176 6333 8566
+mailto:ludo@jupiter-software.de
+
 ## Game materials ##
 Game board
 1 dice

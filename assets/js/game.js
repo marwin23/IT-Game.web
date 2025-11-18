@@ -808,44 +808,6 @@ class Game {
     /// check if a figure can be tracked
     /// </summary>
     /// <param name="f1">
-    /// figure to check
-    /// </param>
-    /// <param name="num">
-    /// number of fields to track
-    /// </param>
-    /// <returns>
-    /// figure that can be tracked
-    /// number of figures to jump over
-    /// true if tracking was aborted
-    /// </returns>
-    #simulateTrackForCheck(f1, num) {
-        let tf = new GameFigure(f1);
-        tf.Test = true;
-
-        let f = null;
-        let numfig = 0;
-
-        for (let i = num; i > 0; i--) {
-            if (!tf.Track())
-                return { f: null, numfig, aborted: true };
-
-            f = this.CheckFigure(tf);
-            if (f == null) continue;
-
-            if (tf.InHouse && this.JumpHouse === false)
-                return { f: null, numfig, aborted: true };
-
-            if (i > 1 && !GameFigure.HaveSameColor(tf, f))
-                numfig++;
-        }
-
-        return { f, numfig, aborted: false };
-    }
-
-    /// <summary>
-    /// check if a figure can be tracked
-    /// </summary>
-    /// <param name="f1">
     /// figure to be checked
     /// </param>
     /// <param name="num">number of field positions</param>
@@ -856,15 +818,36 @@ class Game {
     /// </returns>
     CheckTrackFigure(f1, num, defeat) {
         console.log( "CheckTrackFigure", f1, num, defeat);
-        if (num <= 0) return { num: -1, fd: null };
 
-        const res = { num: -1, fd: null };
-        const { f, numfig, aborted } = this.#simulateTrackForCheck(f1, num);
-        if (aborted) return res;
+        var f = null;
+        var numfig = 0;         // number of foreign figures to jump over
+        var res = { num: -1, fd: null };
+
+        var tf = new GameFigure(f1);
+        tf.Test = true;
+
+        for (var i = num; i > 0; i--)
+        {
+            if (!tf.Track())    // track figure
+                return res;
+
+            f = this.CheckFigure(tf);
+            if (f != null) {
+                if (!this.JumpHouse && tf.InHouse)
+                    return res;
+
+                if (i > 1)              // if last field not reached
+                {
+                    // figure from another player
+                    if (!GameFigure.HaveSameColor(tf, f))
+                        numfig++;
+                }
+            }
+        }
 
         // if there is not another figure on the same position
         // figure cannot be tracked if force defeat is active
-        if (f == null) {
+        if (!f) {
             res.num = defeat ? -1 : numfig;
             return res;
         }

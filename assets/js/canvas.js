@@ -747,7 +747,7 @@ class Canvas {
 
             case Game.FigureAction.Start:
                 if (!this._init) {
-                    this.#text.innerText = `${name} is set to field.`
+                    this.#text.innerText = `${name} is set into field.`
                     if( sound)
                         await Globals.play(this.#sndStart);
                 }
